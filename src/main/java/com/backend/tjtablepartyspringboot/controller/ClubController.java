@@ -7,10 +7,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,10 +20,18 @@ public class ClubController {
 
     @ApiOperation("根据俱乐部id返回俱乐部详情")
     @GetMapping("getClubDetail")
-    public Result<Club> selectClubById(@ApiParam(name="clubId", value="俱乐部id", required = true)
+    public Result<Club> getClubDetail(@ApiParam(name="clubId", value="俱乐部id", required = true)
                                                   @RequestParam("clubId") Long clubId)
     {
         Club club = clubService.selectClub(clubId);
         return Result.success(club);
+    }
+
+    @ApiOperation("根据俱乐部id返回俱乐部详情")
+    @PostMapping("postOneNewClub")
+    public Result<Long> postOneNewClub(@RequestBody Club club)
+    {
+        Long newID = clubService.insertOneNewClub(club);
+        return Result.success(newID);
     }
 }

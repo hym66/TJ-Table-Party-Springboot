@@ -10,4 +10,6 @@ import org.apache.ibatis.annotations.Select;
 public interface ClubMapper extends BaseMapper<Club> {
     @Select("SELECT * FROM club WHERE club_id=${clubId}")
     Club selectById(@Param("clubId") Long clubId);
+
+
 }

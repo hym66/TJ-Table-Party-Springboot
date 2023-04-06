@@ -17,4 +17,10 @@ public class ClubServiceImpl implements ClubService {
         Club club = clubMapper.selectById(clubId);
         return club;
     }
+
+    @Override
+    public Long insertOneNewClub(Club club) {
+        Long newID = Long.valueOf(clubMapper.insert(club));
+        return newID;
+    }
 }

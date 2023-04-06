@@ -1,5 +1,5 @@
 package com.backend.tjtablepartyspringboot.interceptor;
-import com.backend.tjtablepartyspringboot.interceptor.util.JwtUtil;
+import com.backend.tjtablepartyspringboot.util.JwtUtil;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 

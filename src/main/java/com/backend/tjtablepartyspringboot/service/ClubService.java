@@ -6,4 +6,5 @@ import org.springframework.stereotype.Service;
 @Service
 public interface ClubService {
     Club selectClub(Long clubId);
+    Long insertOneNewClub(Club club);
 }
