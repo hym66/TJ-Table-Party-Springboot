@@ -1,5 +1,6 @@
 package com.backend.tjtablepartyspringboot.dto;
 
+import com.backend.tjtablepartyspringboot.entity.PublicSiteTime;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Author 2051196 刘一飞
@@ -32,4 +34,5 @@ public class PublicSiteDto {
     Date checkTime;
     String[] type;
     byte status;
+    List<PublicSiteTimeDto> openTime;
 }

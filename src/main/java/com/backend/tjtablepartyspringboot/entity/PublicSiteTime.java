@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Time;
 import java.util.Date;
 
 /**
@@ -20,10 +21,10 @@ import java.util.Date;
 @NoArgsConstructor
 @TableName(value = "public_site_time")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class publicSiteTime {
+public class PublicSiteTime {
     @JsonSerialize(using= ToStringSerializer.class)
     Long publicSiteId;
     int weekday;
-    Date startTime;
-    Date endTime;
+    Time startTime;
+    Time endTime;
 }
