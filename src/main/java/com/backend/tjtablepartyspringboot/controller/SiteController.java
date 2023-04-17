@@ -2,6 +2,7 @@ package com.backend.tjtablepartyspringboot.controller;
 
 import com.backend.tjtablepartyspringboot.common.Result;
 import com.backend.tjtablepartyspringboot.dto.PublicSiteBriefDto;
+import com.backend.tjtablepartyspringboot.dto.PublicSiteDto;
 import com.backend.tjtablepartyspringboot.entity.Club;
 import com.backend.tjtablepartyspringboot.entity.PublicSite;
 import com.backend.tjtablepartyspringboot.entity.SiteType;
@@ -33,15 +34,20 @@ public class SiteController {
 
     @ApiOperation("获取所有场地信息")
     @GetMapping("getPublicSiteList")
-    public Result<List<PublicSiteBriefDto>> getPublicSiteList()
-    {
+    public Result<List<PublicSiteBriefDto>> getPublicSiteList() {
         return Result.success(siteService.selectAllPublicSite());
+    }
+
+    @ApiOperation("根据ID获取场地信息")
+    @GetMapping("getPublicSiteById")
+    public Result<PublicSiteDto> getPublicSiteById(@ApiParam(name = "publicSiteId", value = "场地id", required = true)
+                                                @RequestParam("publicSiteId") Long publicSiteId) {
+        return Result.success(siteService.selectPublicSiteById(publicSiteId));
     }
 
     @ApiOperation("获取所有场地的类型信息")
     @GetMapping("getSiteTypeList")
-    public Result<List<SiteType>> getSiteTypeList()
-    {
+    public Result<List<SiteType>> getSiteTypeList() {
         return Result.success(siteService.selectAllSiteType());
     }
 

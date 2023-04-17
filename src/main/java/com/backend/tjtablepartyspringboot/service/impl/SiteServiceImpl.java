@@ -1,6 +1,7 @@
 package com.backend.tjtablepartyspringboot.service.impl;
 
 import com.backend.tjtablepartyspringboot.dto.PublicSiteBriefDto;
+import com.backend.tjtablepartyspringboot.dto.PublicSiteDto;
 import com.backend.tjtablepartyspringboot.entity.PublicSite;
 import com.backend.tjtablepartyspringboot.entity.SiteType;
 import com.backend.tjtablepartyspringboot.mapper.PublicSiteMapper;
@@ -38,6 +39,17 @@ public class SiteServiceImpl implements SiteService {
             res.add(publicSiteBriefDto);
         }
         return res;
+    }
+
+    @Override
+    public PublicSiteDto selectPublicSiteById(Long publicSiteId) {
+        PublicSite ps = publicSiteMapper.selectPublicSiteById(publicSiteId);
+        String[] type = ps.getType().split(",");
+        for (int i = 0; i < type.length; i++) {
+            type[i] = siteTypeMapper.selectTypeNameById(Long.valueOf(type[i]));
+        }
+        PublicSiteDto publicSiteDto = new PublicSiteDto(ps.getPublicSiteId(), ps.getCreatorId(), ps.getName(), ps.getCity(), ps.getLocation(), ps.getPicture(), ps.getIntroduction(), ps.getAvgCost(), ps.getCapacity(), ps.getGameNum(), ps.getPhone(), ps.getUploadTime(), ps.getCheckTime(), type, ps.getStatus());
+        return publicSiteDto;
     }
 
     @Override

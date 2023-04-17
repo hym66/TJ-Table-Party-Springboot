@@ -19,4 +19,7 @@ public interface PublicSiteMapper {
     @Select("SELECT * FROM public_site")
     List<PublicSite> selectAllPublicSite();
 
+    @Select("SELECT * FROM public_site WHERE public_site_id=#{publicSiteId}")
+    PublicSite selectPublicSiteById(@Param("publicSiteId") Long publicSiteId);
+
 }
