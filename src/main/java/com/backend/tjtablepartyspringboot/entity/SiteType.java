@@ -8,8 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
 /**
  * @Author 2051196 刘一飞
  * @Date 2023/4/17
@@ -18,24 +16,10 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName(value = "public_site")
+@TableName(value = "site_type")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PublicSite {
+public class SiteType {
     @JsonSerialize(using= ToStringSerializer.class)
-    Long publicSiteId;
-    @JsonSerialize(using=ToStringSerializer.class)
-    Long creatorId;
-    String name;
-    String city;
-    String location;
-    String picture;
-    String introduction;
-    float avgCost;
-    int capacity;
-    int gameNum;
-    String phone;
-    Date uploadTime;
-    Date checkTime;
-    String type;
-    byte status;
+    Long siteTypeId;
+    String siteTypeName;
 }
