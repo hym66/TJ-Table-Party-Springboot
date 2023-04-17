@@ -1,6 +1,7 @@
 package com.backend.tjtablepartyspringboot.mapper;
 
 import com.backend.tjtablepartyspringboot.entity.PublicSite;
+import com.backend.tjtablepartyspringboot.entity.SiteType;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -15,6 +16,8 @@ import java.util.List;
 @Mapper
 public interface SiteTypeMapper {
 
+    @Select("SELECT * FROM site_type")
+    List<SiteType> selectAllSiteType();
     @Select("SELECT site_type_name FROM site_type WHERE site_type_id=#{typeId}")
     String selectTypeNameById(@Param("typeId") Long typeId);
 }

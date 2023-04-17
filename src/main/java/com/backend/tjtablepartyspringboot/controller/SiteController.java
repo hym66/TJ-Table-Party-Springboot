@@ -4,6 +4,7 @@ import com.backend.tjtablepartyspringboot.common.Result;
 import com.backend.tjtablepartyspringboot.dto.PublicSiteBriefDto;
 import com.backend.tjtablepartyspringboot.entity.Club;
 import com.backend.tjtablepartyspringboot.entity.PublicSite;
+import com.backend.tjtablepartyspringboot.entity.SiteType;
 import com.backend.tjtablepartyspringboot.service.SiteService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,6 +36,13 @@ public class SiteController {
     public Result<List<PublicSiteBriefDto>> getPublicSiteList()
     {
         return Result.success(siteService.selectAllPublicSite());
+    }
+
+    @ApiOperation("获取所有场地的类型信息")
+    @GetMapping("getSiteTypeList")
+    public Result<List<SiteType>> getSiteTypeList()
+    {
+        return Result.success(siteService.selectAllSiteType());
     }
 
 }

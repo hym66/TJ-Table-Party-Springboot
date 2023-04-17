@@ -2,6 +2,7 @@ package com.backend.tjtablepartyspringboot.service;
 
 import com.backend.tjtablepartyspringboot.dto.PublicSiteBriefDto;
 import com.backend.tjtablepartyspringboot.entity.PublicSite;
+import com.backend.tjtablepartyspringboot.entity.SiteType;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,4 +16,6 @@ import java.util.List;
 public interface SiteService {
 
     List<PublicSiteBriefDto> selectAllPublicSite();
+
+    List<SiteType> selectAllSiteType();
 }

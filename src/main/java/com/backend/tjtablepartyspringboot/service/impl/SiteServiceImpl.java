@@ -2,6 +2,7 @@ package com.backend.tjtablepartyspringboot.service.impl;
 
 import com.backend.tjtablepartyspringboot.dto.PublicSiteBriefDto;
 import com.backend.tjtablepartyspringboot.entity.PublicSite;
+import com.backend.tjtablepartyspringboot.entity.SiteType;
 import com.backend.tjtablepartyspringboot.mapper.PublicSiteMapper;
 import com.backend.tjtablepartyspringboot.mapper.SiteTypeMapper;
 import com.backend.tjtablepartyspringboot.service.SiteService;
@@ -37,5 +38,10 @@ public class SiteServiceImpl implements SiteService {
             res.add(publicSiteBriefDto);
         }
         return res;
+    }
+
+    @Override
+    public List<SiteType> selectAllSiteType() {
+        return siteTypeMapper.selectAllSiteType();
     }
 }
