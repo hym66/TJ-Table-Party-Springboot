@@ -2,7 +2,8 @@ package com.backend.tjtablepartyspringboot.controller;
 
 import com.backend.tjtablepartyspringboot.common.Result;
 import com.backend.tjtablepartyspringboot.entity.Club;
-import com.backend.tjtablepartyspringboot.entity.Trpg;
+import com.backend.tjtablepartyspringboot.entity.TrpgPrivate;
+import com.backend.tjtablepartyspringboot.entity.TrpgPublic;
 import com.backend.tjtablepartyspringboot.service.ClubService;
 import com.backend.tjtablepartyspringboot.service.TrpgService;
 import io.swagger.annotations.Api;
@@ -11,6 +12,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,23 +32,35 @@ public class TrpgController {
     private TrpgService trpgService;
 
 
-    /*
-    * 获取所有trpg信息,主要为测试
-    * */
-    @ApiOperation("获取所有trpg信息")
-    @PostMapping("/getAllTrpg")
-    public Result<List<Trpg>> getAllTrpg()
+    @ApiOperation("获取所有公开trpg信息")
+    @GetMapping("/getAllPublicTrpg")
+    public Result<List<TrpgPublic>> getAllPublicTrpg()
     {
-        List<Trpg> list=trpgService.getAllTrpg();
+        List<TrpgPublic> list=trpgService.getAllPublicTrpg();
+//        List<TrpgPublic> list2=new ArrayList<>();
+//        list2.add(list.get(2));
         return Result.success(list);
     }
 
+
+    @ApiOperation("获取所有个人trpg信息")
+    @GetMapping("/getAllPrivateTrpg")
+    public Result<List<TrpgPrivate>> getAllPrivateTrpg()
+    {
+        List<TrpgPrivate> list=trpgService.getAllPrivateTrpg();
+//        List<TrpgPrivate> list2=new ArrayList<>();
+//        list2.add(list.get(2));
+        return Result.success(list);
+    }
+
+
+
     /*
-    * 读取本地数据，批量insert数据库的trpg表
+    * 读取本地数据，批量insert数据库的public trpg表
     * */
-    @ApiOperation("本地数据，批量insert数据库的trpg表")
-    @PostMapping("/setDBByLocal")
-    public Result<Map<String,Object>> setDBByLocal(
+    @ApiOperation("本地数据，批量insert数据库的public trpg表")
+    @PostMapping("/setWholeDBPublicTrpg")
+    public Result<Map<String,Object>> setWholeDBPublicTrpg(
             @ApiParam(name="folderPath", value="读取的本地文件夹路径", required = false)
             @RequestParam(value = "folderPath",required = false) String folderPath
     )
@@ -56,7 +70,7 @@ public class TrpgController {
             folderPath="D:\\Language_Programming\\pro_assignment\\python\\crawler_1\\JiShi\\material\\details\\";
         }
         System.out.println(folderPath);
-        Map<String,Object> resultMap= trpgService.setDBByLocal(folderPath);
+        Map<String,Object> resultMap= trpgService.setWholeDBPublicTrpg(folderPath);
         map.put("folderPath",folderPath);
         map.put("resultMap",resultMap);
         return Result.success(map);
