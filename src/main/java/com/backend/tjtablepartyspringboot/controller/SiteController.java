@@ -41,7 +41,7 @@ public class SiteController {
     @ApiOperation("根据ID获取场地信息")
     @GetMapping("getPublicSiteById")
     public Result<PublicSiteDto> getPublicSiteById(@ApiParam(name = "publicSiteId", value = "场地id", required = true)
-                                                @RequestParam("publicSiteId") Long publicSiteId) {
+                                                   @RequestParam("publicSiteId") Long publicSiteId) {
         return Result.success(siteService.selectPublicSiteById(publicSiteId));
     }
 
