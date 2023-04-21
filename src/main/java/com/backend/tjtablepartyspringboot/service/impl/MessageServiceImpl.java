@@ -47,4 +47,9 @@ public class MessageServiceImpl implements MessageService {
     public int deleteUserViewMessage(Long userId, Long messageId) {
         return userViewMessageMapper.deleteUserViewMessage(userId, messageId);
     }
+
+    @Override
+    public int updateMessageView(Long userId, Long messageId) {
+        return userViewMessageMapper.updateMessageView(userId, messageId);
+    }
 }

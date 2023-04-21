@@ -18,4 +18,6 @@ public interface MessageService {
    Message selectMessageInfoById(Long messageId);
 
    int deleteUserViewMessage(Long userId, Long messageId);
+
+   int updateMessageView(Long userId, Long messageId);
 }

@@ -2,10 +2,7 @@ package com.backend.tjtablepartyspringboot.mapper;
 
 import com.backend.tjtablepartyspringboot.entity.Club;
 import com.backend.tjtablepartyspringboot.entity.UserViewMessage;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -21,4 +18,8 @@ public interface UserViewMessageMapper {
 
     @Delete("DELETE FROM user_view_message WHERE user_id=${userId} AND message_id=${messageId}")
     int deleteUserViewMessage(@Param("userId") Long userId, @Param("messageId") Long messageId);
+
+    @Update("UPDATE user_view_message SET is_view=1 WHERE user_id=${userId} AND message_id=${messageId}")
+    int updateMessageView(@Param("userId") Long userId, @Param("messageId") Long messageId);
+
 }

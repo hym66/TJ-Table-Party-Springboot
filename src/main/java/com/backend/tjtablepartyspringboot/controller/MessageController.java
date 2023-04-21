@@ -43,11 +43,22 @@ public class MessageController {
     @ApiOperation("用户删除消息")
     @DeleteMapping("deleteUserViewMessage")
     public Result<String> deleteUserViewMessage(@ApiParam(name = "userId", value = "用户id", required = true)
-                                                 @RequestParam("userId") Long userId,
-                                                 @ApiParam(name = "messageId", value = "消息id", required = true)
-                                                 @RequestParam("messageId") Long messageId) {
+                                                @RequestParam("userId") Long userId,
+                                                @ApiParam(name = "messageId", value = "消息id", required = true)
+                                                @RequestParam("messageId") Long messageId) {
         int res = messageService.deleteUserViewMessage(userId, messageId);
         if (res == 1) return Result.success("删除成功");
         else return Result.success("删除失败");
+    }
+
+    @ApiOperation("用户浏览消息更新消息状态")
+    @PutMapping("updateMessageView")
+    public Result<String> updateMessageView(@ApiParam(name = "userId", value = "用户id", required = true)
+                                            @RequestParam("userId") Long userId,
+                                            @ApiParam(name = "messageId", value = "消息id", required = true)
+                                            @RequestParam("messageId") Long messageId) {
+        int res = messageService.updateMessageView(userId, messageId);
+        if (res == 1) return Result.success("消息状态更新成功");
+        else return Result.success("消息状态更新失败");
     }
 }
