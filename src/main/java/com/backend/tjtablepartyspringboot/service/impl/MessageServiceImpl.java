@@ -37,4 +37,9 @@ public class MessageServiceImpl implements MessageService {
         }
         return res;
     }
+
+    @Override
+    public Message selectMessageInfoById(Long messageId) {
+        return messageMapper.selectMessageInfoById(messageId);
+    }
 }

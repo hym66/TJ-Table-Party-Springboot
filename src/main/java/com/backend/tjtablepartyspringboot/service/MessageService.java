@@ -1,6 +1,7 @@
 package com.backend.tjtablepartyspringboot.service;
 
 import com.backend.tjtablepartyspringboot.dto.MessageDto;
+import com.backend.tjtablepartyspringboot.entity.Message;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,4 +14,6 @@ import java.util.List;
 @Service
 public interface MessageService {
     List<MessageDto> selectMessageInfoByUserId(Long userId);
+
+   Message selectMessageInfoById(Long messageId);
 }
