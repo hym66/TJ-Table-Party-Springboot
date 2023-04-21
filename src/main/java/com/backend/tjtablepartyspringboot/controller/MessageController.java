@@ -10,10 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -41,5 +38,16 @@ public class MessageController {
     public Result<Message> getMessageById(@ApiParam(name = "messageId", value = "消息id", required = true)
                                           @RequestParam("messageId") Long messageId) {
         return Result.success(messageService.selectMessageInfoById(messageId));
+    }
+
+    @ApiOperation("用户删除消息")
+    @DeleteMapping("deleteUserViewMessage")
+    public Result<String> deleteUserViewMessage(@ApiParam(name = "userId", value = "用户id", required = true)
+                                                 @RequestParam("userId") Long userId,
+                                                 @ApiParam(name = "messageId", value = "消息id", required = true)
+                                                 @RequestParam("messageId") Long messageId) {
+        int res = messageService.deleteUserViewMessage(userId, messageId);
+        if (res == 1) return Result.success("删除成功");
+        else return Result.success("删除失败");
     }
 }

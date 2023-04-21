@@ -42,4 +42,9 @@ public class MessageServiceImpl implements MessageService {
     public Message selectMessageInfoById(Long messageId) {
         return messageMapper.selectMessageInfoById(messageId);
     }
+
+    @Override
+    public int deleteUserViewMessage(Long userId, Long messageId) {
+        return userViewMessageMapper.deleteUserViewMessage(userId, messageId);
+    }
 }

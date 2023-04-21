@@ -16,4 +16,6 @@ public interface MessageService {
     List<MessageDto> selectMessageInfoByUserId(Long userId);
 
    Message selectMessageInfoById(Long messageId);
+
+   int deleteUserViewMessage(Long userId, Long messageId);
 }
