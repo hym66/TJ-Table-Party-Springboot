@@ -1,0 +1,43 @@
+package com.backend.tjtablepartyspringboot.dto;
+
+import com.backend.tjtablepartyspringboot.entity.Announce;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.sql.Date;
+import java.sql.Timestamp;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@TableName(value = "user")
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ClubAnnounceDto {
+    @JsonSerialize(using= ToStringSerializer.class)
+    Long announceId;
+    @JsonSerialize(using= ToStringSerializer.class)
+    Long clubId;
+    String announceContent;
+    @JsonSerialize(using= ToStringSerializer.class)
+    Long announceUserId;
+    String announcePubTime;
+
+    //人名和头像是另外从user表查出来的
+    String announceUserName;
+    String avatar;
+
+    public ClubAnnounceDto(Announce announce, String announceUserName, String avatar){
+        this.announceId = announce.getAnnounceId();
+        this.clubId = announce.getClubId();
+        this.announceContent = announce.getAnnounceContent();
+        this.announceUserId = announce.getAnnounceUserId();
+        this.announcePubTime = announce.getAnnouncePubTime();
+        this.announceUserName = announceUserName;
+        this.avatar = avatar;
+    }
+}

@@ -10,22 +10,22 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Date;
+import java.sql.Timestamp;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName(value = "club")
+@TableName(value = "announce")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Club {
+public class Announce {
     @TableId(type = IdType.AUTO)
-    @JsonSerialize(using=ToStringSerializer.class)
+    @JsonSerialize(using= ToStringSerializer.class)
+    Long announceId;
+    @JsonSerialize(using= ToStringSerializer.class)
     Long clubId;
-    String posterUrl;
-    String clubTitle;
-    String description;
-    String mainTime;
-    String meetingPoint;
-    Byte isPublic;
-    int capacity;
-    @JsonSerialize(using=ToStringSerializer.class)
-    Long managerId;
+    String announceContent;
+    @JsonSerialize(using= ToStringSerializer.class)
+    Long announceUserId;
+    String announcePubTime;
 }
