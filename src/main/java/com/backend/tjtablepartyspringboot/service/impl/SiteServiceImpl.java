@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Author 2051196 刘一飞
@@ -46,6 +47,8 @@ public class SiteServiceImpl implements SiteService {
         else if (weekday == 6) return "周六";
         else return "周日";
     }
+
+
 
     @Override
     public List<PublicSiteBriefDto> selectAllPublicSite() {
@@ -87,5 +90,15 @@ public class SiteServiceImpl implements SiteService {
     @Override
     public List<SiteTag> selectAllSiteTag() {
         return siteTagMapper.selectAllSiteTag();
+    }
+
+    @Override
+    public int insertPublicSite(PublicSite publicSite) {
+        return publicSiteMapper.insertPublicSite(publicSite);
+    }
+
+    @Override
+    public int insertPublicSiteTime(PublicSiteTime publicSiteTime) {
+        return publicSiteTimeMapper.insertPublicSiteTime(publicSiteTime);
     }
 }

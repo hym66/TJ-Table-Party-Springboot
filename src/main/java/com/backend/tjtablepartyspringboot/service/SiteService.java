@@ -3,6 +3,7 @@ package com.backend.tjtablepartyspringboot.service;
 import com.backend.tjtablepartyspringboot.dto.PublicSiteBriefDto;
 import com.backend.tjtablepartyspringboot.dto.PublicSiteDto;
 import com.backend.tjtablepartyspringboot.entity.PublicSite;
+import com.backend.tjtablepartyspringboot.entity.PublicSiteTime;
 import com.backend.tjtablepartyspringboot.entity.SiteTag;
 import com.backend.tjtablepartyspringboot.entity.SiteType;
 import org.springframework.stereotype.Service;
@@ -23,4 +24,7 @@ public interface SiteService {
 
     List<SiteType> selectAllSiteType();
     List<SiteTag> selectAllSiteTag();
+
+    int insertPublicSite(PublicSite publicSite);
+    int insertPublicSiteTime(PublicSiteTime publicSiteTime);
 }

@@ -3,22 +3,20 @@ package com.backend.tjtablepartyspringboot.controller;
 import com.backend.tjtablepartyspringboot.common.Result;
 import com.backend.tjtablepartyspringboot.dto.PublicSiteBriefDto;
 import com.backend.tjtablepartyspringboot.dto.PublicSiteDto;
-import com.backend.tjtablepartyspringboot.entity.Club;
-import com.backend.tjtablepartyspringboot.entity.PublicSite;
-import com.backend.tjtablepartyspringboot.entity.SiteTag;
-import com.backend.tjtablepartyspringboot.entity.SiteType;
+import com.backend.tjtablepartyspringboot.entity.*;
 import com.backend.tjtablepartyspringboot.service.SiteService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.sql.Time;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @Author 2051196 刘一飞
@@ -30,6 +28,16 @@ import java.util.List;
 @RestController
 @RequestMapping("site")
 public class SiteController {
+
+    public static int weekdayUnTrans(String weekday) {
+        if (Objects.equals(weekday, "周一")) return 1;
+        else if (Objects.equals(weekday, "周二")) return 2;
+        else if (Objects.equals(weekday, "周三")) return 3;
+        else if (Objects.equals(weekday, "周四")) return 4;
+        else if (Objects.equals(weekday, "周五")) return 5;
+        else if (Objects.equals(weekday, "周六")) return 6;
+        else return 7;
+    }
     @Autowired
     private SiteService siteService;
 
@@ -56,6 +64,46 @@ public class SiteController {
     @GetMapping("getSiteTagList")
     public Result<List<SiteTag>> getSiteTagList() {
         return Result.success(siteService.selectAllSiteTag());
+    }
+
+    @ApiOperation("创建公共场地")
+    @PostMapping("createPublicSite")
+    public Result<String> createPublicSite(@RequestBody HashMap<String, Object> map) throws ParseException {
+        HashMap<String, Object> formData = (HashMap<String, Object>) map.get("formData");
+        Long creatorId = Long.valueOf(formData.get("creatorId").toString());
+        String name = (String) formData.get("name");
+        String type = (String) formData.get("type");
+        String introduction = (String) formData.get("introduction");
+        String picture = (String) formData.get("picture");
+        String city = (String) formData.get("city");
+        String location = (String) formData.get("location");
+        float avgCost = Float.parseFloat(formData.get("avgCost").toString());
+        int capacity = (int) formData.get("capacity");
+        String phone = (String) formData.get("phone");
+        String tag = (String) formData.get("tag");
+        ArrayList<HashMap<String, String>> openTime = (ArrayList<HashMap<String, String>>) formData.get("openTime");
+        float latitude = Float.parseFloat(formData.get("latitude").toString());
+        float longitude = Float.parseFloat(formData.get("longitude").toString());
+        // 创建新的公共场地
+        PublicSite publicSite = new PublicSite(creatorId, name, city, location, picture, introduction, avgCost, capacity, 0, phone, new Date(), 0, type, tag, latitude, longitude);
+        // 插入数据库
+        int res = siteService.insertPublicSite(publicSite);
+        if (res == 0) return Result.fail(400, "插入公共场地失败");
+        // 获取插入后自增的ID
+        Long publicSiteId = publicSite.getPublicSiteId();
+
+
+        DateFormat sdf = new SimpleDateFormat("HH:mm");
+        for (HashMap<String, String> op: openTime) {
+            Time startTime = new Time(sdf.parse(op.get("startTime")).getTime());
+            Time endTime = new Time(sdf.parse(op.get("endTime")).getTime());
+            int weekday = weekdayUnTrans(op.get("week"));
+            PublicSiteTime publicSiteTime = new PublicSiteTime(publicSiteId, weekday, startTime, endTime);
+            int res_ = siteService.insertPublicSiteTime(publicSiteTime);
+            if (res_ == 0) return Result.fail(400, "插入公共场地失败");
+        }
+
+        return Result.success("插入公共场地成功");
     }
 
 }

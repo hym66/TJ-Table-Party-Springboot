@@ -33,6 +33,6 @@ public class PublicSiteDto {
     Date uploadTime;
     Date checkTime;
     String[] type;
-    byte status;
+    int status;
     List<PublicSiteTimeDto> openTime;
 }
