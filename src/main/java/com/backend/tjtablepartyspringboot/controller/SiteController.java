@@ -5,6 +5,7 @@ import com.backend.tjtablepartyspringboot.dto.PublicSiteBriefDto;
 import com.backend.tjtablepartyspringboot.dto.PublicSiteDto;
 import com.backend.tjtablepartyspringboot.entity.Club;
 import com.backend.tjtablepartyspringboot.entity.PublicSite;
+import com.backend.tjtablepartyspringboot.entity.SiteTag;
 import com.backend.tjtablepartyspringboot.entity.SiteType;
 import com.backend.tjtablepartyspringboot.service.SiteService;
 import io.swagger.annotations.Api;
@@ -49,6 +50,12 @@ public class SiteController {
     @GetMapping("getSiteTypeList")
     public Result<List<SiteType>> getSiteTypeList() {
         return Result.success(siteService.selectAllSiteType());
+    }
+
+    @ApiOperation("获取所有场地的标签信息")
+    @GetMapping("getSiteTagList")
+    public Result<List<SiteTag>> getSiteTagList() {
+        return Result.success(siteService.selectAllSiteTag());
     }
 
 }

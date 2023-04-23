@@ -5,9 +5,11 @@ import com.backend.tjtablepartyspringboot.dto.PublicSiteDto;
 import com.backend.tjtablepartyspringboot.dto.PublicSiteTimeDto;
 import com.backend.tjtablepartyspringboot.entity.PublicSite;
 import com.backend.tjtablepartyspringboot.entity.PublicSiteTime;
+import com.backend.tjtablepartyspringboot.entity.SiteTag;
 import com.backend.tjtablepartyspringboot.entity.SiteType;
 import com.backend.tjtablepartyspringboot.mapper.PublicSiteMapper;
 import com.backend.tjtablepartyspringboot.mapper.PublicSiteTimeMapper;
+import com.backend.tjtablepartyspringboot.mapper.SiteTagMapper;
 import com.backend.tjtablepartyspringboot.mapper.SiteTypeMapper;
 import com.backend.tjtablepartyspringboot.service.SiteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,9 @@ public class SiteServiceImpl implements SiteService {
 
     @Autowired
     private SiteTypeMapper siteTypeMapper;
+
+    @Autowired
+    private SiteTagMapper siteTagMapper;
 
     @Autowired
     private PublicSiteTimeMapper publicSiteTimeMapper;
@@ -77,5 +82,10 @@ public class SiteServiceImpl implements SiteService {
     @Override
     public List<SiteType> selectAllSiteType() {
         return siteTypeMapper.selectAllSiteType();
+    }
+
+    @Override
+    public List<SiteTag> selectAllSiteTag() {
+        return siteTagMapper.selectAllSiteTag();
     }
 }
