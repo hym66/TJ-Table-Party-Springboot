@@ -9,9 +9,11 @@ import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ClubServiceImpl implements ClubService {
@@ -72,7 +74,11 @@ public class ClubServiceImpl implements ClubService {
         for(ClubUser u : clubUserList){
             //把role属性加上
             String role = u.getUserId() == managerId ? "manager" : "member";
-            ClubUserDto clubUserDto = new ClubUserDto(u.getClubId(), u.getUserId(), role);
+            //todo：查询name和avatar
+            String name = "查询到的名字";
+            String avatar = "//oss.gstonegames.com/static/image/gameimgEh/pic17940221543461645613.jpg";
+
+            ClubUserDto clubUserDto = new ClubUserDto(u.getClubId(), u.getUserId(), role, name, avatar);
             clubUserDtoList.add(clubUserDto);
         }
 
@@ -96,7 +102,7 @@ public class ClubServiceImpl implements ClubService {
 
     @Override
     public int addAnnounce(Announce announce) {
-        announce.setAnnouncePubTime(TimeUtil.getCurrentTime());
+        announce.setAnnouncePubTime(new Date());
         int res = announceMapper.insert(announce);
         return res;
     }
@@ -104,6 +110,8 @@ public class ClubServiceImpl implements ClubService {
     @Override
     public List<ClubAnnounceDto> getClubAnnounceDtos(Long clubId) {
         List<Announce> announceList = announceMapper.selectByClubId(clubId);
+        announceList.stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList());//把所有公告按时间降序
+
         List<ClubAnnounceDto> clubAnnounceDtoList = new ArrayList<>();
         for(Announce a : announceList){
             //todo：补用户名和头像
@@ -117,5 +125,48 @@ public class ClubServiceImpl implements ClubService {
 
 
         return clubAnnounceDtoList;
+    }
+
+    @Override
+    public List<ClubSimpleDto> getCityClubSimpleDtos(String city, float longitude, float latitude) {
+        List<Club> clubList = clubMapper.selectByCity(city);
+        //todo:按经纬度排序
+        //...
+        List<ClubSimpleDto> clubSimpleDtoList = new ArrayList<>();
+        //查询currentPersons, managerAvatar, managerName
+        for(Club c : clubList){
+            Long clubId = c.getClubId();
+            Long managerId = c.getManagerId();
+
+            int currentPersons = clubMapper.selectClubPersonNum(clubId);
+            //todo:user表查询
+            String managerAvatar = "http://www.baidu.com/img/bdlogo.png";
+            String managerName = "查询出来的姓名";
+
+            ClubSimpleDto dto = new ClubSimpleDto(c, currentPersons, managerName, managerAvatar);
+            clubSimpleDtoList.add(dto);
+        }
+
+        return clubSimpleDtoList;
+    }
+
+    @Override
+    public List<ClubSimpleDto> getUserClubSimpleDtos(Long userId) {
+        List<Club> clubList = clubMapper.selectUserClubs(userId);
+        List<ClubSimpleDto> clubSimpleDtoList = new ArrayList<>();
+        //查询currentPersons, managerAvatar, managerName
+        for(Club c : clubList){
+            Long clubId = c.getClubId();
+            Long managerId = c.getManagerId();
+
+            int currentPersons = clubMapper.selectClubPersonNum(clubId);
+            //todo:user表查询
+            String managerAvatar = "http://www.baidu.com/img/bdlogo.png";
+            String managerName = "查询出来的姓名";
+
+            ClubSimpleDto dto = new ClubSimpleDto(c, currentPersons, managerName, managerAvatar);
+            clubSimpleDtoList.add(dto);
+        }
+        return clubSimpleDtoList;
     }
 }

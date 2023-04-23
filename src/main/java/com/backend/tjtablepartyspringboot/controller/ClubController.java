@@ -1,10 +1,7 @@
 package com.backend.tjtablepartyspringboot.controller;
 
 import com.backend.tjtablepartyspringboot.common.Result;
-import com.backend.tjtablepartyspringboot.dto.ClubAnnounceDto;
-import com.backend.tjtablepartyspringboot.dto.ClubInfoDetailDto;
-import com.backend.tjtablepartyspringboot.dto.ClubRecordDetailDto;
-import com.backend.tjtablepartyspringboot.dto.ClubUserDetailDto;
+import com.backend.tjtablepartyspringboot.dto.*;
 import com.backend.tjtablepartyspringboot.entity.Announce;
 import com.backend.tjtablepartyspringboot.entity.Club;
 import com.backend.tjtablepartyspringboot.service.ClubService;
@@ -79,5 +76,28 @@ public class ClubController {
     {
         List<ClubAnnounceDto> clubAnnounceDtoList = clubService.getClubAnnounceDtos(clubId);
         return Result.success(clubAnnounceDtoList);
+    }
+
+    @ApiOperation("返回同城俱乐部，按距离排序（但是按距离排序还没做）")
+    @GetMapping("getCityClubs")
+    public Result<List<ClubSimpleDto>> getCityClubs(@ApiParam(name="city", value="城市", required = true)
+                                                          @RequestParam("city") String city,
+                                                    @ApiParam(name="longitude", value="经度", required = true)
+                                                            @RequestParam("longitude") Float longitude,
+                                                    @ApiParam(name="latitude", value="纬度", required = true)
+                                                            @RequestParam("latitude") Float latitude)
+    {
+        List<ClubSimpleDto> clubInfoDetailDtoList = clubService.getCityClubSimpleDtos(city, longitude, latitude);
+        return Result.success(clubInfoDetailDtoList);
+    }
+
+    @ApiOperation("返回指定用户参与的俱乐部")
+    @GetMapping("getUserClubs")
+    public Result<List<ClubSimpleDto>> getUserClubs(@ApiParam(name="userId", value="用户id", required = true)
+                                                        @RequestParam("userId") Long userId)
+
+    {
+        List<ClubSimpleDto> clubInfoDetailDtoList = clubService.getUserClubSimpleDtos(userId);
+        return Result.success(clubInfoDetailDtoList);
     }
 }

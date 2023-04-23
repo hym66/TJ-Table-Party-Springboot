@@ -24,6 +24,7 @@ public class Club {
     String description;
     String mainTime;
     String meetingPoint;
+    String city;
     Byte isPublic;
     int capacity;
     @JsonSerialize(using=ToStringSerializer.class)
