@@ -28,4 +28,17 @@ public class PrivateSite {
     String location;
     String picture;
     String introduction;
+    float latitude;
+    float longitude;
+
+    public PrivateSite(Long creatorId, String name, String city, String location, String picture, String introduction, float latitude, float longitude) {
+        this.creatorId = creatorId;
+        this.name = name;
+        this.city = city;
+        this.location = location;
+        this.picture = picture;
+        this.introduction = introduction;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
 }

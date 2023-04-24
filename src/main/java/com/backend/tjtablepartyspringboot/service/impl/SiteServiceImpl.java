@@ -3,14 +3,8 @@ package com.backend.tjtablepartyspringboot.service.impl;
 import com.backend.tjtablepartyspringboot.dto.PublicSiteBriefDto;
 import com.backend.tjtablepartyspringboot.dto.PublicSiteDto;
 import com.backend.tjtablepartyspringboot.dto.PublicSiteTimeDto;
-import com.backend.tjtablepartyspringboot.entity.PublicSite;
-import com.backend.tjtablepartyspringboot.entity.PublicSiteTime;
-import com.backend.tjtablepartyspringboot.entity.SiteTag;
-import com.backend.tjtablepartyspringboot.entity.SiteType;
-import com.backend.tjtablepartyspringboot.mapper.PublicSiteMapper;
-import com.backend.tjtablepartyspringboot.mapper.PublicSiteTimeMapper;
-import com.backend.tjtablepartyspringboot.mapper.SiteTagMapper;
-import com.backend.tjtablepartyspringboot.mapper.SiteTypeMapper;
+import com.backend.tjtablepartyspringboot.entity.*;
+import com.backend.tjtablepartyspringboot.mapper.*;
 import com.backend.tjtablepartyspringboot.service.SiteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +31,9 @@ public class SiteServiceImpl implements SiteService {
 
     @Autowired
     private PublicSiteTimeMapper publicSiteTimeMapper;
+
+    @Autowired
+    private PrivateSiteMapper privateSiteMapper;
 
     private static String weekdayTrans(int weekday) {
         if (weekday == 1) return "周一";
@@ -100,5 +97,10 @@ public class SiteServiceImpl implements SiteService {
     @Override
     public int insertPublicSiteTime(PublicSiteTime publicSiteTime) {
         return publicSiteTimeMapper.insertPublicSiteTime(publicSiteTime);
+    }
+
+    @Override
+    public int insertPrivateSite(PrivateSite privateSite) {
+        return privateSiteMapper.insertPrivateSite(privateSite);
     }
 }

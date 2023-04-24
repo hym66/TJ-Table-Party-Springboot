@@ -2,10 +2,7 @@ package com.backend.tjtablepartyspringboot.service;
 
 import com.backend.tjtablepartyspringboot.dto.PublicSiteBriefDto;
 import com.backend.tjtablepartyspringboot.dto.PublicSiteDto;
-import com.backend.tjtablepartyspringboot.entity.PublicSite;
-import com.backend.tjtablepartyspringboot.entity.PublicSiteTime;
-import com.backend.tjtablepartyspringboot.entity.SiteTag;
-import com.backend.tjtablepartyspringboot.entity.SiteType;
+import com.backend.tjtablepartyspringboot.entity.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,4 +24,5 @@ public interface SiteService {
 
     int insertPublicSite(PublicSite publicSite);
     int insertPublicSiteTime(PublicSiteTime publicSiteTime);
+    int insertPrivateSite(PrivateSite privateSite);
 }

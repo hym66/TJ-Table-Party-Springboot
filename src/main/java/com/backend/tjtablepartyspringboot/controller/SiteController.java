@@ -105,5 +105,21 @@ public class SiteController {
 
         return Result.success("插入公共场地成功");
     }
-
+    @ApiOperation("创建私人场地")
+    @PostMapping("createPrivateSite")
+    public Result<String> createPrivateSite(@RequestBody HashMap<String, Object> map) {
+        HashMap<String, Object> formData = (HashMap<String, Object>) map.get("formData");
+        Long creatorId = Long.valueOf(formData.get("creatorId").toString());
+        String name = (String) formData.get("name");
+        String city = (String) formData.get("city");
+        String location = (String) formData.get("location");
+        String picture = (String) formData.get("picture");
+        String introduction = (String) formData.get("introduction");
+        float latitude = Float.parseFloat(formData.get("latitude").toString());
+        float longitude = Float.parseFloat(formData.get("longitude").toString());
+        PrivateSite privateSite = new PrivateSite(creatorId, name, city, location, picture, introduction, latitude, longitude);
+        int res = siteService.insertPrivateSite(privateSite);
+        if (res == 0) return Result.fail(400, "创建私人场地失败");
+        else return Result.success("创建私人场地成功");
+    }
 }
