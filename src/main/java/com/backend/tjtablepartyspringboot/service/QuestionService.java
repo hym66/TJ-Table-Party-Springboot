@@ -49,5 +49,32 @@ public interface QuestionService {
     /**
      * 创建一条新的reply
      */
-//    Map<String,Object>addReply(
+    Integer addReply(Long questionId,Long userId,String content,String anonymity);
+
+    /**
+     * 创建一条新的question
+     */
+    Integer addQuestion(Long activityId,Long userId,String content,String title,String anonymity);
+
+
+    /**
+     * user 点赞/取消点赞 一条reply
+     */
+    Integer userLikeOneReply(Long userId,Long replyId);
+
+    /**
+     * user 点赞/取消点赞 一条 question
+     */
+    Integer userLikeOneQuestion(Long userId,Long questionId);
+
+
+    /**
+     * 删除一条reply
+     */
+    Integer deleteReply(Long replyId);
+
+    /**
+     * 删除一条 question
+     */
+    Integer deleteQuestion(Long questionId);
 }

@@ -86,7 +86,7 @@ public class ActivityController {
             @ApiParam(name = "activityId", value = "活动id", required = true)
             @RequestParam("activityId") Long activityId,
             @ApiParam(name = "userId", value = "用户id", required = true)
-            @RequestParam(name ="userId", defaultValue = "1") Long userId
+            @RequestParam(name ="userId") Long userId
 
     ){
         List<Map<String,Object>>list=new ArrayList<>();

@@ -48,5 +48,4 @@ public class Reply {
     private String displayAvatar;
     private Long userId;
     private Integer likeTotal;
-
 }
