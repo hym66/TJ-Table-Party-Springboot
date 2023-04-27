@@ -1,5 +1,6 @@
 package com.backend.tjtablepartyspringboot.entity;
 
+import com.backend.tjtablepartyspringboot.dto.ReportDto;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -37,4 +38,27 @@ public class Report {
     @JsonFormat(shape = JsonFormat.Shape.STRING , pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     Date checkTime;
     Byte isPassed;
+    String description;
+
+    public Report(ReportDto reportDto){
+        if(reportDto == null){
+            return;
+        }
+        this.reportId = reportDto.getReportId();
+        this.reporterId = reportDto.getReporterId();
+        this.criminalId = reportDto.getCriminalId();
+        this.targetType = reportDto.getTargetType();
+
+        StringBuilder stringBuilder = new StringBuilder();
+        String[] faultTypeList = reportDto.getFaultTypeList();
+        for(String str : faultTypeList){
+            stringBuilder.append(str);
+        }
+        this.faultType = String.valueOf(stringBuilder);
+
+        this.uploadTime = reportDto.getUploadTime();
+        this.checkTime = reportDto.getCheckTime();
+        this.isPassed = reportDto.getIsPassed();
+        this.description = reportDto.getDescription();
+    }
 }

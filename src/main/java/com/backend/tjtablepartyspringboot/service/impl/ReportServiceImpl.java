@@ -1,5 +1,6 @@
 package com.backend.tjtablepartyspringboot.service.impl;
 
+import com.backend.tjtablepartyspringboot.dto.ReportDto;
 import com.backend.tjtablepartyspringboot.entity.Report;
 import com.backend.tjtablepartyspringboot.mapper.ReportMapper;
 import com.backend.tjtablepartyspringboot.service.ReportService;
@@ -12,13 +13,22 @@ public class ReportServiceImpl implements ReportService {
     ReportMapper reportMapper;
 
     @Override
-    public int addReport(Report report){
+    public int addReport(ReportDto reportDto){
+        Report report = new Report(reportDto);
         int res = reportMapper.insert(report);
         return res;
     }
 
     @Override
-    public Report selectReportByReportId(Long reportId) {
+    public ReportDto selectReportDtoByReportId(Long reportId) {
+        Report report = reportMapper.selectByReportId(reportId);
+        //组装Dto
+        ReportDto dto = new ReportDto(report);
+        return dto;
+    }
+
+    @Override
+    public Report selectReportByReportId(Long reportId){
         Report report = reportMapper.selectByReportId(reportId);
         return report;
     }

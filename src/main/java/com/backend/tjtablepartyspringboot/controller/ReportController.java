@@ -2,6 +2,7 @@ package com.backend.tjtablepartyspringboot.controller;
 
 import com.backend.tjtablepartyspringboot.common.Result;
 import com.backend.tjtablepartyspringboot.config.TencentCosConfig;
+import com.backend.tjtablepartyspringboot.dto.ReportDto;
 import com.backend.tjtablepartyspringboot.entity.Report;
 import com.backend.tjtablepartyspringboot.service.ReportService;
 import com.backend.tjtablepartyspringboot.config.TencentCosProperties4Picture;
@@ -45,9 +46,9 @@ public class ReportController {
 
     @ApiOperation("新增一个举报单")
     @PostMapping("addReport")
-    public Result<Map> addReport(@RequestBody Report report) {
-        int res = reportService.addReport(report);
-        Long reportId = report.getReportId();
+    public Result<Map> addReport(@RequestBody ReportDto reportDto) {
+        int res = reportService.addReport(reportDto);
+        Long reportId = reportDto.getReportId();
 
         Map<String, Long> hashMap = new HashMap();
         hashMap.put("reportId", reportId);
@@ -70,5 +71,13 @@ public class ReportController {
 
         return Result.success(url);
 
+    }
+
+    @ApiOperation("根据举报单id，获取举报单")
+    @GetMapping("getReportById")
+    public Result<ReportDto> getReportById(@RequestParam("reportId") Long reportId)
+    {
+        ReportDto reportDto = reportService.selectReportDtoByReportId(reportId);
+        return Result.success(reportDto);
     }
 }

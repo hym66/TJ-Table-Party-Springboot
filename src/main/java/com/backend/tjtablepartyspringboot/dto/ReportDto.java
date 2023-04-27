@@ -1,6 +1,7 @@
 package com.backend.tjtablepartyspringboot.dto;
 
 import com.alibaba.fastjson.annotation.JSONType;
+import com.backend.tjtablepartyspringboot.entity.Report;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -12,7 +13,9 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -26,8 +29,8 @@ public class ReportDto {
     @JsonSerialize(using= ToStringSerializer.class)
     Long criminalId;
     String targetType;
-    String faultType;
-    MultipartFile[] photo;
+    String[] faultTypeList;
+    String[] photoList;
     @DateTimeFormat(pattern="yyyy-MM-dd hh:mm:ss")
     @JsonFormat(shape = JsonFormat.Shape.STRING , pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     Date uploadTime;
@@ -35,4 +38,21 @@ public class ReportDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING , pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     Date checkTime;
     Byte isPassed;
+    String description;
+
+    public ReportDto(Report report){
+        if(report == null){
+            return;
+        }
+        this.reporterId = report.getReporterId();
+        this.reporterId = report.getReporterId();
+        this.criminalId = report.getCriminalId();
+        this.targetType = report.getTargetType();
+        this.faultTypeList = report.getFaultType().split(",");
+        this.photoList = report.getPhotoUrl().split(";");
+        this.uploadTime = report.getUploadTime();
+        this.checkTime = report.getCheckTime();
+        this.isPassed = report.getIsPassed();
+        this.description = report.getDescription();
+    }
 }
