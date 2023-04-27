@@ -39,13 +39,14 @@ public class QuestionController {
     @GetMapping("/getReplyList")
     public Result<Map<String,Object>> getReplyList(
             @ApiParam(name = "questionId", value = "问题id", required = true)
-            @RequestParam("questionId") Long questionId
+            @RequestParam("questionId") Long questionId,
+            @ApiParam(name = "userId", value = "用户id", required = true)
+            @RequestParam(name="userId",defaultValue = "1") Long userId
     ){
-        Map<String,Object>resultMap=new HashMap<>();
+        Map<String,Object> resultMap=new HashMap<>();
         try
         {
-            List<Reply> list =questionService.getListByQuestionId(questionId);
-            resultMap.put("data",list);
+            resultMap =questionService.getReplyList(questionId,userId);
             return Result.success(resultMap);
         }catch (Exception e){
             return Result.fail(0,e.getMessage());

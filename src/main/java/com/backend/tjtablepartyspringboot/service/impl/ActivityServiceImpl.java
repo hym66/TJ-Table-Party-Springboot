@@ -1,22 +1,19 @@
 package com.backend.tjtablepartyspringboot.service.impl;
+import com.backend.tjtablepartyspringboot.entity.*;
+import com.backend.tjtablepartyspringboot.service.TrpgService;
+import com.backend.tjtablepartyspringboot.util.DateUtil;
 
-import com.backend.tjtablepartyspringboot.entity.Activity;
-import com.backend.tjtablepartyspringboot.entity.ActivityHasTrpg;
-import com.backend.tjtablepartyspringboot.entity.UserInterestActivity;
-import com.backend.tjtablepartyspringboot.entity.UserJoinActivity;
 import com.backend.tjtablepartyspringboot.mapper.ActivityHasTrpgMapper;
 import com.backend.tjtablepartyspringboot.mapper.ActivityMapper;
 import com.backend.tjtablepartyspringboot.mapper.UserInterestActivityMapper;
 import com.backend.tjtablepartyspringboot.mapper.UserJoinActivityMapper;
 import com.backend.tjtablepartyspringboot.service.ActivityService;
+import com.backend.tjtablepartyspringboot.util.StringUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -37,6 +34,11 @@ public class ActivityServiceImpl implements ActivityService {
     @Autowired
     UserJoinActivityMapper userJoinActivityMapper;
 
+    @Autowired
+    TrpgService trpgService;
+
+
+
 
     @Override
     public List<Activity> getAllEntity(){
@@ -55,17 +57,143 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Map<String,Object> getActivityHasTrpgEntity(Long activityId){
-        Map<String,Object> map=new HashMap<>();
+    public Map<String,Object>getDetail(Long activityId){
+        Map<String,Object>detailMap=new HashMap<>();
+        //activity 实体
+        QueryWrapper<Activity> qw_act=new QueryWrapper<>();
+        qw_act.eq("activity_id",activityId);
+        Activity act=activityMapper.selectOne(qw_act);
+        detailMap.put("activityId",act.getActivityId());
+        detailMap.put("userId",act.getUserId());
+        detailMap.put("title",act.getTitle());
+        detailMap.put("fee",act.getFee());
+        detailMap.put("maxPeople",act.getMaxPeople());
+        detailMap.put("minPeople",act.getMinPeople());
+        //start time
+        Date startTime=act.getStartTime();
+        detailMap.put("startTime",startTime);
+        detailMap.put("startTimeLabel",activityTimeFormate(startTime));
+
+        //end time
+        Date endTime=act.getStartTime();
+        detailMap.put("endTime",endTime);
+        detailMap.put("endTimeLabel",activityTimeFormate(endTime));
+
+        //end time
+        Date createTime=act.getStartTime();
+        detailMap.put("createTime",createTime);
+        detailMap.put("createTimeLabel",activityTimeFormate(createTime));
+
+        detailMap.put("summary",act.getSummary());
+        detailMap.put("description",act.getDescription());
+        detailMap.put("poster",act.getPoster());
+        detailMap.put("pictures",act.getPictures());
+        detailMap.put("siteId",act.getSiteId());
+        detailMap.put("clubId",act.getClubId());
+
+        //state
+        String state=act.getState();
+        String stateLabel="";
+        detailMap.put("state",state);
+        switch (state){
+            case "0":
+                stateLabel="报名中";
+                break;
+            case "1":
+                stateLabel="报名结束";
+                break;
+            case "2":
+                stateLabel="正在进行";
+                break;
+            case "3":
+                stateLabel="已结束";
+                break;
+            case "4":
+                stateLabel="已删除";
+                break;
+
+        }
+        detailMap.put("stateLabel",stateLabel);
+
+
+        //想玩的游戏
+        List<Map<String,Object>>wishGameList=getActivityHasTrpgEntity(act.getActivityId());
+        detailMap.put("wishGameList",wishGameList);
+
+
+
+        //联系user表
+        Map<String,Object>userData=new HashMap<>();
+        userData.put("id",act.getUserId());
+        userData.put("avatar","https://tse1-mm.cn.bing.net/th/id/OIP-C.KaaPuoL3MiCMsjY3ACnD8gHaHa?pid=ImgDet&rs=1");
+        userData.put("name","测试用"+act.getUserId());
+        detailMap.put("creatorInfo",userData);
+
+
+        //联系club 表
+
+
+        //联系site 表
+        detailMap.put("mapAddress","测试用地址"+act.getActivityId());
+
+
+
+        return detailMap;
+
+    }
+
+
+
+    @Override
+    public List<Map<String,Object>> getActivityHasTrpgEntity(Long activityId){
+        List<Map<String,Object>> list=new ArrayList<>();
         //获取该活动对应的所有trpg的id
         QueryWrapper<ActivityHasTrpg> qw1=new QueryWrapper<>();
         qw1.eq("activity_id",activityId);
         List<ActivityHasTrpg> hasTrpgList=activityHasTrpgMapper.selectList(qw1);
-        //根据trpg id，分为public与private
-        //分别获取trpg信息
+        for (ActivityHasTrpg hasTrpg:hasTrpgList){
+            //根据trpg id，分为public与private
+            //分别获取trpg信息
+            String trpgId=hasTrpg.getTrpgId();
+            Map<String,Object>trpgData=new HashMap<>();
+            if (trpgId.charAt(0)=='A'){
+                TrpgPrivate trpg=trpgService.getDetail_private(trpgId);
 
-        map.put("hasTrpgList",hasTrpgList);
-        return map;
+                trpgData.put("trpgId",trpg.getTrpgId());
+                trpgData.put("poster",trpg.getPoster());
+                trpgData.put("titleName",trpg.getTitleName());
+                trpgData.put("picures", StringUtil.splitStringToList(trpg.getPictures()," "));
+                trpgData.put("genre",StringUtil.splitStringToList(trpg.getGenre(),"#"));
+                trpgData.put("supportNum",StringUtil.splitStringToList(trpg.getSupportNum(),"#"));
+                trpgData.put("recommendNum",StringUtil.splitStringToList(trpg.getRecommendNum(),"#"));
+                trpgData.put("averageDuration",trpg.getAverageDuration());
+                trpgData.put("difficulty",trpg.getDifficulty());
+                trpgData.put("languageRequirement",trpg.getLanguageRequirement());
+                trpgData.put("gameMode",trpg.getGameMode());
+
+            }else{
+                TrpgPublic trpg=trpgService.getDetail_public(trpgId);
+
+                trpgData.put("trpgId",trpg.getTrpgId());
+                trpgData.put("poster",trpg.getPoster());
+                trpgData.put("titleName",trpg.getTitleName());
+                trpgData.put("picures", StringUtil.splitStringToList(trpg.getPictures()," "));
+                trpgData.put("genre",StringUtil.splitStringToList(trpg.getGenre(),"#"));
+                trpgData.put("supportNum",StringUtil.splitStringToList(trpg.getSupportNum(),"#"));
+                trpgData.put("recommendNum",StringUtil.splitStringToList(trpg.getRecommendNum(),"#"));
+                trpgData.put("averageDuration",trpg.getAverageDuration());
+                trpgData.put("difficulty",trpg.getDifficulty());
+                trpgData.put("languageRequirement",trpg.getLanguageRequirement());
+                trpgData.put("gameMode",trpg.getGameMode());
+
+            }
+            list.add(trpgData);
+
+        }
+
+
+
+        return list;
 
     }
 
@@ -86,6 +214,134 @@ public class ActivityServiceImpl implements ActivityService {
         List<UserJoinActivity>list=userJoinActivityMapper.selectList(qw);
 
         return list;
+    }
+
+    public static String activityTimeFormate(Date date){
+        String str="";
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);					//放入Date类型数据
+
+        Integer year= calendar.get(Calendar.YEAR);					//获取年份
+        Integer month=  calendar.get(Calendar.MONTH);					//获取月份
+        Integer day= calendar.get(Calendar.DATE);					//获取日
+
+        Integer hour= calendar.get(Calendar.HOUR_OF_DAY);				//时（24小时制）
+        Integer minute= calendar.get(Calendar.MINUTE);					//分
+        Integer second= calendar.get(Calendar.SECOND);					//秒
+        //今年
+        calendar.setTime(new Date());
+        Integer year_now=calendar.get(Calendar.YEAR);
+
+        if (!year.equals(year_now)){
+            str=year+"年";
+        }
+        str=str+month+"月"+day+"日 "+hour+":"+minute;
+        return str;
+    }
+
+    @Override
+    public Map<String,Object> getList(Map<String,String>filterData,
+                                            Map<String,String>sortData,
+                                            Integer pageSize,Integer pageNo){
+
+
+        Map<String,Object>map=new HashMap<>();
+        List<Activity> actList=new ArrayList<>();
+
+        //先获取所有的activity,list
+        QueryWrapper<Activity>qw=new QueryWrapper<>();
+        qw.select("activity_id","title","summary","poster","start_time",
+                "user_id","site_id","fee","max_people","now_people","state");
+        actList=activityMapper.selectList(qw);
+
+        //filter筛选
+
+        //sort排序
+
+
+        //得到最后的list
+
+
+        //分页返回
+        //分页
+        int totalNum=actList.size();
+        int startIndex=(pageNo-1)*pageSize;
+        int endIndex=startIndex+pageSize;
+        //判断是否有下一页
+        Boolean hasNext=true;
+
+        if (startIndex+pageSize<=totalNum){
+
+        }else{
+            endIndex=totalNum;
+            hasNext=false;
+        }
+        //最终需要返回的activity
+        actList=actList.subList(startIndex,endIndex);
+
+        //结合user表信息
+        List<Map<String,Object>> datalist=new ArrayList<>();
+        for (Activity act: actList){
+            //对每一个activity，再获取相关的user、site信息
+            Map<String,Object>oneActData=new HashMap<>();
+            oneActData.put("activityId",act.getActivityId());
+            oneActData.put("title",act.getTitle());
+            oneActData.put("summary",act.getSummary());
+            oneActData.put("poster",act.getPoster());
+            oneActData.put("userId",act.getUserId());
+            oneActData.put("siteId",act.getSiteId());
+            oneActData.put("fee",act.getFee());
+            oneActData.put("maxPeople",act.getMaxPeople());
+            oneActData.put("nowPeople",act.getNowPeople());
+            //state
+            String state=act.getState();
+            String stateLabel="";
+            oneActData.put("state",state);
+            switch (state){
+                case "0":
+                    stateLabel="报名中";
+                    break;
+                case "1":
+                    stateLabel="报名结束";
+                    break;
+                case "2":
+                    stateLabel="正在进行";
+                    break;
+                case "3":
+                    stateLabel="已结束";
+                    break;
+                case "4":
+                    stateLabel="已删除";
+                    break;
+
+            }
+            oneActData.put("stateLabel",stateLabel);
+
+            //start time
+            Date startTime=act.getStartTime();
+            oneActData.put("startTime",startTime);
+            oneActData.put("startTimeLabel",activityTimeFormate(startTime));
+
+            //user信息
+            Map<String,Object>userData=new HashMap<>();
+            userData.put("id",act.getUserId());
+            userData.put("avatar","https://tse1-mm.cn.bing.net/th/id/OIP-C.KaaPuoL3MiCMsjY3ACnD8gHaHa?pid=ImgDet&rs=1");
+            userData.put("name","测试用"+act.getUserId());
+            oneActData.put("creatorInfo",userData);
+
+
+            //site信息
+            Map<String,Object>siteData=new HashMap<>();
+            oneActData.put("mapAddress","测试用地址"+act.getActivityId());
+
+
+            datalist.add(oneActData);
+        }
+
+        map.put("list",datalist);
+        map.put("totalNum",totalNum);
+        map.put("hasNext",hasNext);
+        return map;
     }
 
 }

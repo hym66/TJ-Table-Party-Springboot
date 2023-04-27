@@ -20,6 +20,6 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ActivityHasTrpg {
     private Long activityId;
-    private Long trpgId;
+    private String trpgId;
 
 }

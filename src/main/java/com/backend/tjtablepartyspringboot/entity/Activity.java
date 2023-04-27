@@ -29,10 +29,13 @@ public class Activity {
     @JsonSerialize(using= ToStringSerializer.class)
     @TableId(type = IdType.ASSIGN_ID)
     private Long activityId;
+    private Long userId;
     private String title;
     private Integer fee;
     private Integer maxPeople;
     private Integer minPeople;
+    private Integer nowPeople;
+
 
     @DateTimeFormat(pattern="yyyy-MM-dd hh:mm:ss")
     @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd hh:mm:ss")
@@ -50,8 +53,12 @@ public class Activity {
     private String summary;
     private String description;
     private String poster;
+    private String pictures;
     private Long siteId;
     private Long clubId;
     private String state;
+
+
+
 
 }

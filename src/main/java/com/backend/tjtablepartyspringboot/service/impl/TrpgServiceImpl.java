@@ -12,13 +12,11 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
-
+import com.backend.tjtablepartyspringboot.util.StringUtil;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author: 杨严
@@ -214,6 +212,187 @@ public class TrpgServiceImpl implements TrpgService {
     @Override
     public Map<String,Object> insertOnePublicTrpg(TrpgPublic trpg){
         Map<String, Object> map = new HashMap<String, Object>();
+
+
+        return map;
+    }
+
+
+    @Override
+    public TrpgPublic getDetail_public(String trpgId ){
+
+        QueryWrapper<TrpgPublic> qw=new QueryWrapper<>();
+        qw.eq("trpg_id",trpgId);
+        TrpgPublic trpg=trpgPublicMapper.selectOne(qw);
+        return trpg;
+
+
+
+    }
+
+    @Override
+    public TrpgPrivate getDetail_private(String trpgId ){
+
+        QueryWrapper<TrpgPrivate> qw=new QueryWrapper<>();
+        qw.eq("trpg_id",trpgId);
+        TrpgPrivate trpg=trpgPrivateMapper.selectOne(qw);
+        return trpg;
+
+
+
+    }
+
+    @Override
+    public List<String> getSearchHint(String key){
+
+        final String _key=key.toLowerCase(Locale.ROOT);
+
+        List<String>list=new ArrayList<>();
+        list.add(key);
+
+        //遍历public trpg 表，任何标题包含了key的，都add
+        QueryWrapper<TrpgPublic>qw=new QueryWrapper<>();
+        qw.select("title_name");
+        List<TrpgPublic>allList=trpgPublicMapper.selectList(qw);
+
+        allList=allList.stream().filter(t->t.getTitleName().toLowerCase().contains(_key)).collect(Collectors.toList());
+
+        list=allList.stream().map(t->t.getTitleName()).collect(Collectors.toList());
+
+
+        return list;
+    }
+
+
+    @Override
+    public Map<String,Object>search(String key,Map<String,String>filterData,
+                                    Map<String,String>sortData,
+                                  Integer pageSize,Integer pageNo){
+        Map<String,Object>map=new HashMap<>();
+
+        List<TrpgPublic>resultList=new ArrayList<>();
+
+        //1.关键词
+        final String _key=key.toLowerCase(Locale.ROOT);
+
+        //遍历public trpg 表，任何标题包含了key的，都add
+        QueryWrapper<TrpgPublic>qw1=new QueryWrapper<>();
+        qw1.select("trpg_id","title_name","poster","genre","support_num","recommend_num","average_duration");
+
+        resultList=trpgPublicMapper.selectList(qw1);
+        resultList=resultList.stream().filter(t->t.getTitleName().toLowerCase().contains(_key)).collect(Collectors.toList());
+
+
+
+
+        //分页
+        int totalNum=resultList.size();
+        int startIndex=(pageNo-1)*pageSize;
+        int endIndex=startIndex+pageSize;
+        //判断是否有下一页
+        Boolean hasNext=true;
+
+        if (startIndex+pageSize<=totalNum){
+
+        }else{
+            endIndex=totalNum;
+            hasNext=false;
+        }
+        resultList=resultList.subList(startIndex,endIndex);
+
+        map.put("list",resultList);
+        map.put("totalNum",totalNum);
+        map.put("hasNext",hasNext);
+        return map;
+
+    }
+
+
+    @Override
+    public  Map<String,Object>parseTrpgEntity(TrpgPublic trpg){
+        Map<String,Object>map=new HashMap<>();
+        //trpg id
+        map.put("trpgId",trpg.getTrpgId());
+
+        //poster
+        map.put("poster",trpg.getPoster());
+
+        //titleName
+        map.put("titleName",trpg.getTitleName());
+
+        //synopsis
+        map.put("synopsis",trpg.getSynopsis());
+
+        //pictures
+        map.put("picures",StringUtil.splitStringToList(trpg.getPictures()," "));
+
+        //designers
+        map.put("designers",StringUtil.splitStringToList(trpg.getDesigners(),"#"));
+
+        //publishers
+        map.put("publishers",StringUtil.splitStringToList(trpg.getPublishers(),"#"));
+
+        map.put("publishLanguages",StringUtil.splitStringToList(trpg.getPublishLanguages(),"#"));
+        map.put("publishYear",trpg.getPublishYear());
+        map.put("publishState",trpg.getPublishState());
+
+        map.put("genre",StringUtil.splitStringToList(trpg.getGenre(),"#"));
+        map.put("portability",trpg.getPortability());
+        map.put("desktopRequirement",trpg.getDesktopRequirement());
+        map.put("suitableAge",trpg.getSuitableAge());
+        map.put("supportNum",StringUtil.splitStringToList(trpg.getSupportNum(),"#"));
+        map.put("recommendNum",StringUtil.splitStringToList(trpg.getRecommendNum(),"#"));
+        map.put("averageDuration",trpg.getAverageDuration());
+        map.put("difficulty",trpg.getDifficulty());
+        map.put("setDuration",trpg.getSetDuration());
+        map.put("languageRequirement",trpg.getLanguageRequirement());
+        map.put("gameMode",trpg.getGameMode());
+
+
+        return map;
+    }
+
+
+    @Override
+    public  Map<String,Object>parseTrpgEntity(TrpgPrivate trpg){
+        Map<String,Object>map=new HashMap<>();
+        map.put("userId",trpg.getUserId());
+        //trpg id
+        map.put("trpgId",trpg.getTrpgId());
+
+        //poster
+        map.put("poster",trpg.getPoster());
+
+        //titleName
+        map.put("titleName",trpg.getTitleName());
+
+        //synopsis
+        map.put("synopsis",trpg.getSynopsis());
+
+        //pictures
+        map.put("picures",StringUtil.splitStringToList(trpg.getPictures()," "));
+
+        //designers
+        map.put("designers",StringUtil.splitStringToList(trpg.getDesigners(),"#"));
+
+        //publishers
+        map.put("publishers",StringUtil.splitStringToList(trpg.getPublishers(),"#"));
+
+        map.put("publishLanguages",StringUtil.splitStringToList(trpg.getPublishLanguages(),"#"));
+        map.put("publishYear",trpg.getPublishYear());
+        map.put("publishState",trpg.getPublishState());
+
+        map.put("genre",StringUtil.splitStringToList(trpg.getGenre(),"#"));
+        map.put("portability",trpg.getPortability());
+        map.put("desktopRequirement",trpg.getDesktopRequirement());
+        map.put("suitableAge",trpg.getSuitableAge());
+        map.put("supportNum",StringUtil.splitStringToList(trpg.getSupportNum(),"#"));
+        map.put("recommendNum",StringUtil.splitStringToList(trpg.getRecommendNum(),"#"));
+        map.put("averageDuration",trpg.getAverageDuration());
+        map.put("difficulty",trpg.getDifficulty());
+        map.put("setDuration",trpg.getSetDuration());
+        map.put("languageRequirement",trpg.getLanguageRequirement());
+        map.put("gameMode",trpg.getGameMode());
 
 
         return map;

@@ -34,12 +34,27 @@ public interface ActivityService {
      */
     Activity getEntityByActivityId(Long activityId);
 
+
+    /**
+     * 根据activity id，获取activity detail的所有相关数据
+     */
+    Map<String,Object>getDetail(Long activityId);
+
+
+    /**
+     * 输入 筛选参数、排序参数，分页返回activity list
+     *
+     */
+    Map<String,Object> getList(Map<String,String>filterData,
+                                     Map<String,String>sortData,
+                                     Integer pageSize,Integer pageNo);
+
     /**
      *
      * 输入activity id，获取该活动对应的所有trpg，包括public与private
      *
      */
-    Map<String,Object> getActivityHasTrpgEntity(Long activityId);
+    List<Map<String,Object>> getActivityHasTrpgEntity(Long activityId);
 
 
     /**
@@ -56,6 +71,7 @@ public interface ActivityService {
      * 需要进一步查找user表，获取user的具体信息
      */
     List<UserJoinActivity> getUserJoinActivityList(Long activityId);
+
 
 
 }

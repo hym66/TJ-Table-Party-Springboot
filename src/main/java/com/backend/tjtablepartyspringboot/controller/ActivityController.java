@@ -11,6 +11,8 @@ import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.PublicKey;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,9 +44,9 @@ public class ActivityController {
         return Result.success(list);
     }
 
-    @ApiOperation("根据activity id获取activity")
-    @GetMapping("/getByActivityId")
-    public Result<Map<String,Object>>getByActivityId(
+    @ApiOperation("根据activity id获取activity entity")
+    @GetMapping("/getEntity")
+    public Result<Map<String,Object>>getEntity(
             @ApiParam(name = "activityId", value = "活动id", required = true)
             @RequestParam("activityId") Long activityId
     ){
@@ -59,18 +61,16 @@ public class ActivityController {
         }
 
     }
-
-    @ApiOperation("获取该活动对应的所有trpg信息列表")
-    @GetMapping("/getTrpgList")
-    public Result<Map<String,Object>>getTrpgList(
+    @ApiOperation("根据activity id,获取activity detail详细信息")
+    @GetMapping("/getDetail")
+    public Result<Map<String,Object>>getDetail(
             @ApiParam(name = "activityId", value = "活动id", required = true)
             @RequestParam("activityId") Long activityId
     ){
         Map<String,Object>resultMap=new HashMap<>();
         try
         {
-            Map<String,Object> map=activityService.getActivityHasTrpgEntity(activityId);
-            resultMap.put("data",map);
+            resultMap=activityService.getDetail(activityId);
             return Result.success(resultMap);
         }catch (Exception e){
             return Result.fail(0,e.getMessage());
@@ -79,20 +79,23 @@ public class ActivityController {
     }
 
 
+
     @ApiOperation("获取该活动对应的所有question信息列表")
     @GetMapping("/getQuestionList")
-    public Result<Map<String,Object>>getQuestionList(
+    public Result<List<Map<String,Object>>>getQuestionList(
             @ApiParam(name = "activityId", value = "活动id", required = true)
-            @RequestParam("activityId") Long activityId
+            @RequestParam("activityId") Long activityId,
+            @ApiParam(name = "userId", value = "用户id", required = true)
+            @RequestParam(name ="userId", defaultValue = "1") Long userId
+
     ){
-        Map<String,Object>resultMap=new HashMap<>();
+        List<Map<String,Object>>list=new ArrayList<>();
         try
         {
-            //获取question 列表，但是只有user id
-            List<Question>list =questionService.getListByActivityId(activityId);
 
-            resultMap.put("data",list);
-            return Result.success(resultMap);
+            list =questionService.getQuestionList(activityId,userId);
+
+            return Result.success(list);
         }catch (Exception e){
             return Result.fail(0,e.getMessage());
         }
@@ -111,8 +114,6 @@ public class ActivityController {
             //获取UserInterestActivity，只有user 的id
             List<UserInterestActivity>list =activityService.getUserInterestActivityList(activityId);
             //查user表，获取user具体信息
-
-
             resultMap.put("data",list);
             return Result.success(resultMap);
         }catch (Exception e){
@@ -142,6 +143,33 @@ public class ActivityController {
         }
 
     }
+
+    @ApiOperation("输入 筛选参数、排序参数，分页返回list")
+    @GetMapping("/getList")
+    public Result<Map<String,Object>> getList(
+            @ApiParam(name = "pageSize", value = " 单页容量", required = false)
+            @RequestParam(name = "pageSize",required = false,defaultValue = "10") Integer pageSize,
+            @ApiParam(name = "pageNo", value = "要求第几页", required = false)
+            @RequestParam(name = "pageNo",required = false,defaultValue = "1") Integer pageNo
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            Map<String,String>filterData=new HashMap<>();
+            Map<String,String>sortData=new HashMap<>();
+
+            Map<String,Object>actList=activityService.getList(filterData,sortData,pageSize,pageNo);
+
+            resultMap.put("list",actList);
+
+
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+    }
+
+
 
 
 

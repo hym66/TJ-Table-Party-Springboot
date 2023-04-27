@@ -44,10 +44,11 @@ public class Question {
 
 
     private String anonymity;
-    private String display_name;
-    private String display_avatar;
-    private Long user_id;
-    private Integer like_total;
+    private String displayName;
+    private String displayAvatar;
+    private Integer likeTotal;
+    private Integer replyTotal;
+    private Long userId;
 
 
 

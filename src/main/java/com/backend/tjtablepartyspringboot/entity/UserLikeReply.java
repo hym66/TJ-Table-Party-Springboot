@@ -23,7 +23,7 @@ import java.util.Date;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserLikeReply {
     private Long userId;
-    private Long questionId;
+    private Long replyId;
 
     @DateTimeFormat(pattern="yyyy-MM-dd hh:mm:ss")
     @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd hh:mm:ss")

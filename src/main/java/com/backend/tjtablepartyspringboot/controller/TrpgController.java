@@ -75,5 +75,128 @@ public class TrpgController {
         map.put("resultMap",resultMap);
         return Result.success(map);
     }
+
+    /**
+     * 输入trpg id，获取一个trpg的详细信息
+     * private和public的id都通用的接口
+     */
+    @ApiOperation("输入private/public trpg id，获取一个trpg的详细信息")
+    @GetMapping("/getTrpgDetail")
+    public Result<Map<String,Object>>getTrpgDetail(
+            @ApiParam(name = "trpgId", value = "桌游id", required = true)
+            @RequestParam("trpgId") String trpgId
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            //区分public，private
+            if (trpgId.charAt(0)=='A'){
+                //private
+                resultMap.put("mode","private");
+                TrpgPrivate trpg=trpgService.getDetail_private(trpgId);
+
+                //处理数据
+                resultMap.put("trpg",trpgService.parseTrpgEntity(trpg));
+            }else{
+                //public
+                resultMap.put("mode","public");
+                TrpgPublic trpg=trpgService.getDetail_public(trpgId);
+
+                //处理数据
+                resultMap.put("trpg",trpgService.parseTrpgEntity(trpg));
+            }
+
+
+
+
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+
+    }
+
+
+    /**
+     * 输入string标题关键词，返回标题相似的trpg的名字列表
+     *
+     */
+    @ApiOperation("输入string标题关键词，返回标题相似的trpg的名字列表")
+    @GetMapping("/getSearchHint")
+    public Result<Map<String,Object>>getSearchHint(
+            @ApiParam(name = "key", value = "原关键词", required = true)
+            @RequestParam("key") String key
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        resultMap.put("key",key);
+        try
+        {
+            List<String>hintList=trpgService.getSearchHint(key);
+            resultMap.put("hint",hintList);
+
+
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+
+    }
+
+
+
+
+    /**
+     * trpg public的搜索，分页返回结果列表
+     *
+     */
+    @ApiOperation("trpg public的搜索，分页返回结果列表")
+    @GetMapping("/search")
+    public Result<Map<String,Object>>search(
+            @ApiParam(name = "key", value = "标题关键词", required = false)
+            @RequestParam(name="key",required = false) String key,
+
+            @ApiParam(name = "filter_supportPeople", value = "筛选-支持人数", required = false)
+            @RequestParam(name = "filter_supportPeople",required = false) String filter_supportPeople,
+
+            @ApiParam(name = "filter_recommendPeople", value = "筛选-推荐人数", required = false)
+            @RequestParam(name = "filter_recommendPeople",required = false) String filter_recommendPeople,
+
+            @ApiParam(name = "filter_genre", value = "筛选-种类", required = false)
+            @RequestParam(name = "filter_genre",required = false) String filter_genre,
+
+            @ApiParam(name = "filter_difficulty", value = "筛选-难度", required = false)
+            @RequestParam(name = "filter_difficulty",required = false) String filter_difficulty,
+
+
+
+            @ApiParam(name = "pageSize", value = " 单页容量", required = false)
+            @RequestParam(name = "pageSize",required = false,defaultValue = "10") Integer pageSize,
+            @ApiParam(name = "pageNo", value = "要求第几页", required = false)
+            @RequestParam(name = "pageNo",required = false,defaultValue = "1") Integer pageNo,
+
+            @ApiParam(name = "sort_titleName", value = "排序-标题", required = false)
+            @RequestParam(name = "sort_titleName",required = false,defaultValue = "0") String sort_titleName,
+
+            @ApiParam(name = "sort_publishYear", value = "排序-出版年份", required = false)
+            @RequestParam(name = "sort_publishYear",required = false,defaultValue = "-1") String sort_publishYear
+
+
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        resultMap.put("key",key);
+        try
+        {
+            Map<String,String>filterData=new HashMap<>();
+            Map<String,String>sortData=new HashMap<>();
+            resultMap=trpgService.search(key,filterData,sortData,pageSize,pageNo);
+
+
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+
+    }
+
 }
 
