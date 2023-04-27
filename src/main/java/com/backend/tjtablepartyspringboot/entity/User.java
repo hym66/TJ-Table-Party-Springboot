@@ -1,8 +1,10 @@
 package com.backend.tjtablepartyspringboot.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import java.time.LocalDateTime;
 import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -18,7 +20,8 @@ import lombok.EqualsAndHashCode;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class User implements Serializable  {
     private static final long serialVersionUID = 1L;
-
+    @TableId(type = IdType.AUTO)
+    @JsonSerialize(using=ToStringSerializer.class)
 
     /**
      * 用户唯一标识
@@ -75,3 +78,4 @@ public class User implements Serializable  {
      */
     private LocalDateTime updateTime;
 }
+

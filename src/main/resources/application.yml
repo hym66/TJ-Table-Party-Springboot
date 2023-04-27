@@ -6,9 +6,9 @@ spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/tp?useSSL=false
+    url: jdbc:mysql://124.221.132.24:3306/tp?useSSL=false
     username: root
-    password: 123456
+    password: TableParty666@
   mail:
     host: smtp.qq.com #???????
     username: 417695971@qq.com #QQ??
@@ -19,3 +19,12 @@ spring:
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+tencent:
+  cos:
+    app-id: 1314655796
+    secret-id: AKIDWRQm4HPgv6BlFdt24HTstdHJE5DMPMER
+    secret-key: k5WKh6raK3xmVksy0LdwSwS1qhZPB92q
+    bucket-name: cos-1314655796
+    region-id: ap-shanghai
+    base-url: https://cos-1314655796.cos.ap-shanghai.myqcloud.com
