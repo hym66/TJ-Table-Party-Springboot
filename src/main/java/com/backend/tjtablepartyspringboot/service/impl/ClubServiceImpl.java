@@ -122,8 +122,6 @@ public class ClubServiceImpl implements ClubService {
             clubAnnounceDtoList.add(dto);
         }
 
-
-
         return clubAnnounceDtoList;
     }
 

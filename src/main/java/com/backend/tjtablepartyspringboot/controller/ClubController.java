@@ -4,6 +4,7 @@ import com.backend.tjtablepartyspringboot.common.Result;
 import com.backend.tjtablepartyspringboot.dto.*;
 import com.backend.tjtablepartyspringboot.entity.Announce;
 import com.backend.tjtablepartyspringboot.entity.Club;
+import com.backend.tjtablepartyspringboot.entity.Report;
 import com.backend.tjtablepartyspringboot.service.ClubService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -100,4 +101,6 @@ public class ClubController {
         List<ClubSimpleDto> clubInfoDetailDtoList = clubService.getUserClubSimpleDtos(userId);
         return Result.success(clubInfoDetailDtoList);
     }
+
+
 }
