@@ -17,48 +17,36 @@ import java.util.Date;
 
 /**
  * @Author: 杨严
- * @Date: 2023/04/19/8:17 PM
+ * @Date: 2023/04/19/8:21 PM
  * @Description:
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName(value = "activity")
+@TableName(value = "reply")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Activity {
+public class Reply {
+
     @JsonSerialize(using= ToStringSerializer.class)
     @TableId(type = IdType.ASSIGN_ID)
-    private Long activityId;
-    private Long userId;
-    private String title;
-    private Integer fee;
-    private Integer maxPeople;
-    private Integer minPeople;
-    private Integer nowPeople;
+    private Long replyId;
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long questionId;
+    private String content;
 
 
-    @DateTimeFormat(pattern="yyyy-MM-dd hh:mm:ss")
-    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd hh:mm:ss")
-    private Date startTime;
 
-    @DateTimeFormat(pattern="yyyy-MM-dd hh:mm:ss")
-    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd hh:mm:ss")
-    private Date endTime;
 
     @DateTimeFormat(pattern="yyyy-MM-dd hh:mm:ss")
     @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd hh:mm:ss")
     @TableField( "create_time")
     private Date createTime;
 
-    private String summary;
-    private String description;
-    private String poster;
-    private String pictures;
-    private Long siteId;
-    private Long clubId;
-    private String state;
 
-
-
+    private String anonymity;
+    private String displayName;
+    private String displayAvatar;
+    private Long userId;
+    private Integer likeTotal;
 
 }
