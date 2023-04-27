@@ -18,11 +18,9 @@ import lombok.EqualsAndHashCode;
 @NoArgsConstructor
 @TableName(value = "user")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class User implements Serializable  {
-    private static final long serialVersionUID = 1L;
+public class User {
     @TableId(type = IdType.AUTO)
     @JsonSerialize(using=ToStringSerializer.class)
-
     /**
      * 用户唯一标识
      */
