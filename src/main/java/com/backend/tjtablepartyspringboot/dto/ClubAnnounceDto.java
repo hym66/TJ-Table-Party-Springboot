@@ -18,7 +18,6 @@ import java.sql.Timestamp;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName(value = "user")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ClubAnnounceDto {
     @JsonSerialize(using= ToStringSerializer.class)

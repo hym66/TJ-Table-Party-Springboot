@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Api(tags = {"Report"})
@@ -79,5 +80,13 @@ public class ReportController {
     {
         ReportDto reportDto = reportService.selectReportDtoByReportId(reportId);
         return Result.success(reportDto);
+    }
+
+    @ApiOperation("获取所有未审核的举报单")
+    @GetMapping("getUncheckedReports")
+    public Result<List<ReportDto>> getUncheckedReports()
+    {
+        List<ReportDto> reportDtoList = reportService.selectUnchecked();
+        return Result.success(reportDtoList);
     }
 }
