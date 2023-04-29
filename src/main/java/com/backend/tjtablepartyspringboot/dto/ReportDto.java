@@ -48,8 +48,12 @@ public class ReportDto {
         this.reporterId = report.getReporterId();
         this.criminalId = report.getCriminalId();
         this.targetType = report.getTargetType();
-        this.faultTypeList = report.getFaultType().split(",");
-        this.photoList = report.getPhotoUrl().split(";");
+        if(report.getFaultType() != null) {
+            this.faultTypeList = report.getFaultType().split(",");
+        }
+        if(report.getPhotoUrl() != null) {
+            this.photoList = report.getPhotoUrl().split(";");
+        }
         this.uploadTime = report.getUploadTime();
         this.checkTime = report.getCheckTime();
         this.isPassed = report.getIsPassed();

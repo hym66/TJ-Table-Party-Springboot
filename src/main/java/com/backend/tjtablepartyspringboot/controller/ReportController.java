@@ -23,9 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Api(tags = {"Report"})
 @RestController
@@ -79,5 +78,16 @@ public class ReportController {
     {
         ReportDto reportDto = reportService.selectReportDtoByReportId(reportId);
         return Result.success(reportDto);
+    }
+
+    @ApiOperation("获取所有未审核的举报单")
+    @GetMapping("getUncheckedReports")
+    public Result<List<ReportDto>> getUncheckedReports()
+    {
+        List<ReportDto> reportDtoList = reportService.selectUnchecked();
+
+        //按时间升序
+        reportDtoList.stream().sorted().collect(Collectors.toList());
+        return Result.success(reportDtoList);
     }
 }

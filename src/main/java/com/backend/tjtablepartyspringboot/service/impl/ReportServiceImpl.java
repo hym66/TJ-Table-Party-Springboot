@@ -7,6 +7,9 @@ import com.backend.tjtablepartyspringboot.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class ReportServiceImpl implements ReportService {
     @Autowired
@@ -37,6 +40,13 @@ public class ReportServiceImpl implements ReportService {
     public int updateReport(Report report) {
         reportMapper.updateById(report);
         return 0;
+    }
+
+    @Override
+    public List<ReportDto> selectUnchecked() {
+        List<Report> reportList = reportMapper.selectUnchecked();
+        List<ReportDto> dtoList = reportList.stream().map(report -> new ReportDto(report)).collect(Collectors.toList());
+        return dtoList;
     }
 
 

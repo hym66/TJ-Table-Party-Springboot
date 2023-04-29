@@ -20,7 +20,7 @@ import java.util.Date;
 @NoArgsConstructor
 @TableName(value = "report")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Report {
+public class Report implements Comparable{
     @TableId(type = IdType.AUTO)
     @JsonSerialize(using= ToStringSerializer.class)
     Long reportId;
@@ -60,5 +60,19 @@ public class Report {
         this.checkTime = reportDto.getCheckTime();
         this.isPassed = reportDto.getIsPassed();
         this.description = reportDto.getDescription();
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        Report r = (Report) o;
+        if(uploadTime.before(r.getUploadTime())){
+            return -1;
+        }
+        else if(uploadTime.after(r.getUploadTime())){
+            return 1;
+        }
+        else{
+            return 0;
+        }
     }
 }
