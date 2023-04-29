@@ -21,4 +21,5 @@ public class PublicSiteTimeDto {
     String weekday;
     Time startTime;
     Time endTime;
+    boolean open;
 }

@@ -71,45 +71,6 @@ public class SiteController {
         return Result.success(siteService.selectAllSiteTag());
     }
 
-//    @ApiOperation("创建公共场地")
-//    @PostMapping("createPublicSite")
-//    public Result<String> createPublicSite(@RequestBody HashMap<String, Object> map) throws ParseException {
-//        HashMap<String, Object> formData = (HashMap<String, Object>) map.get("formData");
-//        Long creatorId = Long.valueOf(formData.get("creatorId").toString());
-//        String name = (String) formData.get("name");
-//        String type = (String) formData.get("type");
-//        String introduction = (String) formData.get("introduction");
-//        String picture = (String) formData.get("picture");
-//        String city = (String) formData.get("city");
-//        String location = (String) formData.get("location");
-//        float avgCost = Float.parseFloat(formData.get("avgCost").toString());
-//        int capacity = (int) formData.get("capacity");
-//        String phone = (String) formData.get("phone");
-//        String tag = (String) formData.get("tag");
-//        ArrayList<HashMap<String, String>> openTime = (ArrayList<HashMap<String, String>>) formData.get("openTime");
-//        float latitude = Float.parseFloat(formData.get("latitude").toString());
-//        float longitude = Float.parseFloat(formData.get("longitude").toString());
-//        // 创建新的公共场地
-//        PublicSite publicSite = new PublicSite(creatorId, name, city, location, picture, introduction, avgCost, capacity, 0, phone, new Date(), 0, type, tag, latitude, longitude);
-//        // 插入数据库
-//        int res = siteService.insertPublicSite(publicSite);
-//        if (res == 0) return Result.fail(400, "插入公共场地失败");
-//        // 获取插入后自增的ID
-//        Long publicSiteId = publicSite.getPublicSiteId();
-//
-//
-//        DateFormat sdf = new SimpleDateFormat("HH:mm");
-//        for (HashMap<String, String> op : openTime) {
-//            Time startTime = new Time(sdf.parse(op.get("startTime")).getTime());
-//            Time endTime = new Time(sdf.parse(op.get("endTime")).getTime());
-//            int weekday = weekdayUnTrans(op.get("week"));
-//            PublicSiteTime publicSiteTime = new PublicSiteTime(publicSiteId, weekday, startTime, endTime);
-//            int res_ = siteService.insertPublicSiteTime(publicSiteTime);
-//            if (res_ == 0) return Result.fail(400, "插入公共场地失败");
-//        }
-//
-//        return Result.success("插入公共场地成功");
-//    }
     @ApiOperation("创建公共场地")
     @PostMapping("createPublicSite")
     public Result<String> createPublicSite(@RequestParam("file") MultipartFile multipartFile,
@@ -145,7 +106,7 @@ public class SiteController {
             Time startTime = new Time(sdf.parse(op.getStartTime()).getTime());
             Time endTime = new Time(sdf.parse(op.getEndTime()).getTime());
             int weekday = weekdayUnTrans(op.getWeek());
-            PublicSiteTime publicSiteTime = new PublicSiteTime(publicSiteId, weekday, startTime, endTime);
+            PublicSiteTime publicSiteTime = new PublicSiteTime(publicSiteId, weekday, startTime, endTime, op.isOpen());
             int res_ = siteService.insertPublicSiteTime(publicSiteTime);
             if (res_ == 0) return Result.fail(400, "插入公共场地失败");
         }
