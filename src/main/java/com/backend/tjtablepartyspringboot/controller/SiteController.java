@@ -5,12 +5,14 @@ import com.backend.tjtablepartyspringboot.dto.PublicSiteBriefDto;
 import com.backend.tjtablepartyspringboot.dto.PublicSiteDto;
 import com.backend.tjtablepartyspringboot.entity.*;
 import com.backend.tjtablepartyspringboot.service.SiteService;
+import com.backend.tjtablepartyspringboot.util.FileUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Time;
 import java.text.DateFormat;
@@ -38,6 +40,7 @@ public class SiteController {
         else if (Objects.equals(weekday, "周六")) return 6;
         else return 7;
     }
+
     @Autowired
     private SiteService siteService;
 
@@ -94,7 +97,7 @@ public class SiteController {
 
 
         DateFormat sdf = new SimpleDateFormat("HH:mm");
-        for (HashMap<String, String> op: openTime) {
+        for (HashMap<String, String> op : openTime) {
             Time startTime = new Time(sdf.parse(op.get("startTime")).getTime());
             Time endTime = new Time(sdf.parse(op.get("endTime")).getTime());
             int weekday = weekdayUnTrans(op.get("week"));
@@ -105,19 +108,35 @@ public class SiteController {
 
         return Result.success("插入公共场地成功");
     }
+
+    //    @ApiOperation("创建私人场地")
+//    @PostMapping("createPrivateSite")
+//    public Result<String> createPrivateSite(@RequestBody HashMap<String, Object> map) {
+//        HashMap<String, Object> formData = (HashMap<String, Object>) map.get("formData");
+//        Long creatorId = Long.valueOf(formData.get("creatorId").toString());
+//        String name = (String) formData.get("name");
+//        String city = (String) formData.get("city");
+//        String location = (String) formData.get("location");
+//        String picture = (String) formData.get("picture");
+//        String introduction = (String) formData.get("introduction");
+//        float latitude = Float.parseFloat(formData.get("latitude").toString());
+//        float longitude = Float.parseFloat(formData.get("longitude").toString());
+//        PrivateSite privateSite = new PrivateSite(creatorId, name, city, location, picture, introduction, latitude, longitude);
+//        int res = siteService.insertPrivateSite(privateSite);
+//        if (res == 0) return Result.fail(400, "创建私人场地失败");
+//        else return Result.success("创建私人场地成功");
+//    }
     @ApiOperation("创建私人场地")
     @PostMapping("createPrivateSite")
-    public Result<String> createPrivateSite(@RequestBody HashMap<String, Object> map) {
-        HashMap<String, Object> formData = (HashMap<String, Object>) map.get("formData");
-        Long creatorId = Long.valueOf(formData.get("creatorId").toString());
-        String name = (String) formData.get("name");
-        String city = (String) formData.get("city");
-        String location = (String) formData.get("location");
-        String picture = (String) formData.get("picture");
-        String introduction = (String) formData.get("introduction");
-        float latitude = Float.parseFloat(formData.get("latitude").toString());
-        float longitude = Float.parseFloat(formData.get("longitude").toString());
-        PrivateSite privateSite = new PrivateSite(creatorId, name, city, location, picture, introduction, latitude, longitude);
+    public Result<String> createPrivateSite(@RequestParam("file") MultipartFile multipartFile,
+                                            @RequestParam("creatorId") Long creatorId,
+                                            @RequestParam("name") String name,
+                                            @RequestParam("location") String location,
+                                            @RequestParam("latitude") float latitude,
+                                            @RequestParam("longitude") float longitude) {
+        // 图片云存储 返回url
+        String picture = FileUtil.uploadFile("/report/" + creatorId.toString() + "/", multipartFile);
+        PrivateSite privateSite = new PrivateSite(creatorId, name, location, picture, latitude, longitude);
         int res = siteService.insertPrivateSite(privateSite);
         if (res == 0) return Result.fail(400, "创建私人场地失败");
         else return Result.success("创建私人场地成功");

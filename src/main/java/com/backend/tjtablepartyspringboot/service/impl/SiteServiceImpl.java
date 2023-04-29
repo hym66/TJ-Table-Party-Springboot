@@ -65,9 +65,15 @@ public class SiteServiceImpl implements SiteService {
     @Override
     public PublicSiteDto selectPublicSiteById(Long publicSiteId) {
         PublicSite ps = publicSiteMapper.selectPublicSiteById(publicSiteId);
+        // 转换场地类型
         String[] type = ps.getType().split(",");
         for (int i = 0; i < type.length; i++) {
             type[i] = siteTypeMapper.selectTypeNameById(Long.valueOf(type[i]));
+        }
+        // 转换场地标签
+        String[] tag = ps.getTag().split(",");
+        for (int i = 0; i < tag.length; i++) {
+            tag[i] = siteTagMapper.selectTagNameById(Long.valueOf(tag[i]));
         }
         List<PublicSiteTime> publicSiteTimes = publicSiteTimeMapper.selectTimeById(ps.getPublicSiteId());
         ArrayList<PublicSiteTimeDto> openTime = new ArrayList<>();
@@ -75,7 +81,7 @@ public class SiteServiceImpl implements SiteService {
             PublicSiteTimeDto publicSiteTimeDto = new PublicSiteTimeDto(weekdayTrans(pst.getWeekday()), pst.getStartTime(), pst.getEndTime());
             openTime.add(publicSiteTimeDto);
         }
-        PublicSiteDto publicSiteDto = new PublicSiteDto(ps.getPublicSiteId(), ps.getCreatorId(), ps.getName(), ps.getCity(), ps.getLocation(), ps.getPicture(), ps.getIntroduction(), ps.getAvgCost(), ps.getCapacity(), ps.getGameNum(), ps.getPhone(), ps.getUploadTime(), ps.getCheckTime(), type, ps.getStatus(), openTime);
+        PublicSiteDto publicSiteDto = new PublicSiteDto(ps.getPublicSiteId(), ps.getCreatorId(), ps.getName(), ps.getCity(), ps.getLocation(), ps.getPicture(), ps.getIntroduction(), ps.getAvgCost(), ps.getCapacity(), ps.getGameNum(), ps.getPhone(), ps.getUploadTime(), ps.getCheckTime(), type, tag, ps.getStatus(), openTime);
         return publicSiteDto;
     }
 
