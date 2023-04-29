@@ -50,6 +50,13 @@ public interface ActivityService {
                                      Integer pageSize,Integer pageNo);
 
     /**
+     * 输入user id，返回该user的所有活动
+     */
+    Map<String,Object> getUserList(Long userId);
+
+
+
+    /**
      *
      * 输入activity id，获取该活动对应的所有trpg，包括public与private
      *
@@ -72,6 +79,30 @@ public interface ActivityService {
      */
     List<UserJoinActivity> getUserJoinActivityList(Long activityId);
 
+
+    /**
+     * 新建一个activity，输入是一个不完整的activity，自动补全信息
+     */
+    Map<String,Object> addActivity(Activity activity);
+
+
+    String toStateLabel(String state);
+
+    /*
+    * 删除一个活动
+    * */
+    Map<String,Object>deleteOne(Long activityId);
+
+
+    /**
+     *  更新一个活动的信息
+     */
+    Map<String,Object>updateActivity(Activity activity,Long activityId);
+
+    /**
+     * 重置一个activity的poster字段
+     */
+    Map<String,Object>updatePoster(String posterUrl,Long activityId);
 
 
 }

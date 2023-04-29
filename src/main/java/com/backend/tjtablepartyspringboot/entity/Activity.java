@@ -56,7 +56,12 @@ public class Activity {
     private String pictures;
     private Long siteId;
     private Long clubId;
+
+    /**
+     * 活动的状态：0正在召集，1集合完成，2进行中，3已结束，4已删除
+     */
     private String state;
+
 
 
 

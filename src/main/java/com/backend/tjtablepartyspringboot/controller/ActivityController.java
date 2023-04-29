@@ -4,12 +4,14 @@ import com.backend.tjtablepartyspringboot.common.Result;
 import com.backend.tjtablepartyspringboot.entity.*;
 import com.backend.tjtablepartyspringboot.service.ActivityService;
 import com.backend.tjtablepartyspringboot.service.QuestionService;
+import com.backend.tjtablepartyspringboot.util.FileUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.PublicKey;
 import java.util.ArrayList;
@@ -170,7 +172,84 @@ public class ActivityController {
     }
 
 
+    @ApiOperation("输入userId,返回user的活动")
+    @GetMapping("/getUserList")
+    public Result<Map<String,Object>> getUserList(
+            @ApiParam(name = "userId", value = " user ID", required = false)
+            @RequestParam(name = "userId",required = true) Long userId
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            Map<String,String>filterData=new HashMap<>();
+            Map<String,String>sortData=new HashMap<>();
 
+            resultMap=activityService.getUserList(userId);
+
+
+
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+    }
+
+
+    @ApiOperation("提交活动海报")
+    @PostMapping("/postPoster")
+    public Result<Map<String,Object>>postPoster(
+            @RequestParam("file") MultipartFile multipartFile,
+            @RequestParam("activityId") Long activityId
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+//        System.out.println(multipartFile);
+
+        try
+        {
+            String url = FileUtil.uploadFile("/activity/poster/"+activityId.toString()+"/", multipartFile);
+            Map<String,Object> map1=activityService.updatePoster(url,activityId);
+            resultMap.put("url",url);
+            resultMap.put("update",map1);
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+    }
+
+
+    @ApiOperation("新建活动")
+    @PostMapping("/postActivity")
+    public Result<Map<String,Object>> postActivity(
+            @ApiParam(name = "activity", value = "activity entity", required = true)
+            @RequestBody(required = true) Activity activity
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            resultMap=activityService.addActivity(activity);
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+    }
+
+
+    @ApiOperation("删除一个活动")
+    @DeleteMapping("/deleteOne")
+    public Result<Map<String,Object>>deleteOne(
+            @ApiParam(name = "activityId", value = "活动id", required = true)
+            @RequestParam(name ="activityId",required = true) Long activityId
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            resultMap=activityService.deleteOne(activityId);
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+
+    }
 
 
 //    @ApiOperation("")

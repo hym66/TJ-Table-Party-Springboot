@@ -1,15 +1,15 @@
 package com.backend.tjtablepartyspringboot.service.impl;
+import com.backend.tjtablepartyspringboot.dto.UserDto;
 import com.backend.tjtablepartyspringboot.entity.*;
+import com.backend.tjtablepartyspringboot.mapper.*;
 import com.backend.tjtablepartyspringboot.service.TrpgService;
+import com.backend.tjtablepartyspringboot.service.UserService;
 import com.backend.tjtablepartyspringboot.util.DateUtil;
 
-import com.backend.tjtablepartyspringboot.mapper.ActivityHasTrpgMapper;
-import com.backend.tjtablepartyspringboot.mapper.ActivityMapper;
-import com.backend.tjtablepartyspringboot.mapper.UserInterestActivityMapper;
-import com.backend.tjtablepartyspringboot.mapper.UserJoinActivityMapper;
 import com.backend.tjtablepartyspringboot.service.ActivityService;
 import com.backend.tjtablepartyspringboot.util.StringUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,8 +37,35 @@ public class ActivityServiceImpl implements ActivityService {
     @Autowired
     TrpgService trpgService;
 
+    @Autowired
+    UserService userService;
 
 
+
+
+    @Override
+    public String toStateLabel(String state){
+        String stateLabel="";
+        switch (state){
+            case "0":
+                stateLabel="报名中";
+                break;
+            case "1":
+                stateLabel="报名结束";
+                break;
+            case "2":
+                stateLabel="正在进行";
+                break;
+            case "3":
+                stateLabel="已结束";
+                break;
+            case "4":
+                stateLabel="已删除";
+                break;
+
+        }
+        return stateLabel;
+    }
 
     @Override
     public List<Activity> getAllEntity(){
@@ -75,12 +102,12 @@ public class ActivityServiceImpl implements ActivityService {
         detailMap.put("startTimeLabel",activityTimeFormate(startTime));
 
         //end time
-        Date endTime=act.getStartTime();
+        Date endTime=act.getEndTime();
         detailMap.put("endTime",endTime);
         detailMap.put("endTimeLabel",activityTimeFormate(endTime));
 
         //end time
-        Date createTime=act.getStartTime();
+        Date createTime=act.getCreateTime();
         detailMap.put("createTime",createTime);
         detailMap.put("createTimeLabel",activityTimeFormate(createTime));
 
@@ -93,27 +120,9 @@ public class ActivityServiceImpl implements ActivityService {
 
         //state
         String state=act.getState();
-        String stateLabel="";
         detailMap.put("state",state);
-        switch (state){
-            case "0":
-                stateLabel="报名中";
-                break;
-            case "1":
-                stateLabel="报名结束";
-                break;
-            case "2":
-                stateLabel="正在进行";
-                break;
-            case "3":
-                stateLabel="已结束";
-                break;
-            case "4":
-                stateLabel="已删除";
-                break;
 
-        }
-        detailMap.put("stateLabel",stateLabel);
+        detailMap.put("stateLabel",toStateLabel(state));
 
 
         //想玩的游戏
@@ -124,9 +133,11 @@ public class ActivityServiceImpl implements ActivityService {
 
         //联系user表
         Map<String,Object>userData=new HashMap<>();
-        userData.put("id",act.getUserId());
-        userData.put("avatar","https://tse1-mm.cn.bing.net/th/id/OIP-C.KaaPuoL3MiCMsjY3ACnD8gHaHa?pid=ImgDet&rs=1");
-        userData.put("name","测试用"+act.getUserId());
+        Long userId=act.getUserId();
+        UserDto userDto =userService.getNameAndAvatarUrl(userId);
+        userData.put("id",userId);
+        userData.put("avatar",userDto.getAvatarUrl());
+        userData.put("name",userDto.getNickName());
         detailMap.put("creatorInfo",userData);
 
 
@@ -222,7 +233,7 @@ public class ActivityServiceImpl implements ActivityService {
         calendar.setTime(date);					//放入Date类型数据
 
         Integer year= calendar.get(Calendar.YEAR);					//获取年份
-        Integer month=  calendar.get(Calendar.MONTH);					//获取月份
+        Integer month=  calendar.get(Calendar.MONTH)+1;					//获取月份
         Integer day= calendar.get(Calendar.DATE);					//获取日
 
         Integer hour= calendar.get(Calendar.HOUR_OF_DAY);				//时（24小时制）
@@ -295,27 +306,9 @@ public class ActivityServiceImpl implements ActivityService {
             oneActData.put("nowPeople",act.getNowPeople());
             //state
             String state=act.getState();
-            String stateLabel="";
             oneActData.put("state",state);
-            switch (state){
-                case "0":
-                    stateLabel="报名中";
-                    break;
-                case "1":
-                    stateLabel="报名结束";
-                    break;
-                case "2":
-                    stateLabel="正在进行";
-                    break;
-                case "3":
-                    stateLabel="已结束";
-                    break;
-                case "4":
-                    stateLabel="已删除";
-                    break;
 
-            }
-            oneActData.put("stateLabel",stateLabel);
+            oneActData.put("stateLabel",toStateLabel(state));
 
             //start time
             Date startTime=act.getStartTime();
@@ -326,7 +319,7 @@ public class ActivityServiceImpl implements ActivityService {
             Map<String,Object>userData=new HashMap<>();
             userData.put("id",act.getUserId());
             userData.put("avatar","https://tse1-mm.cn.bing.net/th/id/OIP-C.KaaPuoL3MiCMsjY3ACnD8gHaHa?pid=ImgDet&rs=1");
-            userData.put("name","测试用"+act.getUserId());
+            userData.put("name",act.getUserId());
             oneActData.put("creatorInfo",userData);
 
 
@@ -344,4 +337,137 @@ public class ActivityServiceImpl implements ActivityService {
         return map;
     }
 
+
+    @Override
+    public Map<String,Object> getUserList(Long userId){
+        Map<String,Object>map=new HashMap<>();
+        List<Activity> actList=new ArrayList<>();
+
+        //用户自己创建的
+        QueryWrapper<Activity>qw=new QueryWrapper<>();
+        qw.select("activity_id","title","summary","poster","start_time",
+                "user_id","site_id","fee","max_people","now_people","state")
+                .eq("user_id",userId);
+        actList=activityMapper.selectList(qw);
+
+        /**
+         * 筛选
+         */
+
+
+
+
+        //用户参与的
+
+
+
+
+
+        //sort排序
+
+
+        //得到最后的list
+
+
+
+        //结合其他表信息
+        List<Map<String,Object>> datalist=new ArrayList<>();
+        for (Activity act: actList){
+            //对每一个activity，再获取相关的user、site信息
+            Map<String,Object>oneActData=new HashMap<>();
+            oneActData.put("activityId",act.getActivityId());
+            oneActData.put("title",act.getTitle());
+            oneActData.put("summary",act.getSummary());
+            oneActData.put("poster",act.getPoster());
+            oneActData.put("userId",act.getUserId());
+            oneActData.put("siteId",act.getSiteId());
+            oneActData.put("fee",act.getFee());
+            oneActData.put("maxPeople",act.getMaxPeople());
+            oneActData.put("nowPeople",act.getNowPeople());
+            //state
+            String state=act.getState();
+            oneActData.put("state",state);
+
+            oneActData.put("stateLabel",toStateLabel(state));
+
+            //start time
+            Date startTime=act.getStartTime();
+            oneActData.put("startTime",startTime);
+            oneActData.put("startTimeLabel",activityTimeFormate(startTime));
+
+            //user信息
+            Map<String,Object>userData=new HashMap<>();
+
+            UserDto userDto =userService.getNameAndAvatarUrl(userId);
+            userData.put("id",userId);
+            userData.put("avatar",userDto.getAvatarUrl());
+            userData.put("name",userDto.getNickName());
+            oneActData.put("creatorInfo",userData);
+
+
+            //site信息
+            Map<String,Object>siteData=new HashMap<>();
+            oneActData.put("mapAddress","测试用地址"+act.getActivityId());
+
+
+            datalist.add(oneActData);
+        }
+
+        map.put("list",datalist);
+        return map;
+
+    }
+
+    @Override
+    public Map<String,Object> addActivity(Activity activity){
+        Map<String,Object> resultMap=new HashMap<>();
+        //补全信息
+        Integer nowPeople=1;
+        Date createTime=new Date();
+        String state="0";
+        activity.setNowPeople(nowPeople);
+        activity.setCreateTime(createTime);
+        activity.setState(state);
+        //insert
+        activityMapper.insert(activity);
+        resultMap.put("id",activity.getActivityId());
+        return resultMap;
+    }
+
+
+    @Override
+    public Map<String,Object>deleteOne(Long activityId){
+        Map<String,Object>resultMap=new HashMap<>();
+        QueryWrapper<Activity>qw=new QueryWrapper<>();
+        qw.eq("activity_id",activityId);
+        Integer i= activityMapper.delete(qw);
+        resultMap.put("i",i);
+
+        return resultMap;
+    }
+
+    @Override
+    public Map<String,Object>updateActivity(Activity activity,Long activityId){
+        Map<String,Object>resultMap=new HashMap<>();
+        QueryWrapper<Activity>qw=new QueryWrapper<>();
+        qw.eq("activity_id",activityId);
+        Integer i=activityMapper.updateById(activity);
+        resultMap.put("i",i);
+
+        return resultMap;
+    }
+
+    @Override
+    public Map<String,Object>updatePoster(String posterUrl,Long activityId){
+        Map<String,Object>resultMap=new HashMap<>();
+        Integer i= activityMapper.update(
+                null,
+                Wrappers.<Activity>lambdaUpdate()
+                        .eq(Activity::getActivityId,activityId)
+                        .set(Activity::getPoster,posterUrl)
+        );
+        resultMap.put("i",i);
+
+        return resultMap;
+    }
 }

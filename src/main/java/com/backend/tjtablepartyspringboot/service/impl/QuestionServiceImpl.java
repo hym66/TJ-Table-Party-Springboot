@@ -1,5 +1,6 @@
 package com.backend.tjtablepartyspringboot.service.impl;
 
+import com.backend.tjtablepartyspringboot.dto.UserDto;
 import com.backend.tjtablepartyspringboot.entity.Question;
 import com.backend.tjtablepartyspringboot.entity.Reply;
 import com.backend.tjtablepartyspringboot.entity.UserLikeQuestion;
@@ -9,6 +10,7 @@ import com.backend.tjtablepartyspringboot.mapper.ReplyMapper;
 import com.backend.tjtablepartyspringboot.mapper.UserLikeQuestionMapper;
 import com.backend.tjtablepartyspringboot.mapper.UserLikeReplyMapper;
 import com.backend.tjtablepartyspringboot.service.QuestionService;
+import com.backend.tjtablepartyspringboot.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,13 +36,16 @@ public class QuestionServiceImpl implements QuestionService {
     @Autowired
     UserLikeReplyMapper userLikeReplyMapper;
 
+    @Autowired
+    UserService userService;
+
     public static String questionTimeFormate(Date date){
         String str="";
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);					//放入Date类型数据
 
         Integer year= calendar.get(Calendar.YEAR);					//获取年份
-        Integer month=  calendar.get(Calendar.MONTH);					//获取月份
+        Integer month=  calendar.get(Calendar.MONTH)+1;					//获取月份
         Integer day= calendar.get(Calendar.DATE);					//获取日
 
         Integer hour= calendar.get(Calendar.HOUR_OF_DAY);				//时（24小时制）
@@ -241,8 +246,10 @@ public class QuestionServiceImpl implements QuestionService {
             displayName="匿名";
         }else{
             //从user表获取信息
-            displayAvatar="/icon/user_avatar.png";
-            displayName="测试-用户名"+userId;
+            UserDto userDto=userService.getNameAndAvatarUrl(userId);
+
+            displayAvatar=userDto.getAvatarUrl();
+            displayName=userDto.getNickName();
         }
         reply.setDisplayAvatar(displayAvatar);
         reply.setDisplayName(displayName);
@@ -291,8 +298,10 @@ public class QuestionServiceImpl implements QuestionService {
             displayName="匿名";
         }else{
             //从user表获取信息
-            displayAvatar="/icon/user_avatar.png";
-            displayName="测试-用户名"+userId;
+            UserDto userDto=userService.getNameAndAvatarUrl(userId);
+
+            displayAvatar=userDto.getAvatarUrl();
+            displayName=userDto.getNickName();
         }
         question.setDisplayAvatar(displayAvatar);
         question.setDisplayName(displayName);
