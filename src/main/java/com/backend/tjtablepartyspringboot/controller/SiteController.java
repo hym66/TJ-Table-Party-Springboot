@@ -1,8 +1,10 @@
 package com.backend.tjtablepartyspringboot.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.backend.tjtablepartyspringboot.common.Result;
 import com.backend.tjtablepartyspringboot.dto.PublicSiteBriefDto;
 import com.backend.tjtablepartyspringboot.dto.PublicSiteDto;
+import com.backend.tjtablepartyspringboot.dto.SiteTimeDto;
 import com.backend.tjtablepartyspringboot.entity.*;
 import com.backend.tjtablepartyspringboot.service.SiteService;
 import com.backend.tjtablepartyspringboot.util.FileUtil;
@@ -69,24 +71,66 @@ public class SiteController {
         return Result.success(siteService.selectAllSiteTag());
     }
 
+//    @ApiOperation("创建公共场地")
+//    @PostMapping("createPublicSite")
+//    public Result<String> createPublicSite(@RequestBody HashMap<String, Object> map) throws ParseException {
+//        HashMap<String, Object> formData = (HashMap<String, Object>) map.get("formData");
+//        Long creatorId = Long.valueOf(formData.get("creatorId").toString());
+//        String name = (String) formData.get("name");
+//        String type = (String) formData.get("type");
+//        String introduction = (String) formData.get("introduction");
+//        String picture = (String) formData.get("picture");
+//        String city = (String) formData.get("city");
+//        String location = (String) formData.get("location");
+//        float avgCost = Float.parseFloat(formData.get("avgCost").toString());
+//        int capacity = (int) formData.get("capacity");
+//        String phone = (String) formData.get("phone");
+//        String tag = (String) formData.get("tag");
+//        ArrayList<HashMap<String, String>> openTime = (ArrayList<HashMap<String, String>>) formData.get("openTime");
+//        float latitude = Float.parseFloat(formData.get("latitude").toString());
+//        float longitude = Float.parseFloat(formData.get("longitude").toString());
+//        // 创建新的公共场地
+//        PublicSite publicSite = new PublicSite(creatorId, name, city, location, picture, introduction, avgCost, capacity, 0, phone, new Date(), 0, type, tag, latitude, longitude);
+//        // 插入数据库
+//        int res = siteService.insertPublicSite(publicSite);
+//        if (res == 0) return Result.fail(400, "插入公共场地失败");
+//        // 获取插入后自增的ID
+//        Long publicSiteId = publicSite.getPublicSiteId();
+//
+//
+//        DateFormat sdf = new SimpleDateFormat("HH:mm");
+//        for (HashMap<String, String> op : openTime) {
+//            Time startTime = new Time(sdf.parse(op.get("startTime")).getTime());
+//            Time endTime = new Time(sdf.parse(op.get("endTime")).getTime());
+//            int weekday = weekdayUnTrans(op.get("week"));
+//            PublicSiteTime publicSiteTime = new PublicSiteTime(publicSiteId, weekday, startTime, endTime);
+//            int res_ = siteService.insertPublicSiteTime(publicSiteTime);
+//            if (res_ == 0) return Result.fail(400, "插入公共场地失败");
+//        }
+//
+//        return Result.success("插入公共场地成功");
+//    }
     @ApiOperation("创建公共场地")
     @PostMapping("createPublicSite")
-    public Result<String> createPublicSite(@RequestBody HashMap<String, Object> map) throws ParseException {
-        HashMap<String, Object> formData = (HashMap<String, Object>) map.get("formData");
-        Long creatorId = Long.valueOf(formData.get("creatorId").toString());
-        String name = (String) formData.get("name");
-        String type = (String) formData.get("type");
-        String introduction = (String) formData.get("introduction");
-        String picture = (String) formData.get("picture");
-        String city = (String) formData.get("city");
-        String location = (String) formData.get("location");
-        float avgCost = Float.parseFloat(formData.get("avgCost").toString());
-        int capacity = (int) formData.get("capacity");
-        String phone = (String) formData.get("phone");
-        String tag = (String) formData.get("tag");
-        ArrayList<HashMap<String, String>> openTime = (ArrayList<HashMap<String, String>>) formData.get("openTime");
-        float latitude = Float.parseFloat(formData.get("latitude").toString());
-        float longitude = Float.parseFloat(formData.get("longitude").toString());
+    public Result<String> createPublicSite(@RequestParam("file") MultipartFile multipartFile,
+                                           @RequestParam("creatorId") Long creatorId,
+                                           @RequestParam("name") String name,
+                                           @RequestParam("type") String type,
+                                           @RequestParam("introduction") String introduction,
+                                           @RequestParam("city") String city,
+                                           @RequestParam("location") String location,
+                                           @RequestParam("avgCost") float avgCost,
+                                           @RequestParam("capacity") int capacity,
+                                           @RequestParam("phone") String phone,
+                                           @RequestParam("tag") String tag,
+                                           @RequestParam("openTime") String openTime,
+                                           @RequestParam("latitude") float latitude,
+                                           @RequestParam("longitude") float longitude
+                                           ) throws ParseException {
+        List<SiteTimeDto> openTime_new = new ArrayList<SiteTimeDto>(JSONArray.parseArray(openTime, SiteTimeDto.class));
+
+        // 图片云存储 返回url
+        String picture = FileUtil.uploadFile("/report/" + creatorId.toString() + "/", multipartFile);
         // 创建新的公共场地
         PublicSite publicSite = new PublicSite(creatorId, name, city, location, picture, introduction, avgCost, capacity, 0, phone, new Date(), 0, type, tag, latitude, longitude);
         // 插入数据库
@@ -97,35 +141,17 @@ public class SiteController {
 
 
         DateFormat sdf = new SimpleDateFormat("HH:mm");
-        for (HashMap<String, String> op : openTime) {
-            Time startTime = new Time(sdf.parse(op.get("startTime")).getTime());
-            Time endTime = new Time(sdf.parse(op.get("endTime")).getTime());
-            int weekday = weekdayUnTrans(op.get("week"));
+        for (SiteTimeDto op : openTime_new) {
+            Time startTime = new Time(sdf.parse(op.getStartTime()).getTime());
+            Time endTime = new Time(sdf.parse(op.getEndTime()).getTime());
+            int weekday = weekdayUnTrans(op.getWeek());
             PublicSiteTime publicSiteTime = new PublicSiteTime(publicSiteId, weekday, startTime, endTime);
             int res_ = siteService.insertPublicSiteTime(publicSiteTime);
             if (res_ == 0) return Result.fail(400, "插入公共场地失败");
         }
-
         return Result.success("插入公共场地成功");
     }
 
-    //    @ApiOperation("创建私人场地")
-//    @PostMapping("createPrivateSite")
-//    public Result<String> createPrivateSite(@RequestBody HashMap<String, Object> map) {
-//        HashMap<String, Object> formData = (HashMap<String, Object>) map.get("formData");
-//        Long creatorId = Long.valueOf(formData.get("creatorId").toString());
-//        String name = (String) formData.get("name");
-//        String city = (String) formData.get("city");
-//        String location = (String) formData.get("location");
-//        String picture = (String) formData.get("picture");
-//        String introduction = (String) formData.get("introduction");
-//        float latitude = Float.parseFloat(formData.get("latitude").toString());
-//        float longitude = Float.parseFloat(formData.get("longitude").toString());
-//        PrivateSite privateSite = new PrivateSite(creatorId, name, city, location, picture, introduction, latitude, longitude);
-//        int res = siteService.insertPrivateSite(privateSite);
-//        if (res == 0) return Result.fail(400, "创建私人场地失败");
-//        else return Result.success("创建私人场地成功");
-//    }
     @ApiOperation("创建私人场地")
     @PostMapping("createPrivateSite")
     public Result<String> createPrivateSite(@RequestParam("file") MultipartFile multipartFile,
