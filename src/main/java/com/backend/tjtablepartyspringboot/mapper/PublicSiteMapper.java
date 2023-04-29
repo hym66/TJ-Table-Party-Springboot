@@ -2,6 +2,7 @@ package com.backend.tjtablepartyspringboot.mapper;
 
 import com.backend.tjtablepartyspringboot.entity.Club;
 import com.backend.tjtablepartyspringboot.entity.PublicSite;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
  * @JDKVersion 17.0.4
  */
 @Mapper
-public interface PublicSiteMapper {
+public interface PublicSiteMapper extends BaseMapper<PublicSite>{
 
     @Select("SELECT * FROM public_site")
     List<PublicSite> selectAllPublicSite();

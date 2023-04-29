@@ -10,10 +10,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,10 +31,28 @@ public class ApplicationController {
     }
 
     @ApiOperation("获取所有未审核的场地申请单")
-    @GetMapping("getUncheckedReports")
+    @GetMapping("getUncheckedApps")
     public Result<List<AppSimpleDto>> getUncheckedApps()
     {
         List<AppSimpleDto> appSimpleDtoList = applicationService.selectUnchecked();
         return Result.success(appSimpleDtoList);
+    }
+
+    @ApiOperation("审核申请单")
+    @GetMapping("checkApp")
+    public Result<String> checkApp(@ApiParam(name="publicSiteId", value="公用场地id", required = true)
+                                       @RequestParam("publicSiteId") Long publicSiteId,
+                                   @ApiParam(name="agree", value="是否同意该场地入驻", required = true)
+                                        @RequestParam("agree") Boolean agree,
+                                   @ApiParam(name="adminId", value="审核的管理员id", required = true)
+                                       @RequestParam("adminId") Long adminId)
+    {
+        int res = applicationService.adminCheck(publicSiteId, agree, adminId);
+        if(res > 0){
+            return Result.success("审核保存成功！");
+        }
+        else{
+            return Result.fail(500,"审核失败！检查后端");
+        }
     }
 }

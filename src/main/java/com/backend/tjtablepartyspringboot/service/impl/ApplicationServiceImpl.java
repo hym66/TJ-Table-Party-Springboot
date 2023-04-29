@@ -2,19 +2,19 @@ package com.backend.tjtablepartyspringboot.service.impl;
 
 import com.backend.tjtablepartyspringboot.dto.AppDto;
 import com.backend.tjtablepartyspringboot.dto.AppSimpleDto;
-import com.backend.tjtablepartyspringboot.dto.PublicSiteDto;
 import com.backend.tjtablepartyspringboot.dto.PublicSiteTimeDto;
 import com.backend.tjtablepartyspringboot.entity.PublicSite;
 import com.backend.tjtablepartyspringboot.entity.PublicSiteTime;
 import com.backend.tjtablepartyspringboot.mapper.ApplicationMapper;
+import com.backend.tjtablepartyspringboot.mapper.PublicSiteMapper;
 import com.backend.tjtablepartyspringboot.mapper.PublicSiteTimeMapper;
 import com.backend.tjtablepartyspringboot.mapper.SiteTypeMapper;
 import com.backend.tjtablepartyspringboot.service.ApplicationService;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +26,8 @@ public class ApplicationServiceImpl implements ApplicationService {
     SiteTypeMapper siteTypeMapper;
     @Autowired
     PublicSiteTimeMapper publicSiteTimeMapper;
+    @Autowired
+    PublicSiteMapper publicSiteMapper;
 
     private static String weekdayTrans(int weekday) {
         if (weekday == 1) return "周一";
@@ -47,6 +49,9 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Override
     public AppDto selectBySiteId(Long publicSiteId) {
         PublicSite ps = applicationMapper.selectById(publicSiteId);
+        if(ps == null){
+            return null;
+        }
         String[] type = ps.getType().split(",");
         for (int i = 0; i < type.length; i++) {
             type[i] = siteTypeMapper.selectTypeNameById(Long.valueOf(type[i]));
@@ -57,9 +62,20 @@ public class ApplicationServiceImpl implements ApplicationService {
             PublicSiteTimeDto publicSiteTimeDto = new PublicSiteTimeDto(weekdayTrans(pst.getWeekday()), pst.getStartTime(), pst.getEndTime());
             openTime.add(publicSiteTimeDto);
         }
-        PublicSiteDto publicSiteDto = new PublicSiteDto(ps.getPublicSiteId(), ps.getCreatorId(), ps.getName(), ps.getCity(), ps.getLocation(), ps.getPicture(), ps.getIntroduction(), ps.getAvgCost(), ps.getCapacity(), ps.getGameNum(), ps.getPhone(), ps.getUploadTime(), ps.getCheckTime(), type, ps.getStatus(), openTime);
 
         AppDto appDto = new AppDto(ps, type, openTime);
         return appDto;
+    }
+
+    @Override
+    public int adminCheck(Long publicSiteId, boolean agree, Long adminId) {
+        Byte status = agree ?  Byte.valueOf("1") : Byte.valueOf("0");
+
+        PublicSite publicSite = publicSiteMapper.selectPublicSiteById(publicSiteId);
+        publicSite.setCheckTime(new Date());
+        publicSite.setStatus(status);
+        publicSite.setAdminId(adminId);
+        int res = publicSiteMapper.updateById(publicSite);
+        return res;
     }
 }
