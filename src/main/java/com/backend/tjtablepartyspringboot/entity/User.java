@@ -13,20 +13,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName(value = "club")
+@TableName(value = "user")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Club {
+public class User {
     @TableId(type = IdType.AUTO)
     @JsonSerialize(using=ToStringSerializer.class)
-    Long clubId;
-    String posterUrl;
-    String clubTitle;
-    String description;
-    String mainTime;
-    String meetingPoint;
-    String city;
-    Byte isPublic;
-    int capacity;
-    @JsonSerialize(using=ToStringSerializer.class)
-    Long managerId;
+    Long userId;
+    String photo;
 }
