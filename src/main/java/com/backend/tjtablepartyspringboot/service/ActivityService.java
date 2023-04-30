@@ -108,4 +108,21 @@ public interface ActivityService {
     Map<String,Object>updatePoster(String posterUrl,Long activityId);
 
 
+    /**
+     * user id和activity id，user参与活动
+     */
+    Integer addParticipator(Long userId,Long activityId);
+
+
+    /**
+     * 输入activity id，获取所有参与者的信息
+     */
+    List<Map<String,Object>> getActivityParticipatorList(Long activityId,Long creatorId);
+    Map<String,Object> getActivityParticipator(Long activityId);
+
+
+    /**
+     * 删除一个user 参与活动
+     */
+    Integer deleteUserJoin(Long activityId,Long userId);
 }

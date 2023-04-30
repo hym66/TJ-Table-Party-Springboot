@@ -131,8 +131,13 @@ public class ActivityServiceImpl implements ActivityService {
         detailMap.put("wishGameList",wishGameList);
 
 
+        //参与者
+        List<Map<String,Object>>participatorList=getActivityParticipatorList(activityId, act.getUserId());
+        detailMap.put("participatorList",participatorList);
 
-        //联系user表
+
+
+        //创建者的信息
         Map<String,Object>userData=new HashMap<>();
         Long userId=act.getUserId();
         UserDto userDto =userService.getNameAndAvatarUrl(userId);
@@ -147,6 +152,8 @@ public class ActivityServiceImpl implements ActivityService {
 
         //联系site 表
         detailMap.put("mapAddress","测试用地址"+act.getActivityId());
+
+
 
 
 
@@ -374,10 +381,13 @@ public class ActivityServiceImpl implements ActivityService {
 
             //user信息
             Map<String,Object>userData=new HashMap<>();
-            userData.put("id",act.getUserId());
-            userData.put("avatar","https://tse1-mm.cn.bing.net/th/id/OIP-C.KaaPuoL3MiCMsjY3ACnD8gHaHa?pid=ImgDet&rs=1");
-            userData.put("name",act.getUserId());
+            Long userId=act.getUserId();
+            UserDto userDto =userService.getNameAndAvatarUrl(userId);
+            userData.put("id",userId);
+            userData.put("avatar",userDto.getAvatarUrl());
+            userData.put("name",userDto.getNickName());
             oneActData.put("creatorInfo",userData);
+
 
 
             //site信息
@@ -500,6 +510,9 @@ public class ActivityServiceImpl implements ActivityService {
         }
 
 
+        //创建者是参与者
+        addParticipator(activity.getUserId(),activityId);
+
         return resultMap;
     }
 
@@ -538,5 +551,112 @@ public class ActivityServiceImpl implements ActivityService {
         resultMap.put("i",i);
 
         return resultMap;
+    }
+
+
+
+    @Override
+    public Integer addParticipator(Long userId,Long activityId){
+        Integer i=0;
+        QueryWrapper<UserJoinActivity>qw=new QueryWrapper<>();
+        qw.eq("activity_id",activityId)
+                .eq("user_id",userId);
+        UserJoinActivity oldOne=userJoinActivityMapper.selectOne(qw);
+        if (oldOne==null){
+            userJoinActivityMapper.insert(new UserJoinActivity(userId,activityId,new Date()));
+        }
+
+
+        return i;
+    }
+
+    @Override
+    public List<Map<String,Object>> getActivityParticipatorList(Long activityId,Long creatorId){
+        List<Map<String,Object>> list=new ArrayList<>();
+        QueryWrapper<UserJoinActivity>qw=new QueryWrapper<>();
+        qw.eq("activity_id",activityId);
+        List<UserJoinActivity>joinList=userJoinActivityMapper.selectList(qw);
+        for (UserJoinActivity userJoin:joinList){
+            Map<String,Object>oneData=new HashMap<>();
+            Long userId=userJoin.getUserId();
+            oneData.put("id",userId);
+            oneData.put("joinTime",userJoin.getJoinTime());
+
+            if (userId.equals(creatorId)){
+                oneData.put("role","creator");
+                oneData.put("roleLabel","创建者");
+            }else{
+                oneData.put("role","participator");
+                oneData.put("roleLabel","参与者");
+
+            }
+
+            //user detail
+            UserDto userDto=userService.getNameAndAvatarUrl(userId);
+            oneData.put("avatar",userDto.getAvatarUrl());
+            oneData.put("name",userDto.getNickName());
+
+
+            list.add(oneData);
+        }
+
+        return list;
+    }
+
+
+    @Override
+    public Map<String,Object> getActivityParticipator(Long activityId){
+        Map<String,Object>resultMap=new HashMap<>();
+        Activity activity=activityMapper.selectById(activityId);
+        Long creatorId=activity.getUserId();
+
+
+        List<Map<String,Object>> list=new ArrayList<>();
+        Map<String,Object>creatorInfo=new HashMap<>();
+
+        QueryWrapper<UserJoinActivity>qw=new QueryWrapper<>();
+        qw.eq("activity_id",activityId);
+        List<UserJoinActivity>joinList=userJoinActivityMapper.selectList(qw);
+        for (UserJoinActivity userJoin:joinList){
+            Map<String,Object>oneData=new HashMap<>();
+            Long userId=userJoin.getUserId();
+            oneData.put("id",userId);
+            oneData.put("joinTime",userJoin.getJoinTime());
+
+
+
+            //user detail
+            UserDto userDto=userService.getNameAndAvatarUrl(userId);
+            oneData.put("avatar",userDto.getAvatarUrl());
+            oneData.put("name",userDto.getNickName());
+
+            if (userId.equals(creatorId)){
+                oneData.put("role","creator");
+                oneData.put("roleLabel","创建者");
+                creatorInfo=oneData;
+            }else{
+                oneData.put("role","participator");
+                oneData.put("roleLabel","参与者");
+
+            }
+            list.add(oneData);
+        }
+
+
+        resultMap.put("list",list);
+        resultMap.put("activityId",activityId);
+        resultMap.put("creatorInfo",creatorInfo);
+
+        return resultMap;
+    }
+
+    @Override
+    public Integer deleteUserJoin(Long activityId, Long userId) {
+        Integer i=0;
+        QueryWrapper<UserJoinActivity>qw=new QueryWrapper<>();
+        qw.eq("activity_id",activityId)
+                .eq("user_id",userId);
+        i=userJoinActivityMapper.delete(qw);
+        return i;
     }
 }

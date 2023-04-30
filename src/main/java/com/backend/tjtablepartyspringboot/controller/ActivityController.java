@@ -253,6 +253,42 @@ public class ActivityController {
 
     }
 
+    @ApiOperation("删除一个user参与活动")
+    @DeleteMapping("/deleteUserJoin")
+    public Result<Map<String,Object>>deleteUserJoin(
+            @ApiParam(name = "activityId", value = "活动id", required = true)
+            @RequestParam(name ="activityId",required = true) Long activityId,
+            @ApiParam(name = "userId", value = "用户id", required = true)
+            @RequestParam(name ="userId",required = true) Long userId
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            Integer i= activityService.deleteUserJoin(activityId,userId);
+            resultMap.put("i",i);
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+
+    }
+
+    @ApiOperation("输入activity id，获取活动参与者")
+    @GetMapping("/getParticipator")
+    public Result<Map<String,Object>>getParticipator(
+            @ApiParam(name = "activityId", value = "活动id", required = true)
+            @RequestParam("activityId") Long activityId
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            resultMap=activityService.getActivityParticipator(activityId);
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+
+    }
 
 //    @ApiOperation("")
 //    @GetMapping("/getByActivityId")
