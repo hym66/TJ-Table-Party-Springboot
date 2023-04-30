@@ -46,18 +46,33 @@ public class SiteController {
     @Autowired
     private SiteService siteService;
 
-    @ApiOperation("获取所有场地信息")
+    @ApiOperation("获取所有公共场地信息")
     @GetMapping("getPublicSiteList")
     public Result<List<PublicSiteBriefDto>> getPublicSiteList() {
         return Result.success(siteService.selectAllPublicSite());
     }
 
-    @ApiOperation("根据ID获取场地信息")
+    @ApiOperation("根据ID获取公共场地详细信息")
     @GetMapping("getPublicSiteById")
-    public Result<PublicSiteDto> getPublicSiteById(@ApiParam(name = "publicSiteId", value = "场地id", required = true)
+    public Result<PublicSiteDto> getPublicSiteById(@ApiParam(name = "publicSiteId", value = "公共场地id", required = true)
                                                    @RequestParam("publicSiteId") Long publicSiteId) {
         return Result.success(siteService.selectPublicSiteById(publicSiteId));
     }
+
+    @ApiOperation("根据用户ID获取私人场地信息")
+    @GetMapping("getPrivateSiteByCreatorId")
+    public Result<List<PrivateSite>> getPrivateSiteByCreatorId(@ApiParam(name = "creatorId", value = "创建者id", required = true)
+                                                   @RequestParam("creatorId") Long creatorId) {
+        return Result.success(siteService.selectPrivateSiteByCreatorId(creatorId));
+    }
+
+    @ApiOperation("根据ID获取私人场地详细信息")
+    @GetMapping("getPrivateSiteById")
+    public Result<PrivateSite> getPrivateSiteById(@ApiParam(name = "privateSiteId", value = "私人场地id", required = true)
+                                                   @RequestParam("privateSiteId") Long privateSiteId) {
+        return Result.success(siteService.selectPrivateSiteById(privateSiteId));
+    }
+
 
     @ApiOperation("获取所有场地的类型信息")
     @GetMapping("getSiteTypeList")

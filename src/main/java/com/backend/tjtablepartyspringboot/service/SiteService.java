@@ -19,6 +19,9 @@ public interface SiteService {
 
     PublicSiteDto selectPublicSiteById(Long publicSiteId);
 
+    List<PrivateSite> selectPrivateSiteByCreatorId(Long creatorId);
+
+    PrivateSite selectPrivateSiteById(Long privateSiteId);
     List<SiteType> selectAllSiteType();
     List<SiteTag> selectAllSiteTag();
 

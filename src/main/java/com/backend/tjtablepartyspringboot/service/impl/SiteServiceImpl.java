@@ -86,6 +86,16 @@ public class SiteServiceImpl implements SiteService {
     }
 
     @Override
+    public List<PrivateSite> selectPrivateSiteByCreatorId(Long creatorId) {
+        return privateSiteMapper.selectPrivateSiteByCreatorId(creatorId);
+    }
+
+    @Override
+    public PrivateSite selectPrivateSiteById(Long privateSiteId) {
+        return privateSiteMapper.selectPrivateSiteById(privateSiteId);
+    }
+
+    @Override
     public List<SiteType> selectAllSiteType() {
         return siteTypeMapper.selectAllSiteType();
     }
