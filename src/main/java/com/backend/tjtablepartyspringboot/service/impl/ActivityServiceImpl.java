@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 /**
  * @Author: 杨严
@@ -106,7 +107,7 @@ public class ActivityServiceImpl implements ActivityService {
         detailMap.put("endTime",endTime);
         detailMap.put("endTimeLabel",activityTimeFormate(endTime));
 
-        //end time
+        //create time
         Date createTime=act.getCreateTime();
         detailMap.put("createTime",createTime);
         detailMap.put("createTimeLabel",activityTimeFormate(createTime));
@@ -210,6 +211,58 @@ public class ActivityServiceImpl implements ActivityService {
 
 
     @Override
+    public List<Map<String,Object>>getActivityWishGame(String wishGame){
+        List<Map<String,Object>> list=new ArrayList<>();
+        //获取该活动对应的所有trpg的id
+        List<String> wishGameIdList=List.of(wishGame.split("#"));
+        wishGameIdList.stream().filter(ele->!ele.equals("")).collect(Collectors.toList());
+
+
+        for (String trpgId:wishGameIdList){
+            //根据trpg id，分为public与private
+            //分别获取trpg信息
+            Map<String,Object>trpgData=new HashMap<>();
+            if (trpgId.charAt(0)=='A'){
+                TrpgPrivate trpg=trpgService.getDetail_private(trpgId);
+
+                trpgData.put("trpgId",trpg.getTrpgId());
+                trpgData.put("poster",trpg.getPoster());
+                trpgData.put("titleName",trpg.getTitleName());
+                trpgData.put("picures", StringUtil.splitStringToList(trpg.getPictures()," "));
+                trpgData.put("genre",StringUtil.splitStringToList(trpg.getGenre(),"#"));
+                trpgData.put("supportNum",StringUtil.splitStringToList(trpg.getSupportNum(),"#"));
+                trpgData.put("recommendNum",StringUtil.splitStringToList(trpg.getRecommendNum(),"#"));
+                trpgData.put("averageDuration",trpg.getAverageDuration());
+                trpgData.put("difficulty",trpg.getDifficulty());
+                trpgData.put("languageRequirement",trpg.getLanguageRequirement());
+                trpgData.put("gameMode",trpg.getGameMode());
+
+            }else{
+                TrpgPublic trpg=trpgService.getDetail_public(trpgId);
+
+                trpgData.put("trpgId",trpg.getTrpgId());
+                trpgData.put("poster",trpg.getPoster());
+                trpgData.put("titleName",trpg.getTitleName());
+                trpgData.put("picures", StringUtil.splitStringToList(trpg.getPictures()," "));
+                trpgData.put("genre",StringUtil.splitStringToList(trpg.getGenre(),"#"));
+                trpgData.put("supportNum",StringUtil.splitStringToList(trpg.getSupportNum(),"#"));
+                trpgData.put("recommendNum",StringUtil.splitStringToList(trpg.getRecommendNum(),"#"));
+                trpgData.put("averageDuration",trpg.getAverageDuration());
+                trpgData.put("difficulty",trpg.getDifficulty());
+                trpgData.put("languageRequirement",trpg.getLanguageRequirement());
+                trpgData.put("gameMode",trpg.getGameMode());
+
+            }
+            list.add(trpgData);
+
+        }
+
+
+
+        return list;
+    }
+
+    @Override
     public List<UserInterestActivity> getUserInterestActivityList(Long activityId){
         QueryWrapper<UserInterestActivity>qw=new QueryWrapper<>();
         qw.eq("activity_id",activityId);
@@ -228,6 +281,9 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     public static String activityTimeFormate(Date date){
+        if (date==null){
+            return "";
+        }
         String str="";
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);					//放入Date类型数据
@@ -266,6 +322,7 @@ public class ActivityServiceImpl implements ActivityService {
         actList=activityMapper.selectList(qw);
 
         //filter筛选
+
 
         //sort排序
 
@@ -419,7 +476,7 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Map<String,Object> addActivity(Activity activity){
+    public Map<String,Object> addActivity(Activity activity,String wishGame){
         Map<String,Object> resultMap=new HashMap<>();
         //补全信息
         Integer nowPeople=1;
@@ -431,6 +488,18 @@ public class ActivityServiceImpl implements ActivityService {
         //insert
         activityMapper.insert(activity);
         resultMap.put("id",activity.getActivityId());
+
+        //联系trpg
+        List<String> trpgIdList=List.of(wishGame.split(","));
+        trpgIdList=trpgIdList.stream().filter(ele->!ele.equals("")).collect(Collectors.toList());
+
+        Long activityId=activity.getActivityId();
+        for (String trpgId:trpgIdList){
+            ActivityHasTrpg activityHasTrpg=new ActivityHasTrpg(activityId,trpgId);
+            activityHasTrpgMapper.insert(activityHasTrpg);
+        }
+
+
         return resultMap;
     }
 

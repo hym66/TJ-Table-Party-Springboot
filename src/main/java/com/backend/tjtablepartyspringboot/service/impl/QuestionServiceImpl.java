@@ -40,6 +40,9 @@ public class QuestionServiceImpl implements QuestionService {
     UserService userService;
 
     public static String questionTimeFormate(Date date){
+        if (date==null){
+            return "";
+        }
         String str="";
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);					//放入Date类型数据

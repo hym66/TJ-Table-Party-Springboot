@@ -6,11 +6,13 @@ import com.backend.tjtablepartyspringboot.entity.TrpgPrivate;
 import com.backend.tjtablepartyspringboot.entity.TrpgPublic;
 import com.backend.tjtablepartyspringboot.service.ClubService;
 import com.backend.tjtablepartyspringboot.service.TrpgService;
+import com.backend.tjtablepartyspringboot.util.FileUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -116,6 +118,28 @@ public class TrpgController {
 
     }
 
+    @ApiOperation("输入userId，返回该user所有的private trpg 简要信息")
+    @GetMapping("/getPrivateTrpgByUserId")
+    public Result<Map<String,Object>>getPrivateTrpgByUserId(
+            @ApiParam(name = "userId", value = "用户id", required = true)
+            @RequestParam("userId") Long userId
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            resultMap=trpgService.getPrivateTrpgByUserId(userId);
+
+
+
+
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+
+    }
+
+
 
     /**
      * 输入string标题关键词，返回标题相似的trpg的名字列表
@@ -196,6 +220,47 @@ public class TrpgController {
             return Result.fail(0,e.getMessage());
         }
 
+    }
+
+
+
+    @ApiOperation("新建一个private trpg")
+    @PostMapping("/postTrpgPrivate")
+    public Result<Map<String,Object>>getByActivityId(
+            @ApiParam(name = "trpgPrivate", value = "trpg private", required = true)
+            @RequestBody(required = true) TrpgPrivate trpgPrivate
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            resultMap=trpgService.addTrpgPrivate(trpgPrivate);
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+
+    }
+
+
+    @ApiOperation("提交trpg海报")
+    @PostMapping("/postPoster")
+    public Result<Map<String,Object>>postPoster(
+            @RequestParam("file") MultipartFile multipartFile,
+            @RequestParam("trpgId") String trpgId
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+//        System.out.println(multipartFile);
+
+        try
+        {
+            String url = FileUtil.uploadFile("/trpg/poster/"+trpgId.toString()+"/", multipartFile);
+            Map<String,Object> map1=trpgService.updatePoster(url,trpgId);
+            resultMap.put("url",url);
+            resultMap.put("update",map1);
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
     }
 
 }

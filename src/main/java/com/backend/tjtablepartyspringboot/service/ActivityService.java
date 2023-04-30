@@ -35,6 +35,9 @@ public interface ActivityService {
     Activity getEntityByActivityId(Long activityId);
 
 
+
+    List<Map<String,Object>>getActivityWishGame(String wishGame);
+
     /**
      * 根据activity id，获取activity detail的所有相关数据
      */
@@ -83,7 +86,7 @@ public interface ActivityService {
     /**
      * 新建一个activity，输入是一个不完整的activity，自动补全信息
      */
-    Map<String,Object> addActivity(Activity activity);
+    Map<String,Object> addActivity(Activity activity,String wishGame);
 
 
     String toStateLabel(String state);

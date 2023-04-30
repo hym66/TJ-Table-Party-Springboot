@@ -2,12 +2,15 @@ package com.backend.tjtablepartyspringboot.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.backend.tjtablepartyspringboot.entity.Activity;
 import com.backend.tjtablepartyspringboot.entity.TrpgPrivate;
 import com.backend.tjtablepartyspringboot.entity.TrpgPublic;
 import com.backend.tjtablepartyspringboot.mapper.TrpgPrivateMapper;
 import com.backend.tjtablepartyspringboot.mapper.TrpgPublicMapper;
 import com.backend.tjtablepartyspringboot.service.TrpgService;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -309,6 +312,19 @@ public class TrpgServiceImpl implements TrpgService {
 
 
     @Override
+    public Map<String,Object>getPrivateTrpgByUserId(Long userId){
+        Map<String,Object>map=new HashMap<>();
+        List<TrpgPrivate>resultList=new ArrayList<>();
+        QueryWrapper<TrpgPrivate>qw=new QueryWrapper<>();
+        qw.select("trpg_id","title_name","poster","genre","support_num","recommend_num","average_duration")
+                .eq("user_id",userId);
+
+        resultList=trpgPrivateMapper.selectList(qw);
+        map.put("list",resultList);
+        return map;
+    }
+
+    @Override
     public  Map<String,Object>parseTrpgEntity(TrpgPublic trpg){
         Map<String,Object>map=new HashMap<>();
         //trpg id
@@ -396,5 +412,51 @@ public class TrpgServiceImpl implements TrpgService {
 
 
         return map;
+    }
+
+
+    @Override
+    public Map<String,Object>addTrpgPrivate(TrpgPrivate trpg){
+        Map<String,Object>resultMap=new HashMap<>();
+        Integer i=trpgPrivateMapper.insert(trpg);
+        String trpgId=trpg.getTrpgId();
+        //修改id，保证A开头
+        trpgPrivateMapper.update(
+                null,
+                Wrappers.<TrpgPrivate>lambdaUpdate()
+                        .eq(TrpgPrivate::getTrpgId,trpgId)
+                        .set(TrpgPrivate::getTrpgId,"A"+trpgId)
+                );
+        trpgId="A"+trpgId;
+        resultMap.put("i",i);
+        resultMap.put("trpgId",trpgId);
+        return resultMap;
+    }
+
+
+    @Override
+    public Map<String,Object>updatePoster(String posterUrl,String trpgId){
+        Map<String,Object>resultMap=new HashMap<>();
+        Integer i=0;
+        //区分private 和public
+        if (trpgId.charAt(0)=='A'){
+            i = trpgPrivateMapper.update(
+                    null,
+                    Wrappers.<TrpgPrivate>lambdaUpdate()
+                            .eq(TrpgPrivate::getTrpgId,trpgId)
+                            .set(TrpgPrivate::getPoster,posterUrl)
+            );
+        }
+        else {
+            i = trpgPublicMapper.update(
+                    null,
+                    Wrappers.<TrpgPublic>lambdaUpdate()
+                            .eq(TrpgPublic::getTrpgId,trpgId)
+                            .set(TrpgPublic::getPoster,posterUrl)
+            );
+        }
+        resultMap.put("i",i);
+
+        return resultMap;
     }
 }

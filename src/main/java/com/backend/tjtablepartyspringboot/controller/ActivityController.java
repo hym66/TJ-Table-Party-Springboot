@@ -221,12 +221,14 @@ public class ActivityController {
     @PostMapping("/postActivity")
     public Result<Map<String,Object>> postActivity(
             @ApiParam(name = "activity", value = "activity entity", required = true)
-            @RequestBody(required = true) Activity activity
+            @RequestBody(required = true) Activity activity,
+            @ApiParam(name = "wishGame", value = "wishGame", required = true)
+            @RequestParam(name = "wishGame",required = false) String wishGame
     ){
         Map<String,Object>resultMap=new HashMap<>();
         try
         {
-            resultMap=activityService.addActivity(activity);
+            resultMap=activityService.addActivity(activity,wishGame);
             return Result.success(resultMap);
         }catch (Exception e){
             return Result.fail(0,e.getMessage());
