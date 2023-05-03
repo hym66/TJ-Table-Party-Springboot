@@ -2,6 +2,7 @@ package com.backend.tjtablepartyspringboot.controller;
 
 import com.backend.tjtablepartyspringboot.common.Result;
 import com.backend.tjtablepartyspringboot.dto.*;
+import com.backend.tjtablepartyspringboot.entity.Activity;
 import com.backend.tjtablepartyspringboot.entity.Announce;
 import com.backend.tjtablepartyspringboot.entity.Club;
 import com.backend.tjtablepartyspringboot.entity.Report;
@@ -29,6 +30,15 @@ public class ClubController {
     {
         ClubInfoDetailDto clubDetail = clubService.selectClubInfo(clubId);
         return Result.success(clubDetail);
+    }
+
+    @ApiOperation("根据俱乐部id，返回俱乐部所有当前正在进行的活动")
+    @GetMapping("getClubCurrentActivities")
+    public Result<List<Activity>> getClubCurrentActivities(@ApiParam(name="clubId", value="俱乐部id", required = true)
+                                                 @RequestParam("clubId") Long clubId)
+    {
+        List<Activity> activityList = clubService.selectCurrentActivities(clubId);
+        return Result.success(activityList);
     }
 
     @ApiOperation("根据俱乐部id，返回俱所有俱乐部成员")
@@ -100,6 +110,48 @@ public class ClubController {
     {
         List<ClubSimpleDto> clubInfoDetailDtoList = clubService.getUserClubSimpleDtos(userId);
         return Result.success(clubInfoDetailDtoList);
+    }
+
+    @ApiOperation("添加俱乐部游戏")
+    @PostMapping("addClubTrpg")
+    public Result<String> addClubTrpg(@ApiParam(name="clubId", value="俱乐部id", required = true)
+                                       @RequestParam("clubId") Long clubId,
+                                       @ApiParam(name="trpgId", value="桌游id", required = true)
+                                       @RequestParam("trpgId") Long trpgId)
+
+    {
+        int res = clubService.addClubTrpg(clubId, trpgId);
+        if(res > 0){
+            return Result.success("添加俱乐部游戏成功！");
+        }
+        else{
+            return Result.fail(500,"添加失败，请检查");
+        }
+    }
+
+    @ApiOperation("删除俱乐部游戏")
+    @DeleteMapping("removeClubTrpg")
+    public Result<String> getUserClubs(@ApiParam(name="clubId", value="俱乐部id", required = true)
+                                                    @RequestParam("clubId") Long clubId,
+                                                    @ApiParam(name="trpgId", value="桌游id", required = true)
+                                                    @RequestParam("trpgId") Long trpgId)
+
+    {
+        int res = clubService.removeClubTrpg(clubId, trpgId);
+        if(res > 0){
+            return Result.success("删除俱乐部游戏成功！");
+        }
+        else{
+            return Result.fail(500,"删除失败，请检查");
+        }
+    }
+
+    @ApiOperation("修改俱乐部基本信息")
+    @PostMapping("putClubInfo")
+    public Result<String> putClubInfo(@RequestBody Club club)
+    {
+        int res = clubService.patchClub(club);
+        return Result.success("更新俱乐部信息成功！");
     }
 
 

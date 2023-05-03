@@ -15,6 +15,6 @@ public interface ActivityMapper extends BaseMapper<Activity> {
     List<Activity> selectPastByClubId(@Param("clubId") Long clubId);
 
     //根据俱乐部id，查出还没结束的俱乐部活动
-    @Select("SELECT * FROM acticity WHERE club_id=#{clubId} AND NOW() <= start_time")
+    @Select("SELECT * FROM activity WHERE club_id=#{clubId} AND (NOW() <= end_time OR ISNULL(end_time))")
     List<Activity> selectCurrentByClubId(@Param("clubId") Long clubId);
 }
