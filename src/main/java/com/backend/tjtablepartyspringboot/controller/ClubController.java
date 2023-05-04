@@ -102,5 +102,39 @@ public class ClubController {
         return Result.success(clubInfoDetailDtoList);
     }
 
+    @ApiOperation("俱乐部添加一名用户")
+    @PostMapping("addUser")
+    public Result<String> addUser(@ApiParam(name="clubId", value="俱乐部id", required = true)
+                                                   @RequestParam("clubId") Long clubId,
+                                               @ApiParam(name="userId", value="用户id", required = true)
+                                                    @RequestParam("userId") Long userId)
+
+    {
+        int res = clubService.addUser(clubId, userId);
+        if(res > 0){
+            return Result.success("添加成功！");
+        }
+        else{
+            return Result.fail(500, "添加失败，请检查！");
+        }
+    }
+
+    @ApiOperation("俱乐部删除一名用户")
+    @DeleteMapping("removeUser")
+    public Result<String> removeUser(@ApiParam(name="clubId", value="俱乐部id", required = true)
+                                  @RequestParam("clubId") Long clubId,
+                                  @ApiParam(name="userId", value="用户id", required = true)
+                                  @RequestParam("userId") Long userId)
+
+    {
+        int res = clubService.removeUser(clubId, userId);
+        if(res > 0){
+            return Result.success("删除成功！");
+        }
+        else{
+            return Result.fail(500, "删除失败，请检查！");
+        }
+    }
+
 
 }

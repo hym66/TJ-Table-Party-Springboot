@@ -15,4 +15,8 @@ public interface ReportMapper extends BaseMapper<Report> {
     //查找所有未审核的举报单
     @Select("SELECT * FROM report WHERE ISNULL(check_time)")
     List<Report> selectUnchecked();
+
+    //查找未审核的举报单数目
+    @Select("SELECT COUNT(*) FROM report WHERE ISNULL(check_time)")
+    Integer selectUncheckedCount();
 }

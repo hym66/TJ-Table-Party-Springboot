@@ -167,4 +167,17 @@ public class ClubServiceImpl implements ClubService {
         }
         return clubSimpleDtoList;
     }
+
+    @Override
+    public int addUser(Long clubId, Long userId) {
+        ClubUser clubUser = new ClubUser(clubId, userId);
+        int res = clubUserMapper.insert(clubUser);
+        return res;
+    }
+
+    @Override
+    public int removeUser(Long clubId, Long userId) {
+        int res = clubUserMapper.deleteUser(clubId, userId);
+        return res;
+    }
 }

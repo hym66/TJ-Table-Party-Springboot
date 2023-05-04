@@ -17,4 +17,6 @@ public interface ClubService {
     List<ClubAnnounceDto> getClubAnnounceDtos(Long clubId);
     List<ClubSimpleDto> getCityClubSimpleDtos(String city, float longitude, float latitude);
     List<ClubSimpleDto> getUserClubSimpleDtos(Long userId);
+    int addUser(Long clubId, Long userId);
+    int removeUser(Long clubId, Long userId);
 }

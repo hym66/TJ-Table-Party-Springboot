@@ -14,4 +14,7 @@ public interface ApplicationMapper extends BaseMapper<PublicSite> {
     @Select("SELECT * FROM public_site WHERE ISNULL(check_time)")
     List<PublicSite> selectUnchecked();
 
+    //查找未审核的申请单数目
+    @Select("SELECT COUNT(*) FROM public_site WHERE ISNULL(check_time)")
+    Integer selectUncheckedCount();
 }
