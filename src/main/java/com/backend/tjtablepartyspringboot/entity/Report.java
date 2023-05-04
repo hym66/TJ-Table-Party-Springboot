@@ -39,6 +39,7 @@ public class Report implements Comparable{
     Date checkTime;
     Byte isPassed;
     String description;
+    Long adminId;
 
     public Report(ReportDto reportDto){
         if(reportDto == null){

@@ -176,6 +176,13 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
+    public int addUser(Long clubId, Long userId) {
+        ClubUser clubUser = new ClubUser(clubId, userId);
+        int res = clubUserMapper.insert(clubUser);
+        return res;
+    }
+
+    @Override
     public int addClubTrpg(Long clubId, Long trpgId) {
         int res = clubMapper.addClubTrpg(clubId, trpgId);
         return res;
@@ -190,6 +197,12 @@ public class ClubServiceImpl implements ClubService {
     @Override
     public int patchClub(Club club) {
         int res = clubMapper.updateById(club);
+        return res;
+    }
+
+    @Override
+    public int removeUser(Long clubId, Long userId) {
+        int res = clubUserMapper.deleteUser(clubId, userId);
         return res;
     }
 }

@@ -22,4 +22,6 @@ public interface ClubService {
     int addClubTrpg(Long clubId, Long trpgId);
     List<Activity> selectCurrentActivities(Long clubId);
     int patchClub(Club club);
+    int addUser(Long clubId, Long userId);
+    int removeUser(Long clubId, Long userId);
 }
