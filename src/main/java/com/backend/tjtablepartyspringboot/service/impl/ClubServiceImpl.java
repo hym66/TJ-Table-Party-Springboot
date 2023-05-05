@@ -177,7 +177,8 @@ public class ClubServiceImpl implements ClubService {
 
     @Override
     public int addUser(Long clubId, Long userId) {
-        ClubUser clubUser = new ClubUser(clubId, userId);
+        ClubUser clubUser = new ClubUser(userId, clubId);
+        System.out.println("666"+ clubId+","+ userId);
         int res = clubUserMapper.insert(clubUser);
         return res;
     }
