@@ -15,6 +15,7 @@ import com.qcloud.cos.model.PutObjectResult;
 import com.qcloud.cos.model.StorageClass;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
@@ -23,9 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Api(tags = {"Report"})
 @RestController
@@ -82,5 +82,34 @@ public class ReportController {
     {
         ReportDto reportDto = reportService.selectReportDtoByReportId(reportId);
         return Result.success(reportDto);
+    }
+
+    @ApiOperation("获取所有未审核的举报单")
+    @GetMapping("getUncheckedReports")
+    public Result<List<ReportDto>> getUncheckedReports()
+    {
+        List<ReportDto> reportDtoList = reportService.selectUnchecked();
+
+        //按时间升序
+        reportDtoList.stream().sorted().collect(Collectors.toList());
+        return Result.success(reportDtoList);
+    }
+
+    @ApiOperation("审核举报单")
+    @GetMapping("checkReport")
+    public Result<String> checkReport(@ApiParam(name="reportId", value="举报单id", required = true)
+                                   @RequestParam("reportId") Long reportId,
+                                   @ApiParam(name="agree", value="是否同意该场地入驻", required = true)
+                                   @RequestParam("agree") Boolean agree,
+                                   @ApiParam(name="adminId", value="审核的管理员id", required = true)
+                                   @RequestParam("adminId") Long adminId)
+    {
+        int res = reportService.checkReport(reportId, agree, adminId);
+        if(res > 0){
+            return Result.success("审核保存成功！");
+        }
+        else{
+            return Result.fail(500,"审核失败！检查后端");
+        }
     }
 }

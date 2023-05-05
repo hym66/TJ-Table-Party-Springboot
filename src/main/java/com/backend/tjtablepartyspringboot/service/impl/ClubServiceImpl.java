@@ -9,6 +9,7 @@ import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.accessibility.AccessibleIcon;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -166,5 +167,42 @@ public class ClubServiceImpl implements ClubService {
             clubSimpleDtoList.add(dto);
         }
         return clubSimpleDtoList;
+    }
+
+    @Override
+    public int removeClubTrpg(Long clubId, Long trpgId) {
+        int res = clubMapper.deleteClubTrpg(clubId, trpgId);
+        return res;
+    }
+
+    @Override
+    public int addUser(Long clubId, Long userId) {
+        ClubUser clubUser = new ClubUser(clubId, userId);
+        int res = clubUserMapper.insert(clubUser);
+        return res;
+    }
+
+    @Override
+    public int addClubTrpg(Long clubId, Long trpgId) {
+        int res = clubMapper.addClubTrpg(clubId, trpgId);
+        return res;
+    }
+
+    @Override
+    public List<Activity> selectCurrentActivities(Long clubId) {
+        List<Activity> activityList = activityMapper.selectCurrentByClubId(clubId);
+        return activityList;
+    }
+
+    @Override
+    public int patchClub(Club club) {
+        int res = clubMapper.updateById(club);
+        return res;
+    }
+
+    @Override
+    public int removeUser(Long clubId, Long userId) {
+        int res = clubUserMapper.deleteUser(clubId, userId);
+        return res;
     }
 }

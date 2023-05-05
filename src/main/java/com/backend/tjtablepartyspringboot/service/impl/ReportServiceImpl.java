@@ -7,6 +7,10 @@ import com.backend.tjtablepartyspringboot.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class ReportServiceImpl implements ReportService {
     @Autowired
@@ -37,6 +41,24 @@ public class ReportServiceImpl implements ReportService {
     public int updateReport(Report report) {
         reportMapper.updateById(report);
         return 0;
+    }
+
+    @Override
+    public List<ReportDto> selectUnchecked() {
+        List<Report> reportList = reportMapper.selectUnchecked();
+        List<ReportDto> dtoList = reportList.stream().map(report -> new ReportDto(report)).collect(Collectors.toList());
+        return dtoList;
+    }
+
+    @Override
+    public int checkReport(Long reportId, Boolean agree, Long adminId) {
+        Report report = reportMapper.selectByReportId(reportId);
+        Byte isPassed = agree ? Byte.valueOf("1") : Byte.valueOf("0");
+        report.setIsPassed(isPassed);
+        report.setCheckTime(new Date());
+        report.setAdminId(adminId);
+        int res = reportMapper.updateById(report);
+        return res;
     }
 
 
