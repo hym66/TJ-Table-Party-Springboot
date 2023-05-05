@@ -210,8 +210,18 @@ public class TrpgController {
         resultMap.put("key",key);
         try
         {
+            //组装filter数据
             Map<String,String>filterData=new HashMap<>();
+            filterData.put("filter_supportPeople",filter_supportPeople);
+            filterData.put("filter_recommendPeople",filter_recommendPeople);
+            filterData.put("filter_genre",filter_genre);
+            filterData.put("filter_difficulty",filter_difficulty);
+
+            //组装排序数据
             Map<String,String>sortData=new HashMap<>();
+            sortData.put("sort_titleName",sort_titleName);
+            sortData.put("sort_publishYear",sort_publishYear);
+
             resultMap=trpgService.search(key,filterData,sortData,pageSize,pageNo);
 
 
@@ -261,6 +271,25 @@ public class TrpgController {
         }catch (Exception e){
             return Result.fail(0,e.getMessage());
         }
+    }
+
+
+    @ApiOperation("删除一个私人trpg")
+    @DeleteMapping("/deletePrivateTrpg")
+    public Result<Map<String,Object>>deletePrivateTrpg(
+            @ApiParam(name = "trpgId", value = "private trpg id", required = true)
+            @RequestParam(name ="trpgId",required = true) String trpgId
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            Integer i= trpgService.deleteTrpgPrivate(trpgId);
+            resultMap.put("i",i);
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+
     }
 
 }

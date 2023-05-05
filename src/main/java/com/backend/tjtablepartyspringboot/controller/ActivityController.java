@@ -67,12 +67,14 @@ public class ActivityController {
     @GetMapping("/getDetail")
     public Result<Map<String,Object>>getDetail(
             @ApiParam(name = "activityId", value = "活动id", required = true)
-            @RequestParam("activityId") Long activityId
+            @RequestParam("activityId") Long activityId,
+            @ApiParam(name = "userId", value = "用户id", required = true)
+            @RequestParam("userId") Long userId
     ){
         Map<String,Object>resultMap=new HashMap<>();
         try
         {
-            resultMap=activityService.getDetail(activityId);
+            resultMap=activityService.getDetail(activityId,userId);
             return Result.success(resultMap);
         }catch (Exception e){
             return Result.fail(0,e.getMessage());
@@ -149,6 +151,17 @@ public class ActivityController {
     @ApiOperation("输入 筛选参数、排序参数，分页返回list")
     @GetMapping("/getList")
     public Result<Map<String,Object>> getList(
+            @ApiParam(name = "key", value = "关键词搜索", required = false)
+            @RequestParam(name = "key",required = false,defaultValue = "") String key,
+
+            @ApiParam(name = "startDate", value = "开始时间", required = false)
+            @RequestParam(name = "startDate",required = false,defaultValue = "") String startDate,
+            @ApiParam(name = "endDate", value = "结束时间", required = false)
+            @RequestParam(name = "endDate",required = false,defaultValue = "") String endDate,
+
+
+
+
             @ApiParam(name = "pageSize", value = " 单页容量", required = false)
             @RequestParam(name = "pageSize",required = false,defaultValue = "10") Integer pageSize,
             @ApiParam(name = "pageNo", value = "要求第几页", required = false)
@@ -158,9 +171,11 @@ public class ActivityController {
         try
         {
             Map<String,String>filterData=new HashMap<>();
+            filterData.put("startDate",startDate);
+            filterData.put("endDate",endDate);
             Map<String,String>sortData=new HashMap<>();
 
-            Map<String,Object>actList=activityService.getList(filterData,sortData,pageSize,pageNo);
+            Map<String,Object>actList=activityService.getList(key,filterData,sortData,pageSize,pageNo);
 
             resultMap.put("list",actList);
 

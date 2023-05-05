@@ -13,6 +13,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
@@ -85,7 +86,7 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Map<String,Object>getDetail(Long activityId){
+    public Map<String,Object>getDetail(Long activityId,Long userId){
         Map<String,Object>detailMap=new HashMap<>();
         //activity 实体
         QueryWrapper<Activity> qw_act=new QueryWrapper<>();
@@ -97,6 +98,9 @@ public class ActivityServiceImpl implements ActivityService {
         detailMap.put("fee",act.getFee());
         detailMap.put("maxPeople",act.getMaxPeople());
         detailMap.put("minPeople",act.getMinPeople());
+
+
+
         //start time
         Date startTime=act.getStartTime();
         detailMap.put("startTime",startTime);
@@ -139,12 +143,47 @@ public class ActivityServiceImpl implements ActivityService {
 
         //创建者的信息
         Map<String,Object>userData=new HashMap<>();
-        Long userId=act.getUserId();
-        UserDto userDto =userService.getNameAndAvatarUrl(userId);
-        userData.put("id",userId);
-        userData.put("avatar",userDto.getAvatarUrl());
-        userData.put("name",userDto.getNickName());
+        Long creatorId=act.getUserId();
+        UserDto creatorDto =userService.getNameAndAvatarUrl(creatorId);
+        userData.put("id",creatorId);
+        userData.put("avatar",creatorDto.getAvatarUrl());
+        userData.put("name",creatorDto.getNickName());
         detailMap.put("creatorInfo",userData);
+
+
+        //请求信息的user，对于这个活动是什么role身份
+        List<String>roles=new ArrayList<>();
+        //interest
+        QueryWrapper<UserInterestActivity>qw_insterest=new QueryWrapper<>();
+        qw_insterest.eq("activity_id",activityId).eq("user_id",userId);
+        UserInterestActivity interestAct=userInterestActivityMapper.selectOne(qw_insterest);
+        //join
+        QueryWrapper<UserJoinActivity>qw_join=new QueryWrapper<>();
+        qw_join.eq("activity_id",activityId).eq("user_id",userId);
+        UserJoinActivity joinAct=userJoinActivityMapper.selectOne(qw_join);
+
+        //passer
+
+        if(userId==creatorId){
+            roles.add("creator");
+        }
+        if (interestAct!=null){
+            roles.add("interest");
+
+        }
+        if (joinAct!=null) {
+            roles.add("participator");
+
+        }
+        if (roles.size()==0){
+            roles.add("passer");
+
+        }
+
+        detailMap.put("roles",roles);
+        detailMap.put("userId",userId);
+
+
 
 
         //联系club 表
@@ -314,9 +353,36 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Map<String,Object> getList(Map<String,String>filterData,
+    public Map<String,Object> getList(String key,Map<String,String>filterData,
                                             Map<String,String>sortData,
                                             Integer pageSize,Integer pageNo){
+        //解析filter数据
+
+        //date数据解析成date型
+        String startDate_str=filterData.get("startDate");
+        String endDate_str=filterData.get("endDate");
+        Date startDate=null;
+        Date endDate=null;
+
+
+        try {
+            //把字符串类型的时间转换为sql类型的时间 parse(需要转换的字符串)
+            //因为parse(可能值为空所以需要 try catch 块)
+            startDate= new Date(new SimpleDateFormat("yyyy-MM-dd").parse(startDate_str).getTime());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            endDate= new Date(new SimpleDateFormat("yyyy-MM-dd").parse(endDate_str).getTime());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        final Date _startDate=startDate;
+        final Date _endDate=endDate;
+
 
 
         Map<String,Object>map=new HashMap<>();
@@ -328,7 +394,27 @@ public class ActivityServiceImpl implements ActivityService {
                 "user_id","site_id","fee","max_people","now_people","state");
         actList=activityMapper.selectList(qw);
 
+        //key关键词匹配
+        final String _key=key.toLowerCase(Locale.ROOT);
+        actList=actList.stream().filter(t->t.getTitle().toLowerCase().contains(_key)).collect(Collectors.toList());
+
+
         //filter筛选
+        //日期筛选
+        if (_startDate!=null){
+            actList=actList.stream().filter(t->
+                            t.getStartTime()!=null&&
+                                    t.getStartTime().after(_startDate)
+                    ).collect(Collectors.toList());
+
+        }
+        if (_endDate!=null){
+            actList=actList.stream().filter(t->
+                    t.getStartTime()!=null&&
+                            t.getStartTime().before(_endDate)
+            ).collect(Collectors.toList());
+
+        }
 
 
         //sort排序
@@ -524,6 +610,12 @@ public class ActivityServiceImpl implements ActivityService {
         qw.eq("activity_id",activityId);
         Integer i= activityMapper.delete(qw);
         resultMap.put("i",i);
+        if (i.equals(1)){
+            //删除activity has trpg
+            QueryWrapper<ActivityHasTrpg>qw_2=new QueryWrapper<>();
+            qw_2.eq("activity_id",activityId);
+            activityHasTrpgMapper.delete(qw_2);
+        }
 
         return resultMap;
     }
@@ -659,4 +751,8 @@ public class ActivityServiceImpl implements ActivityService {
         i=userJoinActivityMapper.delete(qw);
         return i;
     }
+
+
+
+
 }

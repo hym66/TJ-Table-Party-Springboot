@@ -41,16 +41,10 @@ public interface ActivityService {
     /**
      * 根据activity id，获取activity detail的所有相关数据
      */
-    Map<String,Object>getDetail(Long activityId);
+    Map<String,Object>getDetail(Long activityId,Long userId);
 
 
-    /**
-     * 输入 筛选参数、排序参数，分页返回activity list
-     *
-     */
-    Map<String,Object> getList(Map<String,String>filterData,
-                                     Map<String,String>sortData,
-                                     Integer pageSize,Integer pageNo);
+
 
     /**
      * 输入user id，返回该user的所有活动
@@ -125,4 +119,17 @@ public interface ActivityService {
      * 删除一个user 参与活动
      */
     Integer deleteUserJoin(Long activityId,Long userId);
+
+
+    /**
+     * 输入 筛选参数、排序参数，分页返回activity list
+     *
+     */
+    Map<String,Object> getList(String key,Map<String,String>filterData,
+                               Map<String,String>sortData,
+                               Integer pageSize,Integer pageNo);
+
+
+
+
 }

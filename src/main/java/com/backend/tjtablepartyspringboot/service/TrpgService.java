@@ -61,6 +61,12 @@ public interface TrpgService {
     Map<String,Object>addTrpgPrivate(TrpgPrivate trpg);
 
     /**
+     * 输入trpg id，删除这个私人 trpg
+     */
+    Integer deleteTrpgPrivate(String trpgId);
+
+
+    /**
      * 输入userId，返回该user所有的private trpg 简要信息
      */
     Map<String,Object>getPrivateTrpgByUserId(Long userId);
