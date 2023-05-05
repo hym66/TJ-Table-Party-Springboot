@@ -63,8 +63,11 @@ public class ClubController {
     @PostMapping("postOneNewClub")
     public Result<Long> postOneNewClub(@RequestBody Club club)
     {
-        Long newID = clubService.insertOneNewClub(club);
-        return Result.success(newID);
+        //todo:多个CRUD回滚事务
+        int res = Math.toIntExact(clubService.insertOneNewClub(club));
+        //向club_user表中插入部长与俱乐部的联系
+        res = clubService.addUser(club.getClubId(), club.getManagerId());
+        return Result.success(1L);
     }
 
     @ApiOperation("给俱乐部添加一条公告")
