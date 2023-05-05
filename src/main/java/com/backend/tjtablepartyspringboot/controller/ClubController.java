@@ -7,6 +7,7 @@ import com.backend.tjtablepartyspringboot.entity.Announce;
 import com.backend.tjtablepartyspringboot.entity.Club;
 import com.backend.tjtablepartyspringboot.entity.Report;
 import com.backend.tjtablepartyspringboot.service.ClubService;
+import com.backend.tjtablepartyspringboot.util.GeoUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -15,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Api(tags = {"Club"})
 @RestController
@@ -189,6 +192,47 @@ public class ClubController {
         else{
             return Result.fail(500, "删除失败，请检查！");
         }
+    }
+
+    @ApiOperation("俱乐部条件筛选")
+    @GetMapping("getConditionClubs")
+    public Result<List<ClubSimpleDto>> getConditionClubs(@ApiParam(name="keyword", value="关键词", required = true)
+                                        @RequestParam("keyword") String keyword,
+                                     @ApiParam(name="city", value="城市", required = true)
+                                        @RequestParam("city") String city,
+                                     @ApiParam(name="capacitySet", value="容量列表", required = true)
+                                         @RequestParam("capacitySet") Set<Integer> capacitySet,
+                                     @ApiParam(name="minDistance", value="最小距离", required = true)
+                                         @RequestParam("minDistance") Float minDistance,
+                                     @ApiParam(name="maxDistance", value="最大距离", required = true)
+                                         @RequestParam("maxDistance") Float maxDistance,
+                                      @ApiParam(name="longitude", value="基准经度", required = true)
+                                        @RequestParam("longitude") Float longitude,
+                                      @ApiParam(name="latitude", value="基准纬度", required = true)
+                                           @RequestParam("latitude") Float latitude)
+    {
+        //1.关键词筛选
+        List<ClubSimpleDto> clubList = clubService.selectByKeyword(keyword);
+
+        //2.容量筛选
+        clubList = clubList.stream()
+                .filter((ClubSimpleDto c) -> capacitySet.contains(c.getCapacity()))
+                .collect(Collectors.toList());
+
+        //3.距离筛选
+        clubList = clubList.stream()
+                .filter((ClubSimpleDto c) -> {
+                    float dis = GeoUtil.getDistance(longitude, latitude, c.getLongtitude(), c.getLatitude());
+                    if(dis >= minDistance && dis <= maxDistance){
+                        return true;
+                    }
+                    else{
+                        return false;
+                    }
+                })
+                .collect(Collectors.toList());
+
+        return Result.success(clubList);
     }
 
 

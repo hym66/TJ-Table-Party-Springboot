@@ -24,4 +24,5 @@ public interface ClubService {
     int patchClub(Club club);
     int addUser(Long clubId, Long userId);
     int removeUser(Long clubId, Long userId);
+    List<ClubSimpleDto> selectByKeyword(String keyword);
 }
