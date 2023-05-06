@@ -6,7 +6,9 @@ import com.backend.tjtablepartyspringboot.entity.Activity;
 import com.backend.tjtablepartyspringboot.entity.Announce;
 import com.backend.tjtablepartyspringboot.entity.Club;
 import com.backend.tjtablepartyspringboot.entity.Report;
+import com.backend.tjtablepartyspringboot.mapper.ClubMapper;
 import com.backend.tjtablepartyspringboot.service.ClubService;
+import com.backend.tjtablepartyspringboot.util.FileUtil;
 import com.backend.tjtablepartyspringboot.util.GeoUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -14,8 +16,11 @@ import io.swagger.annotations.ApiParam;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,6 +30,9 @@ import java.util.stream.Collectors;
 public class ClubController {
     @Autowired
     ClubService clubService;
+
+    @Autowired
+    ClubMapper clubMapper;
 
     @ApiOperation("根据俱乐部id，返回俱乐部基本信息")
     @GetMapping("getClubInfo")
@@ -64,13 +72,35 @@ public class ClubController {
 
     @ApiOperation("创建新俱乐部")
     @PostMapping("postOneNewClub")
-    public Result<Long> postOneNewClub(@RequestBody Club club)
+    public Result<Map<String, Long>> postOneNewClub(@RequestBody Club club)
     {
         //todo:多个CRUD回滚事务
         int res = Math.toIntExact(clubService.insertOneNewClub(club));
         //向club_user表中插入部长与俱乐部的联系
         res = clubService.addUser(club.getClubId(), club.getManagerId());
-        return Result.success(1L);
+
+        Long clubId = club.getClubId();
+        Map<String, Long> hashMap = new HashMap<>();
+        hashMap.put("clubId", clubId);
+        return Result.success(hashMap);
+    }
+
+    @ApiOperation("创建新俱乐部时上传海报")
+    @PostMapping("postClubPoster")
+    public Result<String> postClubPoster(@RequestParam("file") MultipartFile multipartFile, @RequestParam("clubId") Long clubId)
+    {
+        Club club = clubMapper.selectById(clubId);
+        String url = FileUtil.uploadFile("/club/"+clubId.toString()+"/", multipartFile);
+
+        club.setPosterUrl(url);
+        int res = clubMapper.updateById(club);
+
+        if(res > 0){
+            return Result.success("插入俱乐部海报成功！");
+        }
+        else{
+            return Result.fail(500, "插入俱乐部海报失败");
+        }
     }
 
     @ApiOperation("给俱乐部添加一条公告")
@@ -183,7 +213,6 @@ public class ClubController {
                                   @RequestParam("clubId") Long clubId,
                                   @ApiParam(name="userId", value="用户id", required = true)
                                   @RequestParam("userId") Long userId)
-
     {
         int res = clubService.removeUser(clubId, userId);
         if(res > 0){
@@ -195,22 +224,17 @@ public class ClubController {
     }
 
     @ApiOperation("俱乐部条件筛选")
-    @GetMapping("getConditionClubs")
-    public Result<List<ClubSimpleDto>> getConditionClubs(@ApiParam(name="keyword", value="关键词", required = true)
-                                        @RequestParam("keyword") String keyword,
-                                     @ApiParam(name="city", value="城市", required = true)
-                                        @RequestParam("city") String city,
-                                     @ApiParam(name="capacitySet", value="容量列表", required = true)
-                                         @RequestParam("capacitySet") Set<Integer> capacitySet,
-                                     @ApiParam(name="minDistance", value="最小距离", required = true)
-                                         @RequestParam("minDistance") Float minDistance,
-                                     @ApiParam(name="maxDistance", value="最大距离", required = true)
-                                         @RequestParam("maxDistance") Float maxDistance,
-                                      @ApiParam(name="longitude", value="基准经度", required = true)
-                                        @RequestParam("longitude") Float longitude,
-                                      @ApiParam(name="latitude", value="基准纬度", required = true)
-                                           @RequestParam("latitude") Float latitude)
+    @PostMapping ("getConditionClubs")
+    public Result<List<ClubSimpleDto>> getConditionClubs(@RequestBody ClubConditionDto clubConditionDto)
     {
+        Set capacitySet = clubConditionDto.getCapacitySet();
+        String city = clubConditionDto.getCity();
+        String keyword = clubConditionDto.getKeyword();
+        Float latitude = clubConditionDto.getLatitude();
+        Float longitude = clubConditionDto.getLongitude();
+        Float maxDistance = clubConditionDto.getMaxDistance();
+        Float minDistance = clubConditionDto.getMinDistance();
+
         //1.关键词筛选
         List<ClubSimpleDto> clubList = clubService.selectByKeyword(keyword);
 
@@ -222,7 +246,7 @@ public class ClubController {
         //3.距离筛选
         clubList = clubList.stream()
                 .filter((ClubSimpleDto c) -> {
-                    float dis = GeoUtil.getDistance(longitude, latitude, c.getLongtitude(), c.getLatitude());
+                    float dis = GeoUtil.getDistance(longitude, latitude, c.getLongitude(), c.getLatitude());
                     if(dis >= minDistance && dis <= maxDistance){
                         return true;
                     }

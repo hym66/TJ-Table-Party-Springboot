@@ -29,6 +29,6 @@ public interface ClubMapper extends BaseMapper<Club> {
     @Delete("DELETE FROM club_trpg WHERE club_id=#{clubId} AND trpg_id=#{trpgId}")
     Integer deleteClubTrpg(@Param("clubId") Long clubId, @Param("trpgId") Long trpgId);
     //关键词搜索
-    @Select("SELECT * FROM club WHERE club_title LIKE #{keyword}")
+    @Select("SELECT * FROM club WHERE club_title LIKE '%${keyword}%'")
     List<Club> selectByKeyword(@Param("keyword") String keyword);
 }
