@@ -2,6 +2,12 @@ package com.backend.tjtablepartyspringboot.util;
 
 public class GeoUtil {
     private static final double EARTH_RADIUS = 6371; // 地球半径，单位km
+
+    /**
+     * Author: hym
+     * Description: 获取地图上两点间距离
+     * return: 两点间距离，单位为km
+     */
     public static float getDistance(float lat1, float lon1, float lat2, float lon2) {
         double radLat1 = Math.toRadians(lat1);
         double radLat2 = Math.toRadians(lat2);
