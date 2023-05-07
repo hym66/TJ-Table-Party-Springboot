@@ -244,17 +244,18 @@ public class ClubController {
                 .collect(Collectors.toList());
 
         //3.距离筛选
-        clubList = clubList.stream()
-                .filter((ClubSimpleDto c) -> {
-                    float dis = GeoUtil.getDistance(longitude, latitude, c.getLongitude(), c.getLatitude());
-                    if(dis >= minDistance && dis <= maxDistance){
-                        return true;
-                    }
-                    else{
-                        return false;
-                    }
-                })
-                .collect(Collectors.toList());
+        if(maxDistance != null || minDistance != null) {
+            clubList = clubList.stream()
+                    .filter((ClubSimpleDto c) -> {
+                        float dis = GeoUtil.getDistance(longitude, latitude, c.getLongitude(), c.getLatitude());
+                        if (dis >= minDistance && dis <= maxDistance) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    })
+                    .collect(Collectors.toList());
+        }
 
         return Result.success(clubList);
     }
