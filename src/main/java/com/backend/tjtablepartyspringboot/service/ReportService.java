@@ -8,7 +8,7 @@ import java.util.List;
 
 @Service
 public interface ReportService {
-    int addReport(ReportDto reportDto);
+    Long addReport(ReportDto reportDto);
     ReportDto selectReportDtoByReportId(Long reportId);
     Report selectReportByReportId(Long reportId);
     int updateReport(Report report);

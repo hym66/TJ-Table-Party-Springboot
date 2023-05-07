@@ -26,6 +26,8 @@ public class ClubSimpleDto {
     Long managerId;
     String managerAvatar;
     String managerName;
+    float longitude;
+    float latitude;
 
     public ClubSimpleDto(Club club, int currentPersons, String managerName, String managerAvatar){
         this.clubId = club.getClubId();
@@ -39,5 +41,7 @@ public class ClubSimpleDto {
         this.managerId = club.getManagerId();
         this.managerAvatar = managerAvatar;
         this.managerName = managerName;
+        this.longitude = club.getLongitude();
+        this.latitude = club.getLatitude();
     }
 }

@@ -206,4 +206,22 @@ public class ClubServiceImpl implements ClubService {
         int res = clubUserMapper.deleteUser(clubId, userId);
         return res;
     }
+
+    @Override
+    public List<ClubSimpleDto> selectByKeyword(String keyword) {
+        List<Club> clubList = clubMapper.selectByKeyword(keyword);
+        List<ClubSimpleDto> dtoList = new ArrayList<>();
+        for(Club c : clubList){
+            Long clubId = c.getClubId();
+            int currentPersons = clubMapper.selectClubPersonNum(clubId);
+
+            //todo:搜索用户名和头像
+            String managerName = "查询到的姓名";
+            String managerAvatar = "666";
+            ClubSimpleDto dto = new ClubSimpleDto(c, currentPersons, managerName, managerAvatar);
+            dtoList.add(dto);
+        }
+
+        return dtoList;
+    }
 }

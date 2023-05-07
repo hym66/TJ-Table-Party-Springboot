@@ -47,8 +47,8 @@ public class ReportController {
     @ApiOperation("新增一个举报单")
     @PostMapping("addReport")
     public Result<Map> addReport(@RequestBody ReportDto reportDto) {
-        int res = reportService.addReport(reportDto);
-        Long reportId = reportDto.getReportId();
+        reportDto.setUploadTime(new Date());
+        Long reportId = reportService.addReport(reportDto);
 
         Map<String, Long> hashMap = new HashMap();
         hashMap.put("reportId", reportId);
@@ -59,21 +59,24 @@ public class ReportController {
     @ApiOperation("新增一个举报单图片")
     @PostMapping("addReportPhoto")
     public Result<String> addReportPhoto(@RequestParam("file") MultipartFile multipartFile, @RequestParam("reportId") Long reportId){
-        //更新数据库中存储的图片url
-        Report report = reportService.selectReportByReportId(reportId);
+        String lock = "";
 
-        String url = FileUtil.uploadFile("/report/"+reportId.toString()+"/", multipartFile);
+        synchronized (lock) {
+            //更新数据库中存储的图片url
+            Report report = reportService.selectReportByReportId(reportId);
 
-        String oldUrl = report.getPhotoUrl();
-        String newUrl = oldUrl == null ? url : oldUrl + url;
-        report.setPhotoUrl(oldUrl + newUrl + ";");
-        reportService.updateReport(report);
+            String url = FileUtil.uploadFile("/report/" + reportId.toString() + "/", multipartFile);
 
-        return Result.success(url);
+            String oldUrl = report.getPhotoUrl();
+            String newUrl = oldUrl == null ? url : oldUrl + url;
+            report.setPhotoUrl(newUrl + ";");
+            reportService.updateReport(report);
+            return Result.success(url);
+        }
+
+
 
     }
-
-
 
 
     @ApiOperation("根据举报单id，获取举报单")
