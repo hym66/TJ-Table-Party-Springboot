@@ -26,8 +26,7 @@ public class ReportDto implements Comparable {
     Long reportId;
     @JsonSerialize(using= ToStringSerializer.class)
     Long reporterId;
-    @JsonSerialize(using= ToStringSerializer.class)
-    Long criminalId;
+    String criminalId;
     String targetType;
     String[] faultTypeList;
     String[] photoList;

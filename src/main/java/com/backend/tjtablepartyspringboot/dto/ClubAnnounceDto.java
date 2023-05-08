@@ -1,8 +1,6 @@
 package com.backend.tjtablepartyspringboot.dto;
 
 import com.backend.tjtablepartyspringboot.entity.Announce;
-import com.backend.tjtablepartyspringboot.util.TimeUtil;
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -13,7 +11,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
-import java.sql.Timestamp;
 
 @Data
 @AllArgsConstructor
@@ -26,7 +23,7 @@ public class ClubAnnounceDto {
     Long clubId;
     String announceContent;
     @JsonSerialize(using= ToStringSerializer.class)
-    Long announceUserId;
+    String announceUserId;
     @DateTimeFormat(pattern="yyyy-MM-dd hh:mm:ss")
     @JsonFormat(shape = JsonFormat.Shape.STRING , pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     Date announcePubTime;

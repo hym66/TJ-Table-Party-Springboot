@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
-import java.sql.Timestamp;
 
 @Data
 @AllArgsConstructor
@@ -28,7 +27,7 @@ public class Announce implements Comparable {
     Long clubId;
     String announceContent;
     @JsonSerialize(using= ToStringSerializer.class)
-    Long announceUserId;
+    String announceUserId;
     @DateTimeFormat(pattern="yyyy-MM-dd hh:mm:ss")
     @JsonFormat(shape = JsonFormat.Shape.STRING , pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     Date announcePubTime;
