@@ -357,7 +357,7 @@ public class ActivityController {
         Map<String,Object>resultMap=new HashMap<>();
         try
         {
-            resultMap=activityService.addActivity(activity,wishGame);
+            resultMap=activityService.modify(activity,wishGame);
             return Result.success(resultMap);
         }catch (Exception e){
             return Result.fail(0,e.getMessage());

@@ -791,10 +791,33 @@ public class ActivityServiceImpl implements ActivityService {
     public Map<String,Object>modify(Activity activity,String wishGame){
         Map<String,Object>resultMap=new HashMap<>();
         //修改activity表内容
+        Long activityId=activity.getActivityId();
+        QueryWrapper<Activity>qw=new QueryWrapper<>();
+        qw.eq("activity_id",activityId);
+        Activity newAct=activityMapper.selectOne(qw);
+
+        newAct.setTitle(activity.getTitle());
+        newAct.setFee(activity.getFee());
+        newAct.setMaxPeople(activity.getMaxPeople());
+        newAct.setMinPeople(activity.getMinPeople());
+        newAct.setStartTime(activity.getStartTime());
+        newAct.setEndTime(activity.getEndTime());
+        newAct.setSummary(activity.getSummary());
+        newAct.setDescription(activity.getDescription());
+
+        activityMapper.update(newAct,qw);
 
 
         //修改activity has trpg
 
+        //联系trpg
+        List<String> trpgIdList=List.of(wishGame.split(","));
+        trpgIdList=trpgIdList.stream().filter(ele->!ele.equals("")).collect(Collectors.toList());
+
+        for (String trpgId:trpgIdList){
+            ActivityHasTrpg activityHasTrpg=new ActivityHasTrpg(activityId,trpgId);
+            activityHasTrpgMapper.insert(activityHasTrpg);
+        }
 
 
         return resultMap;
