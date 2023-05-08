@@ -17,7 +17,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserDto getNameAndAvatarUrl(Long userId){
+    public UserDto getNameAndAvatarUrl(String userId){
 
         User user = userMapper.selectById(userId);
         System.out.println(user.getUserId());

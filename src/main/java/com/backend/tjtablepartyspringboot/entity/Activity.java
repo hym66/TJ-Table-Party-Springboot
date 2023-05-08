@@ -29,7 +29,7 @@ public class Activity {
     @JsonSerialize(using= ToStringSerializer.class)
     @TableId(type = IdType.ASSIGN_ID)
     private Long activityId;
-    private Long userId;
+    private String userId;
     private String title;
     private Integer fee;
     private Integer maxPeople;

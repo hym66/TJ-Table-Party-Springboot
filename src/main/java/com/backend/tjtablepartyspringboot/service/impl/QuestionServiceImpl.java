@@ -66,7 +66,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Map<String,Object>getQuesion(Long quesionId,Long userId){
+    public Map<String,Object>getQuesion(Long quesionId,String userId){
 
         QueryWrapper<Question>qw=new QueryWrapper<>();
         qw.eq("question_id",quesionId);
@@ -113,7 +113,7 @@ public class QuestionServiceImpl implements QuestionService {
 
 
     @Override
-    public List<Map<String, Object>> getQuestionList(Long activityId,Long userId){
+    public List<Map<String, Object>> getQuestionList(Long activityId,String userId){
         List<Map<String, Object>>list=new ArrayList<>();
 
         QueryWrapper<Question> qw=new QueryWrapper<>();
@@ -163,7 +163,7 @@ public class QuestionServiceImpl implements QuestionService {
 
 
     @Override
-    public Map<String, Object> getReplyList(Long questionId,Long userId){
+    public Map<String, Object> getReplyList(Long questionId,String userId){
         Map<String, Object>resultMap=new HashMap<>();
 
         //repley list
@@ -230,7 +230,7 @@ public class QuestionServiceImpl implements QuestionService {
 
 
     @Override
-    public Integer addReply(Long questionId,Long userId,String content,String anonymity){
+    public Integer addReply(Long questionId,String userId,String content,String anonymity){
         Map<String,Object>resultMap=new HashMap<>();
 
 
@@ -280,7 +280,7 @@ public class QuestionServiceImpl implements QuestionService {
 
 
     @Override
-    public Integer addQuestion(Long activityId,Long userId,String content,String title,String anonymity){
+    public Integer addQuestion(Long activityId,String userId,String content,String title,String anonymity){
         Map<String,Object>resultMap=new HashMap<>();
 
 
@@ -318,7 +318,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Integer userLikeOneReply(Long userId,Long replyId){
+    public Integer userLikeOneReply(String userId,Long replyId){
         Integer i=0;
         //判断是否like过
         QueryWrapper<UserLikeReply>qw=new QueryWrapper<>();
@@ -363,7 +363,7 @@ public class QuestionServiceImpl implements QuestionService {
 
 
     @Override
-    public Integer userLikeOneQuestion(Long userId,Long questionId){
+    public Integer userLikeOneQuestion(String userId,Long questionId){
         Integer i=0;
         //判断是否like过
         QueryWrapper<UserLikeQuestion>qw=new QueryWrapper<>();

@@ -41,7 +41,7 @@ public interface ActivityService {
     /**
      * 根据activity id，获取activity detail的所有相关数据
      */
-    Map<String,Object>getDetail(Long activityId,Long userId);
+    Map<String,Object>getDetail(Long activityId,String userId);
 
 
 
@@ -49,7 +49,7 @@ public interface ActivityService {
     /**
      * 输入user id，返回该user的所有活动
      */
-    Map<String,Object> getUserList(Long userId);
+    Map<String,Object> getUserList(String userId);
 
 
 
@@ -105,20 +105,20 @@ public interface ActivityService {
     /**
      * user id和activity id，user参与活动
      */
-    Integer addParticipator(Long userId,Long activityId);
+    Integer addParticipator(String userId,Long activityId);
 
 
     /**
      * 输入activity id，获取所有参与者的信息
      */
-    List<Map<String,Object>> getActivityParticipatorList(Long activityId,Long creatorId);
+    List<Map<String,Object>> getActivityParticipatorList(Long activityId,String creatorId);
     Map<String,Object> getActivityParticipator(Long activityId);
 
 
     /**
      * 删除一个user 参与活动
      */
-    Integer deleteUserJoin(Long activityId,Long userId);
+    Integer deleteUserJoin(Long activityId,String userId);
 
 
     /**

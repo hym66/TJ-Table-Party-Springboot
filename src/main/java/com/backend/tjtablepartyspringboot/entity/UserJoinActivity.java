@@ -21,7 +21,7 @@ import java.util.Date;
 @TableName(value = "user_join_activity")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserJoinActivity {
-    private Long userId;
+    private String userId;
     private Long activityId;
 
     @DateTimeFormat(pattern="yyyy-MM-dd hh:mm:ss")

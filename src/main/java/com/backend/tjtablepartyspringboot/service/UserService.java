@@ -8,5 +8,5 @@ import java.util.Map;
 
 @Service
 public interface UserService {
-    UserDto getNameAndAvatarUrl(Long userID);
+    UserDto getNameAndAvatarUrl(String userID);
 }

@@ -21,5 +21,4 @@ import lombok.NoArgsConstructor;
 public class ActivityHasTrpg {
     private Long activityId;
     private String trpgId;
-
 }
