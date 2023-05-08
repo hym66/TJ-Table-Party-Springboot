@@ -86,7 +86,7 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Map<String,Object>getDetail(Long activityId,Long userId){
+    public Map<String,Object>getDetail(Long activityId,String userId){
         Map<String,Object>detailMap=new HashMap<>();
         //activity 实体
         QueryWrapper<Activity> qw_act=new QueryWrapper<>();
@@ -143,7 +143,7 @@ public class ActivityServiceImpl implements ActivityService {
 
         //创建者的信息
         Map<String,Object>userData=new HashMap<>();
-        Long creatorId=act.getUserId();
+        String creatorId=act.getUserId();
         UserDto creatorDto =userService.getNameAndAvatarUrl(creatorId);
         userData.put("id",creatorId);
         userData.put("avatar",creatorDto.getAvatarUrl());
@@ -467,7 +467,7 @@ public class ActivityServiceImpl implements ActivityService {
 
             //user信息
             Map<String,Object>userData=new HashMap<>();
-            Long userId=act.getUserId();
+            String userId=act.getUserId();
             UserDto userDto =userService.getNameAndAvatarUrl(userId);
             userData.put("id",userId);
             userData.put("avatar",userDto.getAvatarUrl());
@@ -492,7 +492,7 @@ public class ActivityServiceImpl implements ActivityService {
 
 
     @Override
-    public Map<String,Object> getUserList(Long userId){
+    public Map<String,Object> getUserList(String userId){
         Map<String,Object>map=new HashMap<>();
         List<Activity> actList=new ArrayList<>();
 
@@ -648,7 +648,7 @@ public class ActivityServiceImpl implements ActivityService {
 
 
     @Override
-    public Integer addParticipator(Long userId,Long activityId){
+    public Integer addParticipator(String userId,Long activityId){
         Integer i=0;
         QueryWrapper<UserJoinActivity>qw=new QueryWrapper<>();
         qw.eq("activity_id",activityId)
@@ -663,14 +663,14 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<Map<String,Object>> getActivityParticipatorList(Long activityId,Long creatorId){
+    public List<Map<String,Object>> getActivityParticipatorList(Long activityId,String creatorId){
         List<Map<String,Object>> list=new ArrayList<>();
         QueryWrapper<UserJoinActivity>qw=new QueryWrapper<>();
         qw.eq("activity_id",activityId);
         List<UserJoinActivity>joinList=userJoinActivityMapper.selectList(qw);
         for (UserJoinActivity userJoin:joinList){
             Map<String,Object>oneData=new HashMap<>();
-            Long userId=userJoin.getUserId();
+            String userId=userJoin.getUserId();
             oneData.put("id",userId);
             oneData.put("joinTime",userJoin.getJoinTime());
 
@@ -700,7 +700,7 @@ public class ActivityServiceImpl implements ActivityService {
     public Map<String,Object> getActivityParticipator(Long activityId){
         Map<String,Object>resultMap=new HashMap<>();
         Activity activity=activityMapper.selectById(activityId);
-        Long creatorId=activity.getUserId();
+        String creatorId=activity.getUserId();
 
 
         List<Map<String,Object>> list=new ArrayList<>();
@@ -711,7 +711,7 @@ public class ActivityServiceImpl implements ActivityService {
         List<UserJoinActivity>joinList=userJoinActivityMapper.selectList(qw);
         for (UserJoinActivity userJoin:joinList){
             Map<String,Object>oneData=new HashMap<>();
-            Long userId=userJoin.getUserId();
+            String userId=userJoin.getUserId();
             oneData.put("id",userId);
             oneData.put("joinTime",userJoin.getJoinTime());
 
@@ -743,7 +743,7 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Integer deleteUserJoin(Long activityId, Long userId) {
+    public Integer deleteUserJoin(Long activityId, String userId) {
         Integer i=0;
         QueryWrapper<UserJoinActivity>qw=new QueryWrapper<>();
         qw.eq("activity_id",activityId)

@@ -109,7 +109,7 @@ public class SiteController {
     @PostMapping("createPrivateSite")
     public Result<String> createPrivateSite(@RequestBody HashMap<String, Object> map) {
         HashMap<String, Object> formData = (HashMap<String, Object>) map.get("formData");
-        Long creatorId = Long.valueOf(formData.get("creatorId").toString());
+        String creatorId = (String) formData.get("creatorId");
         String name = (String) formData.get("name");
         String city = (String) formData.get("city");
         String location = (String) formData.get("location");

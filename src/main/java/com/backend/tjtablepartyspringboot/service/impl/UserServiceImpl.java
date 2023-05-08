@@ -19,7 +19,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserDto getNameAndAvatarUrl(Long userId){
+    public UserDto getNameAndAvatarUrl(String userId){
 
         User user = userMapper.selectById(userId);
         System.out.println(user.getUserId());
@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserInfoDto getUserInfo(Long userId){
+    public UserInfoDto getUserInfo(String userId){
         User user = userMapper.selectById(userId);
         System.out.println(user.getUserId());
         UserInfoDto userInfoDto = new UserInfoDto();

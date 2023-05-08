@@ -17,7 +17,7 @@ public interface ClubMapper extends BaseMapper<Club> {
 
     //查找某个用户参与的所有俱乐部
     @Select("SELECT * FROM club INNER JOIN club_user USING(club_id) WHERE user_id=#{userId}")
-    List<Club> selectUserClubs(@Param("userId") Long userId);
+    List<Club> selectUserClubs(@Param("userId") String userId);
 
     //查找俱乐部当前人数
     @Select("SELECT COUNT(user_id) FROM club_user WHERE club_id=#{clubId}")

@@ -19,20 +19,20 @@ public interface QuestionService {
      *
      * @return List
      */
-    List<Map<String,Object>> getQuestionList(Long activityId,Long userId);
+    List<Map<String,Object>> getQuestionList(Long activityId,String userId);
 
 
     /**
      * 获取一个question的详细信息
      */
-    Map<String,Object>getQuesion(Long quesionId,Long userId);
+    Map<String,Object>getQuesion(Long quesionId,String userId);
 
     /**
      * 输入question id，获取该问题的reply列表
      *
      * @return List
      */
-    Map<String, Object> getReplyList(Long questionId,Long userId);
+    Map<String, Object> getReplyList(Long questionId,String userId);
 
     /**
      * 输入question id，获取UserLikeQuestion,计数用
@@ -49,23 +49,23 @@ public interface QuestionService {
     /**
      * 创建一条新的reply
      */
-    Integer addReply(Long questionId,Long userId,String content,String anonymity);
+    Integer addReply(Long questionId,String userId,String content,String anonymity);
 
     /**
      * 创建一条新的question
      */
-    Integer addQuestion(Long activityId,Long userId,String content,String title,String anonymity);
+    Integer addQuestion(Long activityId,String userId,String content,String title,String anonymity);
 
 
     /**
      * user 点赞/取消点赞 一条reply
      */
-    Integer userLikeOneReply(Long userId,Long replyId);
+    Integer userLikeOneReply(String userId,Long replyId);
 
     /**
      * user 点赞/取消点赞 一条 question
      */
-    Integer userLikeOneQuestion(Long userId,Long questionId);
+    Integer userLikeOneQuestion(String userId,Long questionId);
 
 
     /**

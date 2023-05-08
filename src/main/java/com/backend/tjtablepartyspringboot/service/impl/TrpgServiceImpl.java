@@ -373,7 +373,7 @@ public class TrpgServiceImpl implements TrpgService {
 
 
     @Override
-    public Map<String,Object>getPrivateTrpgByUserId(Long userId){
+    public Map<String,Object>getPrivateTrpgByUserId(String userId){
         Map<String,Object>map=new HashMap<>();
         List<TrpgPrivate>resultList=new ArrayList<>();
         QueryWrapper<TrpgPrivate>qw=new QueryWrapper<>();

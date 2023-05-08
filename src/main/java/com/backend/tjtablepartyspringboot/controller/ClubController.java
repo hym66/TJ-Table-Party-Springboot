@@ -108,7 +108,7 @@ public class ClubController {
     @ApiOperation("返回指定用户参与的俱乐部")
     @GetMapping("getUserClubs")
     public Result<List<ClubSimpleDto>> getUserClubs(@ApiParam(name="userId", value="用户id", required = true)
-                                                        @RequestParam("userId") Long userId)
+                                                        @RequestParam("userId") String userId)
 
     {
         List<ClubSimpleDto> clubInfoDetailDtoList = clubService.getUserClubSimpleDtos(userId);
@@ -162,7 +162,7 @@ public class ClubController {
     public Result<String> addUser(@ApiParam(name="clubId", value="俱乐部id", required = true)
                                                    @RequestParam("clubId") Long clubId,
                                                @ApiParam(name="userId", value="用户id", required = true)
-                                                    @RequestParam("userId") Long userId)
+                                                    @RequestParam("userId") String userId)
 
     {
         int res = clubService.addUser(clubId, userId);
@@ -179,7 +179,7 @@ public class ClubController {
     public Result<String> removeUser(@ApiParam(name="clubId", value="俱乐部id", required = true)
                                   @RequestParam("clubId") Long clubId,
                                   @ApiParam(name="userId", value="用户id", required = true)
-                                  @RequestParam("userId") Long userId)
+                                  @RequestParam("userId") String userId)
 
     {
         int res = clubService.removeUser(clubId, userId);

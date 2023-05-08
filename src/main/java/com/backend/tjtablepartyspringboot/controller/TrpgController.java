@@ -122,7 +122,7 @@ public class TrpgController {
     @GetMapping("/getPrivateTrpgByUserId")
     public Result<Map<String,Object>>getPrivateTrpgByUserId(
             @ApiParam(name = "userId", value = "用户id", required = true)
-            @RequestParam("userId") Long userId
+            @RequestParam("userId") String userId
     ){
         Map<String,Object>resultMap=new HashMap<>();
         try

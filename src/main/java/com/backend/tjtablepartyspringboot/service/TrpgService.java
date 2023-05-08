@@ -69,7 +69,7 @@ public interface TrpgService {
     /**
      * 输入userId，返回该user所有的private trpg 简要信息
      */
-    Map<String,Object>getPrivateTrpgByUserId(Long userId);
+    Map<String,Object>getPrivateTrpgByUserId(String userId);
 
     /**
      * 重置一个 trpg 的poster字段

@@ -26,7 +26,7 @@ public class MessageServiceImpl implements MessageService {
     UserViewMessageMapper userViewMessageMapper;
 
     @Override
-    public List<MessageDto> selectMessageInfoByUserId(Long userId) {
+    public List<MessageDto> selectMessageInfoByUserId(String userId) {
         List<UserViewMessage> userViewMessages = userViewMessageMapper.selectMessageByUserId(userId);
         ArrayList<MessageDto> res = new ArrayList<>();
         for (UserViewMessage uvm : userViewMessages) {
@@ -44,12 +44,12 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public int deleteUserViewMessage(Long userId, Long messageId) {
+    public int deleteUserViewMessage(String userId, Long messageId) {
         return userViewMessageMapper.deleteUserViewMessage(userId, messageId);
     }
 
     @Override
-    public int updateMessageView(Long userId, Long messageId) {
+    public int updateMessageView(String userId, Long messageId) {
         return userViewMessageMapper.updateMessageView(userId, messageId);
     }
 }

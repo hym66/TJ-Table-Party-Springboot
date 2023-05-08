@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserInfoDto {
-    private Long userId;
+    private String userId;
     private String nickName;
     private String avatarUrl;
     private String province;

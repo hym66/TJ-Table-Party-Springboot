@@ -69,7 +69,7 @@ public class ActivityController {
             @ApiParam(name = "activityId", value = "活动id", required = true)
             @RequestParam("activityId") Long activityId,
             @ApiParam(name = "userId", value = "用户id", required = true)
-            @RequestParam("userId") Long userId
+            @RequestParam("userId") String userId
     ){
         Map<String,Object>resultMap=new HashMap<>();
         try
@@ -90,7 +90,7 @@ public class ActivityController {
             @ApiParam(name = "activityId", value = "活动id", required = true)
             @RequestParam("activityId") Long activityId,
             @ApiParam(name = "userId", value = "用户id", required = true)
-            @RequestParam(name ="userId") Long userId
+            @RequestParam(name ="userId") String userId
 
     ){
         List<Map<String,Object>>list=new ArrayList<>();
@@ -191,7 +191,7 @@ public class ActivityController {
     @GetMapping("/getUserList")
     public Result<Map<String,Object>> getUserList(
             @ApiParam(name = "userId", value = " user ID", required = false)
-            @RequestParam(name = "userId",required = true) Long userId
+            @RequestParam(name = "userId",required = true) String userId
     ){
         Map<String,Object>resultMap=new HashMap<>();
         try
@@ -274,7 +274,7 @@ public class ActivityController {
             @ApiParam(name = "activityId", value = "活动id", required = true)
             @RequestParam(name ="activityId",required = true) Long activityId,
             @ApiParam(name = "userId", value = "用户id", required = true)
-            @RequestParam(name ="userId",required = true) Long userId
+            @RequestParam(name ="userId",required = true) String userId
     ){
         Map<String,Object>resultMap=new HashMap<>();
         try
