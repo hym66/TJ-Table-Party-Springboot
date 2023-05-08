@@ -70,7 +70,7 @@ public class SiteController {
     @PostMapping("createPublicSite")
     public Result<String> createPublicSite(@RequestBody HashMap<String, Object> map) throws ParseException {
         HashMap<String, Object> formData = (HashMap<String, Object>) map.get("formData");
-        Long creatorId = Long.valueOf(formData.get("creatorId").toString());
+        String creatorId = formData.get("creatorId").toString();
         String name = (String) formData.get("name");
         String type = (String) formData.get("type");
         String introduction = (String) formData.get("introduction");
