@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 public class User {
     @TableId(type = IdType.AUTO)
     @JsonSerialize(using=ToStringSerializer.class)
-    private Long userId;
+    private String userId;
     private String nickName;
     private String avatarUrl;
     private String province;

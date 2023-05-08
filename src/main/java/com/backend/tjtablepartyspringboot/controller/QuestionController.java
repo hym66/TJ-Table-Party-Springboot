@@ -38,7 +38,7 @@ public class QuestionController {
             @ApiParam(name = "questionId", value = "问题id", required = true)
             @RequestParam("questionId") Long questionId,
             @ApiParam(name = "userId", value = "用户id", required = true)
-            @RequestParam(name="userId") Long userId
+            @RequestParam(name="userId") String userId
     ){
         Map<String,Object> resultMap=new HashMap<>();
         try
@@ -101,7 +101,7 @@ public class QuestionController {
         try
         {
             Long questionId=Long.parseLong(replyData.get("questionId"));
-            Long userId=Long.parseLong(replyData.get("userId"));
+            String userId=replyData.get("userId");
             String content=replyData.get("content");
             String anonymity=replyData.get("anonymity");
 
@@ -129,7 +129,7 @@ public class QuestionController {
 
         try
         {
-            Long userId=Long.parseLong(questionData.get("userId"));
+            String userId=questionData.get("userId");
             Long activityId=Long.parseLong(questionData.get("activityId"));
             String content=questionData.get("content");
             String title=questionData.get("title");
@@ -159,7 +159,7 @@ public class QuestionController {
         try
         {
             Long replyId=Long.parseLong(userLikeReplyMap.get("replyId"));
-            Long userId=Long.parseLong(userLikeReplyMap.get("userId"));
+            String userId=userLikeReplyMap.get("userId");
 
             Integer i =questionService.userLikeOneReply(userId,replyId);
             resultMap.put("i",i);
@@ -184,7 +184,7 @@ public class QuestionController {
         try
         {
             Long questionId=Long.parseLong(userLikeQuestionMap.get("questionId"));
-            Long userId=Long.parseLong(userLikeQuestionMap.get("userId"));
+            String userId=userLikeQuestionMap.get("userId");
 
             Integer i =questionService.userLikeOneQuestion(userId,questionId);
             resultMap.put("i",i);

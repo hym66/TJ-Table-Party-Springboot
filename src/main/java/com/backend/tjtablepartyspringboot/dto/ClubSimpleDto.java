@@ -23,7 +23,7 @@ public class ClubSimpleDto {
     int capacity;
     int currentPersons;
     @JsonSerialize(using= ToStringSerializer.class)
-    Long managerId;
+    String managerId;
     String managerAvatar;
     String managerName;
     float longitude;

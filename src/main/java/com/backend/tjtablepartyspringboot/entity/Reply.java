@@ -46,6 +46,6 @@ public class Reply {
     private String anonymity;
     private String displayName;
     private String displayAvatar;
-    private Long userId;
+    private String userId;
     private Integer likeTotal;
 }

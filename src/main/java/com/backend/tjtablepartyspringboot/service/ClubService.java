@@ -17,12 +17,12 @@ public interface ClubService {
     int addAnnounce(Announce announce);
     List<ClubAnnounceDto> getClubAnnounceDtos(Long clubId);
     List<ClubSimpleDto> getCityClubSimpleDtos(String city, float longitude, float latitude);
-    List<ClubSimpleDto> getUserClubSimpleDtos(Long userId);
+    List<ClubSimpleDto> getUserClubSimpleDtos(String userId);
     int removeClubTrpg(Long clubId, Long trpgId);
     int addClubTrpg(Long clubId, Long trpgId);
     List<Activity> selectCurrentActivities(Long clubId);
     int patchClub(Club club);
-    int addUser(Long clubId, Long userId);
-    int removeUser(Long clubId, Long userId);
     List<ClubSimpleDto> selectByKeyword(String keyword);
+    int addUser(Long clubId, String userId);
+    int removeUser(Long clubId, String userId);
 }

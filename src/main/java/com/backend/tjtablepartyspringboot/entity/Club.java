@@ -28,7 +28,7 @@ public class Club {
     Byte isPublic;
     int capacity;
     @JsonSerialize(using=ToStringSerializer.class)
-    Long managerId;
     float longitude;
     float latitude;
+    String managerId;
 }

@@ -13,11 +13,11 @@ import java.util.List;
  */
 @Service
 public interface MessageService {
-    List<MessageDto> selectMessageInfoByUserId(Long userId);
+    List<MessageDto> selectMessageInfoByUserId(String userId);
 
    Message selectMessageInfoById(Long messageId);
 
-   int deleteUserViewMessage(Long userId, Long messageId);
+   int deleteUserViewMessage(String userId, Long messageId);
 
-   int updateMessageView(Long userId, Long messageId);
+   int updateMessageView(String userId, Long messageId);
 }

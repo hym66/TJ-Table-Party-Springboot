@@ -22,7 +22,7 @@ public class PrivateSite {
     @JsonSerialize(using= ToStringSerializer.class)
     Long privateSiteId;
     @JsonSerialize(using= ToStringSerializer.class)
-    Long creatorId;
+    String creatorId;
     String name;
     String city;
     String location;
@@ -31,7 +31,7 @@ public class PrivateSite {
     float latitude;
     float longitude;
 
-    public PrivateSite(Long creatorId, String name, String city, String location, String picture, String introduction, float latitude, float longitude) {
+    public PrivateSite(String creatorId, String name, String city, String location, String picture, String introduction, float latitude, float longitude) {
         this.creatorId = creatorId;
         this.name = name;
         this.city = city;

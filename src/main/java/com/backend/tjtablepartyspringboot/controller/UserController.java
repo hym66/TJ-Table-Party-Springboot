@@ -21,7 +21,7 @@ public class UserController {
     @GetMapping("/getNameAndAvatarUrl")
     public Result<UserDto> getNameAndAvatarUrl(
             @ApiParam(name = "userId", value = "用户id", required = true)
-            @RequestParam(name="userId")  Long userId
+            @RequestParam(name="userId")  String userId
     ){
             UserDto userDto =userService.getNameAndAvatarUrl(userId);
             return Result.success(userDto);
@@ -30,7 +30,7 @@ public class UserController {
     @GetMapping("/getUserInfo")
     public Result<UserInfoDto> getUserInfo(
             @ApiParam(name = "userId", value = "用户id", required = true)
-            @RequestParam(name="userId")  Long userId
+            @RequestParam(name="userId")  String userId
     ){
         UserInfoDto userInfoDto =userService.getUserInfo(userId);
         return Result.success(userInfoDto);

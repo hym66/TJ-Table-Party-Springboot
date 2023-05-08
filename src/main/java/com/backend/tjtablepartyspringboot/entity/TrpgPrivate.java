@@ -26,7 +26,7 @@ public class TrpgPrivate {
     @JsonSerialize(using= ToStringSerializer.class)
     @TableId(type = IdType.ASSIGN_ID)
     private String trpgId;
-    private Long userId;
+    private String userId;
 
     private String poster;
     private String titleName;
