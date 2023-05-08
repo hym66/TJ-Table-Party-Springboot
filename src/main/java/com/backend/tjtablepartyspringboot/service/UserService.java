@@ -8,7 +8,7 @@ import java.util.Map;
 
 @Service
 public interface UserService {
-    UserDto getNameAndAvatarUrl(String userID);
-    UserInfoDto getUserInfo(String userID);
+    UserDto getNameAndAvatarUrl(String userId);
+    UserInfoDto getUserInfo(String userId);
     String login(String code);
 }

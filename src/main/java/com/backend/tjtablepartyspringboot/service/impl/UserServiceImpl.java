@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getNameAndAvatarUrl(String userId){
 
-        User user = userMapper.selectById(userId);
+        User user = userMapper.selectOne(new QueryWrapper<User>().eq("user_id", userId));
         System.out.println(user.getUserId());
         UserDto userDto = new UserDto();
         userDto.setNickName(user.getNickName());
@@ -31,9 +31,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserInfoDto getUserInfo(String userId){
-        User user = userMapper.selectById(userId);
+        User user = userMapper.selectOne(new QueryWrapper<User>().eq("user_id", userId));
         System.out.println(user.getUserId());
         UserInfoDto userInfoDto = new UserInfoDto();
+        userInfoDto.setUserId(user.getUserId());
         userInfoDto.setNickName(user.getNickName());
         userInfoDto.setAvatarUrl(user.getAvatarUrl());
         userInfoDto.setProvince(user.getProvince());
