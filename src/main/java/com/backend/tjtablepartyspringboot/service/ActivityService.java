@@ -130,6 +130,15 @@ public interface ActivityService {
                                Integer pageSize,Integer pageNo);
 
 
+    /**
+     *  喜欢 或者 取消喜欢
+     */
+    Integer interest(String userId,Long activityId);
 
+
+    /**
+     * 参与 / 取消参与
+     */
+    Integer doJoin(String userId,Long activityId);
 
 }
