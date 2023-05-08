@@ -31,6 +31,9 @@ public class ClubServiceImpl implements ClubService {
     @Autowired
     ClubRecordMapper clubRecordMapper;
 
+    @Autowired
+    UserMapper userMapper;
+
 
     @Override
     public ClubInfoDetailDto selectClubInfo(Long clubId) {
@@ -41,13 +44,12 @@ public class ClubServiceImpl implements ClubService {
         List<Announce> announceList = announceMapper.selectByClubId(clubId);
         List<ClubAnnounceDto> clubAnnounceDtoList = new ArrayList<>();
 
-        //todo：给announce加人名和头像
         for(Announce a : announceList){
-            Long uid = a.getAnnounceUserId();
+            String uid = a.getAnnounceUserId();
             //查询人名和头像
-            //...
-            String name = "查询出来的姓名";
-            String avatar = "http://www.baidu.com/img/bdlogo.png";
+            User user = userMapper.selectById(uid);
+            String name = user.getNickName();
+            String avatar = user.getAvatarUrl();
             ClubAnnounceDto dto = new ClubAnnounceDto(a, name, avatar);
             clubAnnounceDtoList.add(dto);
         }
@@ -75,9 +77,10 @@ public class ClubServiceImpl implements ClubService {
         for(ClubUser u : clubUserList){
             //把role属性加上
             String role = u.getUserId() == managerId ? "manager" : "member";
-            //todo：查询name和avatar
-            String name = "查询到的名字";
-            String avatar = "//oss.gstonegames.com/static/image/gameimgEh/pic17940221543461645613.jpg";
+
+            User user = userMapper.selectById(u.getUserId());
+            String name = user.getNickName();
+            String avatar = user.getAvatarUrl();
 
             ClubUserDto clubUserDto = new ClubUserDto(u.getClubId(), u.getUserId(), role, name, avatar);
             clubUserDtoList.add(clubUserDto);
@@ -115,9 +118,10 @@ public class ClubServiceImpl implements ClubService {
 
         List<ClubAnnounceDto> clubAnnounceDtoList = new ArrayList<>();
         for(Announce a : announceList){
-            //todo：补用户名和头像
-            String name = "查询出来的姓名";
-            String avatar = "http://www.baidu.com/img/bdlogo.png";
+
+            User user = userMapper.selectById(a.getAnnounceUserId());
+            String name = user.getNickName();
+            String avatar = user.getAvatarUrl();
 
             ClubAnnounceDto dto = new ClubAnnounceDto(a, name, avatar);
             clubAnnounceDtoList.add(dto);
@@ -138,9 +142,10 @@ public class ClubServiceImpl implements ClubService {
             String managerId = c.getManagerId();
 
             int currentPersons = clubMapper.selectClubPersonNum(clubId);
-            //todo:user表查询
-            String managerAvatar = "http://www.baidu.com/img/bdlogo.png";
-            String managerName = "查询出来的姓名";
+
+            User user = userMapper.selectById(managerId);
+            String managerName = user.getNickName();
+            String managerAvatar = user.getAvatarUrl();
 
             ClubSimpleDto dto = new ClubSimpleDto(c, currentPersons, managerName, managerAvatar);
             clubSimpleDtoList.add(dto);
@@ -159,9 +164,10 @@ public class ClubServiceImpl implements ClubService {
             String managerId = c.getManagerId();
 
             int currentPersons = clubMapper.selectClubPersonNum(clubId);
-            //todo:user表查询
-            String managerAvatar = "http://www.baidu.com/img/bdlogo.png";
-            String managerName = "查询出来的姓名";
+
+            User user = userMapper.selectById(managerId);
+            String managerName = user.getNickName();
+            String managerAvatar = user.getAvatarUrl();
 
             ClubSimpleDto dto = new ClubSimpleDto(c, currentPersons, managerName, managerAvatar);
             clubSimpleDtoList.add(dto);
@@ -170,7 +176,7 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public int removeClubTrpg(Long clubId, Long trpgId) {
+    public int removeClubTrpg(Long clubId, String trpgId) {
         int res = clubMapper.deleteClubTrpg(clubId, trpgId);
         return res;
     }
@@ -178,13 +184,12 @@ public class ClubServiceImpl implements ClubService {
     @Override
     public int addUser(Long clubId, String userId) {
         ClubUser clubUser = new ClubUser(userId, clubId);
-        System.out.println("666"+ clubId+","+ userId);
         int res = clubUserMapper.insert(clubUser);
         return res;
     }
 
     @Override
-    public int addClubTrpg(Long clubId, Long trpgId) {
+    public int addClubTrpg(Long clubId, String trpgId) {
         int res = clubMapper.addClubTrpg(clubId, trpgId);
         return res;
     }
@@ -208,6 +213,17 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
+    public int addRecord(Long clubId, String content) {
+        ClubRecord clubRecord = new ClubRecord();
+        clubRecord.setClubId(clubId);
+        clubRecord.setContent(content);
+        clubRecord.setTime(new Date());
+
+        int res = clubRecordMapper.insert(clubRecord);
+        return res;
+    }
+
+    @Override
     public List<ClubSimpleDto> selectByKeyword(String keyword) {
         List<Club> clubList = clubMapper.selectByKeyword(keyword);
         List<ClubSimpleDto> dtoList = new ArrayList<>();
@@ -215,9 +231,9 @@ public class ClubServiceImpl implements ClubService {
             Long clubId = c.getClubId();
             int currentPersons = clubMapper.selectClubPersonNum(clubId);
 
-            //todo:搜索用户名和头像
-            String managerName = "查询到的姓名";
-            String managerAvatar = "666";
+            User user = userMapper.selectById(c.getManagerId());
+            String managerName = user.getNickName();
+            String managerAvatar = user.getAvatarUrl();
             ClubSimpleDto dto = new ClubSimpleDto(c, currentPersons, managerName, managerAvatar);
             dtoList.add(dto);
         }

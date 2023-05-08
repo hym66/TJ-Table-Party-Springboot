@@ -53,7 +53,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public int checkReport(Long reportId, Boolean agree, Long adminId) {
+    public int checkReport(Long reportId, Boolean agree, String adminId) {
         Report report = reportMapper.selectByReportId(reportId);
         Byte isPassed = agree ? Byte.valueOf("1") : Byte.valueOf("0");
         report.setIsPassed(isPassed);

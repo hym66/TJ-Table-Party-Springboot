@@ -12,7 +12,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSON;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class       UserServiceImpl implements UserService {
 
     @Autowired
     UserMapper userMapper;
