@@ -344,6 +344,27 @@ public class ActivityController {
 
     }
 
+
+
+    @ApiOperation("修改活动")
+    @PostMapping("/modify")
+    public Result<Map<String,Object>> modify(
+            @ApiParam(name = "activity", value = "activity entity", required = true)
+            @RequestBody(required = true) Activity activity,
+            @ApiParam(name = "wishGame", value = "wishGame", required = true)
+            @RequestParam(name = "wishGame",required = false) String wishGame
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            resultMap=activityService.addActivity(activity,wishGame);
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+    }
+
+
 //    @ApiOperation("")
 //    @GetMapping("/getByActivityId")
 //    public Result<Map<String,Object>>getByActivityId(

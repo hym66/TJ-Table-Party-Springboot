@@ -786,4 +786,19 @@ public class ActivityServiceImpl implements ActivityService {
         return i;
     }
 
+
+    @Override
+    public Map<String,Object>modify(Activity activity,String wishGame){
+        Map<String,Object>resultMap=new HashMap<>();
+        //修改activity表内容
+
+
+        //修改activity has trpg
+
+
+
+        return resultMap;
+
+
+    }
 }

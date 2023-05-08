@@ -25,7 +25,7 @@ public class Report implements Comparable{
     @JsonSerialize(using= ToStringSerializer.class)
     Long reportId;
     @JsonSerialize(using= ToStringSerializer.class)
-    Long reporterId;
+    String reporterId;
     String criminalId;
     String targetType;
     String faultType;
