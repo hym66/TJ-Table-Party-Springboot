@@ -105,7 +105,7 @@ public class ReportController {
                                    @ApiParam(name="agree", value="是否同意该场地入驻", required = true)
                                    @RequestParam("agree") Boolean agree,
                                    @ApiParam(name="adminId", value="审核的管理员id", required = true)
-                                   @RequestParam("adminId") Long adminId)
+                                   @RequestParam("adminId") String adminId)
     {
         int res = reportService.checkReport(reportId, agree, adminId);
         if(res > 0){
