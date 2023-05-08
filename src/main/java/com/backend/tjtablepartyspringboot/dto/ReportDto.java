@@ -21,7 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ReportDto {
+public class ReportDto implements Comparable {
     @JsonSerialize(using= ToStringSerializer.class)
     Long reportId;
     @JsonSerialize(using= ToStringSerializer.class)
@@ -44,11 +44,14 @@ public class ReportDto {
         if(report == null){
             return;
         }
-        this.reporterId = report.getReporterId();
+        this.reportId = report.getReportId();
         this.reporterId = report.getReporterId();
         this.criminalId = report.getCriminalId();
         this.targetType = report.getTargetType();
         if(report.getFaultType() != null) {
+            String faultType = report.getFaultType();
+            String[] tmp = faultType.split(",");
+
             this.faultTypeList = report.getFaultType().split(",");
         }
         if(report.getPhotoUrl() != null) {
@@ -58,5 +61,19 @@ public class ReportDto {
         this.checkTime = report.getCheckTime();
         this.isPassed = report.getIsPassed();
         this.description = report.getDescription();
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        ReportDto r = (ReportDto) o;
+        if(uploadTime.before(r.getUploadTime())){
+            return -1;
+        }
+        else if(uploadTime.after(r.getUploadTime())){
+            return 1;
+        }
+        else{
+            return 0;
+        }
     }
 }

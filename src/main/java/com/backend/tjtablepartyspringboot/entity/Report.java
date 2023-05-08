@@ -53,8 +53,9 @@ public class Report implements Comparable{
         StringBuilder stringBuilder = new StringBuilder();
         String[] faultTypeList = reportDto.getFaultTypeList();
         for(String str : faultTypeList){
-            stringBuilder.append(str);
+            stringBuilder.append(str + ",");
         }
+        stringBuilder.deleteCharAt(stringBuilder.length()-1);
         this.faultType = String.valueOf(stringBuilder);
 
         this.uploadTime = reportDto.getUploadTime();

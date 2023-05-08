@@ -67,7 +67,7 @@ public class ClubServiceImpl implements ClubService {
     @Override
     public ClubUserDetailDto selectClubUser(Long clubId) {
         Club club = clubMapper.selectById(clubId);
-        Long managerId = club.getManagerId();
+        String managerId = club.getManagerId();
 
         List<ClubUser> clubUserList = clubUserMapper.selectUsersByClubId(clubId);//实体类列表
         List<ClubUserDto> clubUserDtoList = new ArrayList<>();//dto列表
@@ -135,7 +135,7 @@ public class ClubServiceImpl implements ClubService {
         //查询currentPersons, managerAvatar, managerName
         for(Club c : clubList){
             Long clubId = c.getClubId();
-            Long managerId = c.getManagerId();
+            String managerId = c.getManagerId();
 
             int currentPersons = clubMapper.selectClubPersonNum(clubId);
             //todo:user表查询
@@ -150,13 +150,13 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public List<ClubSimpleDto> getUserClubSimpleDtos(Long userId) {
+    public List<ClubSimpleDto> getUserClubSimpleDtos(String userId) {
         List<Club> clubList = clubMapper.selectUserClubs(userId);
         List<ClubSimpleDto> clubSimpleDtoList = new ArrayList<>();
         //查询currentPersons, managerAvatar, managerName
         for(Club c : clubList){
             Long clubId = c.getClubId();
-            Long managerId = c.getManagerId();
+            String managerId = c.getManagerId();
 
             int currentPersons = clubMapper.selectClubPersonNum(clubId);
             //todo:user表查询
@@ -176,8 +176,9 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public int addUser(Long clubId, Long userId) {
-        ClubUser clubUser = new ClubUser(clubId, userId);
+    public int addUser(Long clubId, String userId) {
+        ClubUser clubUser = new ClubUser(userId, clubId);
+        System.out.println("666"+ clubId+","+ userId);
         int res = clubUserMapper.insert(clubUser);
         return res;
     }
@@ -201,8 +202,26 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public int removeUser(Long clubId, Long userId) {
+    public int removeUser(Long clubId, String userId) {
         int res = clubUserMapper.deleteUser(clubId, userId);
         return res;
+    }
+
+    @Override
+    public List<ClubSimpleDto> selectByKeyword(String keyword) {
+        List<Club> clubList = clubMapper.selectByKeyword(keyword);
+        List<ClubSimpleDto> dtoList = new ArrayList<>();
+        for(Club c : clubList){
+            Long clubId = c.getClubId();
+            int currentPersons = clubMapper.selectClubPersonNum(clubId);
+
+            //todo:搜索用户名和头像
+            String managerName = "查询到的姓名";
+            String managerAvatar = "666";
+            ClubSimpleDto dto = new ClubSimpleDto(c, currentPersons, managerName, managerAvatar);
+            dtoList.add(dto);
+        }
+
+        return dtoList;
     }
 }

@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ClubUser {
     @JsonSerialize(using= ToStringSerializer.class)
-    Long userId;
+    String userId;
     @JsonSerialize(using= ToStringSerializer.class)
     Long clubId;
 }

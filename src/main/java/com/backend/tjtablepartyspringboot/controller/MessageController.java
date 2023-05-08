@@ -29,7 +29,7 @@ public class MessageController {
     @ApiOperation("根据用户ID获取所有消息")
     @GetMapping("getUserAllMessage")
     public Result<List<MessageDto>> getUserAllMessage(@ApiParam(name = "userId", value = "用户id", required = true)
-                                                      @RequestParam("userId") Long userId) {
+                                                      @RequestParam("userId") String userId) {
         return Result.success(messageService.selectMessageInfoByUserId(userId));
     }
 
@@ -43,7 +43,7 @@ public class MessageController {
     @ApiOperation("用户删除消息")
     @DeleteMapping("deleteUserViewMessage")
     public Result<String> deleteUserViewMessage(@ApiParam(name = "userId", value = "用户id", required = true)
-                                                @RequestParam("userId") Long userId,
+                                                @RequestParam("userId") String userId,
                                                 @ApiParam(name = "messageId", value = "消息id", required = true)
                                                 @RequestParam("messageId") Long messageId) {
         int res = messageService.deleteUserViewMessage(userId, messageId);
@@ -54,7 +54,7 @@ public class MessageController {
     @ApiOperation("用户浏览消息更新消息状态")
     @PutMapping("updateMessageView")
     public Result<String> updateMessageView(@ApiParam(name = "userId", value = "用户id", required = true)
-                                            @RequestParam("userId") Long userId,
+                                            @RequestParam("userId") String userId,
                                             @ApiParam(name = "messageId", value = "消息id", required = true)
                                             @RequestParam("messageId") Long messageId) {
         int res = messageService.updateMessageView(userId, messageId);

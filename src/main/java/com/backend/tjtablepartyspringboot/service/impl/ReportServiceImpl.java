@@ -17,10 +17,12 @@ public class ReportServiceImpl implements ReportService {
     ReportMapper reportMapper;
 
     @Override
-    public int addReport(ReportDto reportDto){
+    public Long addReport(ReportDto reportDto){
         Report report = new Report(reportDto);
         int res = reportMapper.insert(report);
-        return res;
+
+        Long reportId = report.getReportId();
+        return reportId;
     }
 
     @Override

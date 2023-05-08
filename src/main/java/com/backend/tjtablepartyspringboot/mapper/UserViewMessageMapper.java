@@ -14,12 +14,12 @@ import java.util.List;
 @Mapper
 public interface UserViewMessageMapper {
     @Select("SELECT * FROM user_view_message WHERE user_id=${userId}")
-    List<UserViewMessage> selectMessageByUserId(@Param("userId") Long userId);
+    List<UserViewMessage> selectMessageByUserId(@Param("userId") String userId);
 
     @Delete("DELETE FROM user_view_message WHERE user_id=${userId} AND message_id=${messageId}")
-    int deleteUserViewMessage(@Param("userId") Long userId, @Param("messageId") Long messageId);
+    int deleteUserViewMessage(@Param("userId") String userId, @Param("messageId") Long messageId);
 
     @Update("UPDATE user_view_message SET is_view=1 WHERE user_id=${userId} AND message_id=${messageId}")
-    int updateMessageView(@Param("userId") Long userId, @Param("messageId") Long messageId);
+    int updateMessageView(@Param("userId") String userId, @Param("messageId") Long messageId);
 
 }

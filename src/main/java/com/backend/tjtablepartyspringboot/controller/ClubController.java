@@ -6,15 +6,23 @@ import com.backend.tjtablepartyspringboot.entity.Activity;
 import com.backend.tjtablepartyspringboot.entity.Announce;
 import com.backend.tjtablepartyspringboot.entity.Club;
 import com.backend.tjtablepartyspringboot.entity.Report;
+import com.backend.tjtablepartyspringboot.mapper.ClubMapper;
 import com.backend.tjtablepartyspringboot.service.ClubService;
+import com.backend.tjtablepartyspringboot.util.FileUtil;
+import com.backend.tjtablepartyspringboot.util.GeoUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Api(tags = {"Club"})
 @RestController
@@ -22,6 +30,9 @@ import java.util.List;
 public class ClubController {
     @Autowired
     ClubService clubService;
+
+    @Autowired
+    ClubMapper clubMapper;
 
     @ApiOperation("根据俱乐部id，返回俱乐部基本信息")
     @GetMapping("getClubInfo")
@@ -61,10 +72,35 @@ public class ClubController {
 
     @ApiOperation("创建新俱乐部")
     @PostMapping("postOneNewClub")
-    public Result<Long> postOneNewClub(@RequestBody Club club)
+    public Result<Map<String, Long>> postOneNewClub(@RequestBody Club club)
     {
-        Long newID = clubService.insertOneNewClub(club);
-        return Result.success(newID);
+        //todo:多个CRUD回滚事务
+        int res = Math.toIntExact(clubService.insertOneNewClub(club));
+        //向club_user表中插入部长与俱乐部的联系
+        res = clubService.addUser(club.getClubId(), club.getManagerId());
+
+        Long clubId = club.getClubId();
+        Map<String, Long> hashMap = new HashMap<>();
+        hashMap.put("clubId", clubId);
+        return Result.success(hashMap);
+    }
+
+    @ApiOperation("创建新俱乐部时上传海报")
+    @PostMapping("postClubPoster")
+    public Result<String> postClubPoster(@RequestParam("file") MultipartFile multipartFile, @RequestParam("clubId") Long clubId)
+    {
+        Club club = clubMapper.selectById(clubId);
+        String url = FileUtil.uploadFile("/club/"+clubId.toString()+"/", multipartFile);
+
+        club.setPosterUrl(url);
+        int res = clubMapper.updateById(club);
+
+        if(res > 0){
+            return Result.success("插入俱乐部海报成功！");
+        }
+        else{
+            return Result.fail(500, "插入俱乐部海报失败");
+        }
     }
 
     @ApiOperation("给俱乐部添加一条公告")
@@ -105,7 +141,7 @@ public class ClubController {
     @ApiOperation("返回指定用户参与的俱乐部")
     @GetMapping("getUserClubs")
     public Result<List<ClubSimpleDto>> getUserClubs(@ApiParam(name="userId", value="用户id", required = true)
-                                                        @RequestParam("userId") Long userId)
+                                                        @RequestParam("userId") String userId)
 
     {
         List<ClubSimpleDto> clubInfoDetailDtoList = clubService.getUserClubSimpleDtos(userId);
@@ -159,7 +195,7 @@ public class ClubController {
     public Result<String> addUser(@ApiParam(name="clubId", value="俱乐部id", required = true)
                                                    @RequestParam("clubId") Long clubId,
                                                @ApiParam(name="userId", value="用户id", required = true)
-                                                    @RequestParam("userId") Long userId)
+                                                    @RequestParam("userId") String userId)
 
     {
         int res = clubService.addUser(clubId, userId);
@@ -176,7 +212,7 @@ public class ClubController {
     public Result<String> removeUser(@ApiParam(name="clubId", value="俱乐部id", required = true)
                                   @RequestParam("clubId") Long clubId,
                                   @ApiParam(name="userId", value="用户id", required = true)
-                                  @RequestParam("userId") Long userId)
+                                  @RequestParam("userId") String userId)
 
     {
         int res = clubService.removeUser(clubId, userId);
@@ -186,6 +222,43 @@ public class ClubController {
         else{
             return Result.fail(500, "删除失败，请检查！");
         }
+    }
+
+    @ApiOperation("俱乐部条件筛选")
+    @PostMapping ("getConditionClubs")
+    public Result<List<ClubSimpleDto>> getConditionClubs(@RequestBody ClubConditionDto clubConditionDto)
+    {
+        Set capacitySet = clubConditionDto.getCapacitySet();
+        String city = clubConditionDto.getCity();
+        String keyword = clubConditionDto.getKeyword();
+        Float latitude = clubConditionDto.getLatitude();
+        Float longitude = clubConditionDto.getLongitude();
+        Float maxDistance = clubConditionDto.getMaxDistance();
+        Float minDistance = clubConditionDto.getMinDistance();
+
+        //1.关键词筛选
+        List<ClubSimpleDto> clubList = clubService.selectByKeyword(keyword);
+
+        //2.容量筛选
+        clubList = clubList.stream()
+                .filter((ClubSimpleDto c) -> capacitySet.contains(c.getCapacity()))
+                .collect(Collectors.toList());
+
+        //3.距离筛选
+        if(maxDistance != null || minDistance != null) {
+            clubList = clubList.stream()
+                    .filter((ClubSimpleDto c) -> {
+                        float dis = GeoUtil.getDistance(longitude, latitude, c.getLongitude(), c.getLatitude());
+                        if (dis >= minDistance && dis <= maxDistance) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    })
+                    .collect(Collectors.toList());
+        }
+
+        return Result.success(clubList);
     }
 
 

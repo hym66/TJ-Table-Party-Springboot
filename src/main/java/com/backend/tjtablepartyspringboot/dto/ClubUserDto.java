@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ClubUserDto {
     Long clubId;
-    Long userId;
+    String userId;
     String role;
     String name;
     String avatar;
