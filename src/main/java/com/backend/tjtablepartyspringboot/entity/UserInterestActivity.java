@@ -22,7 +22,7 @@ import java.util.Date;
 @TableName(value = "user_interest_activity")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserInterestActivity {
-    private Long userId;
+    private String userId;
     private Long activityId;
 
     @DateTimeFormat(pattern="yyyy-MM-dd hh:mm:ss")

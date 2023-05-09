@@ -4,12 +4,14 @@ import com.backend.tjtablepartyspringboot.common.Result;
 import com.backend.tjtablepartyspringboot.entity.*;
 import com.backend.tjtablepartyspringboot.service.ActivityService;
 import com.backend.tjtablepartyspringboot.service.QuestionService;
+import com.backend.tjtablepartyspringboot.util.FileUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.PublicKey;
 import java.util.ArrayList;
@@ -65,12 +67,14 @@ public class ActivityController {
     @GetMapping("/getDetail")
     public Result<Map<String,Object>>getDetail(
             @ApiParam(name = "activityId", value = "活动id", required = true)
-            @RequestParam("activityId") Long activityId
+            @RequestParam("activityId") Long activityId,
+            @ApiParam(name = "userId", value = "用户id", required = true)
+            @RequestParam("userId") String userId
     ){
         Map<String,Object>resultMap=new HashMap<>();
         try
         {
-            resultMap=activityService.getDetail(activityId);
+            resultMap=activityService.getDetail(activityId,userId);
             return Result.success(resultMap);
         }catch (Exception e){
             return Result.fail(0,e.getMessage());
@@ -86,7 +90,7 @@ public class ActivityController {
             @ApiParam(name = "activityId", value = "活动id", required = true)
             @RequestParam("activityId") Long activityId,
             @ApiParam(name = "userId", value = "用户id", required = true)
-            @RequestParam(name ="userId", defaultValue = "1") Long userId
+            @RequestParam(name ="userId") String userId
 
     ){
         List<Map<String,Object>>list=new ArrayList<>();
@@ -147,6 +151,17 @@ public class ActivityController {
     @ApiOperation("输入 筛选参数、排序参数，分页返回list")
     @GetMapping("/getList")
     public Result<Map<String,Object>> getList(
+            @ApiParam(name = "key", value = "关键词搜索", required = false)
+            @RequestParam(name = "key",required = false,defaultValue = "") String key,
+
+            @ApiParam(name = "startDate", value = "开始时间", required = false)
+            @RequestParam(name = "startDate",required = false,defaultValue = "") String startDate,
+            @ApiParam(name = "endDate", value = "结束时间", required = false)
+            @RequestParam(name = "endDate",required = false,defaultValue = "") String endDate,
+
+
+
+
             @ApiParam(name = "pageSize", value = " 单页容量", required = false)
             @RequestParam(name = "pageSize",required = false,defaultValue = "10") Integer pageSize,
             @ApiParam(name = "pageNo", value = "要求第几页", required = false)
@@ -156,9 +171,11 @@ public class ActivityController {
         try
         {
             Map<String,String>filterData=new HashMap<>();
+            filterData.put("startDate",startDate);
+            filterData.put("endDate",endDate);
             Map<String,String>sortData=new HashMap<>();
 
-            Map<String,Object>actList=activityService.getList(filterData,sortData,pageSize,pageNo);
+            Map<String,Object>actList=activityService.getList(key,filterData,sortData,pageSize,pageNo);
 
             resultMap.put("list",actList);
 
@@ -170,7 +187,182 @@ public class ActivityController {
     }
 
 
+    @ApiOperation("输入userId,返回user的活动")
+    @GetMapping("/getUserList")
+    public Result<Map<String,Object>> getUserList(
+            @ApiParam(name = "userId", value = " user ID", required = false)
+            @RequestParam(name = "userId",required = true) String userId
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            Map<String,String>filterData=new HashMap<>();
+            Map<String,String>sortData=new HashMap<>();
 
+            resultMap=activityService.getUserList(userId);
+
+
+
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+    }
+
+
+    @ApiOperation("提交活动海报")
+    @PostMapping("/postPoster")
+    public Result<Map<String,Object>>postPoster(
+            @RequestParam("file") MultipartFile multipartFile,
+            @RequestParam("activityId") Long activityId
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+//        System.out.println(multipartFile);
+
+        try
+        {
+            String url = FileUtil.uploadFile("/activity/poster/"+activityId.toString()+"/", multipartFile);
+            Map<String,Object> map1=activityService.updatePoster(url,activityId);
+            resultMap.put("url",url);
+            resultMap.put("update",map1);
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+    }
+
+
+    @ApiOperation("新建活动")
+    @PostMapping("/postActivity")
+    public Result<Map<String,Object>> postActivity(
+            @ApiParam(name = "activity", value = "activity entity", required = true)
+            @RequestBody(required = true) Activity activity,
+            @ApiParam(name = "wishGame", value = "wishGame", required = true)
+            @RequestParam(name = "wishGame",required = false) String wishGame
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            resultMap=activityService.addActivity(activity,wishGame);
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+    }
+
+
+    @ApiOperation("删除一个活动")
+    @DeleteMapping("/deleteOne")
+    public Result<Map<String,Object>>deleteOne(
+            @ApiParam(name = "activityId", value = "活动id", required = true)
+            @RequestParam(name ="activityId",required = true) Long activityId
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            resultMap=activityService.deleteOne(activityId);
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+
+    }
+
+    @ApiOperation("删除一个user参与活动")
+    @DeleteMapping("/deleteUserJoin")
+    public Result<Map<String,Object>>deleteUserJoin(
+            @ApiParam(name = "activityId", value = "活动id", required = true)
+            @RequestParam(name ="activityId",required = true) Long activityId,
+            @ApiParam(name = "userId", value = "用户id", required = true)
+            @RequestParam(name ="userId",required = true) String userId
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            Integer i= activityService.deleteUserJoin(activityId,userId);
+            resultMap.put("i",i);
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+
+    }
+
+    @ApiOperation("输入activity id，获取活动参与者")
+    @GetMapping("/getParticipator")
+    public Result<Map<String,Object>>getParticipator(
+            @ApiParam(name = "activityId", value = "活动id", required = true)
+            @RequestParam("activityId") Long activityId
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            resultMap=activityService.getActivityParticipator(activityId);
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+
+    }
+
+
+    @ApiOperation("喜欢或者取消喜欢activity")
+    @PostMapping("/doInterest")
+    public Result<Map<String,Object>>doInterest(
+            @ApiParam(name = "activityId", value = "活动id", required = true)
+            @RequestParam("activityId") Long activityId,
+            @ApiParam(name = "userId", value = "user id", required = true)
+            @RequestParam("userId") String userId
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            Integer i=activityService.interest(userId,activityId);
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+
+    }
+
+    @ApiOperation("参与 或者 取消参与activity")
+    @PostMapping("/doJoin")
+    public Result<Map<String,Object>>doJoin(
+            @ApiParam(name = "activityId", value = "活动id", required = true)
+            @RequestParam("activityId") Long activityId,
+            @ApiParam(name = "userId", value = "user id", required = true)
+            @RequestParam("userId") String userId
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            Integer i=activityService.doJoin(userId,activityId);
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+
+    }
+
+
+
+    @ApiOperation("修改活动")
+    @PostMapping("/modify")
+    public Result<Map<String,Object>> modify(
+            @ApiParam(name = "activity", value = "activity entity", required = true)
+            @RequestBody(required = true) Activity activity,
+            @ApiParam(name = "wishGame", value = "wishGame", required = true)
+            @RequestParam(name = "wishGame",required = false) String wishGame
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            resultMap=activityService.addActivity(activity,wishGame);
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+    }
 
 
 //    @ApiOperation("")

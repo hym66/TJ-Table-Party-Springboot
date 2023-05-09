@@ -22,7 +22,7 @@ public class PrivateSite {
     @JsonSerialize(using= ToStringSerializer.class)
     Long privateSiteId;
     @JsonSerialize(using= ToStringSerializer.class)
-    Long creatorId;
+    String creatorId;
     String name;
     String location;
     String picture;

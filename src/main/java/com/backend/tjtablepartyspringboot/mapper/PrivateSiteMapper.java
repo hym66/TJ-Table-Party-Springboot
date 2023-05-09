@@ -3,7 +3,6 @@ package com.backend.tjtablepartyspringboot.mapper;
 import com.backend.tjtablepartyspringboot.entity.PrivateSite;
 import com.backend.tjtablepartyspringboot.entity.PublicSite;
 import org.apache.ibatis.annotations.*;
-
 import java.util.List;
 
 /**

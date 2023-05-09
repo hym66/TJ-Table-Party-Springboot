@@ -25,9 +25,8 @@ public class Report implements Comparable{
     @JsonSerialize(using= ToStringSerializer.class)
     Long reportId;
     @JsonSerialize(using= ToStringSerializer.class)
-    Long reporterId;
-    @JsonSerialize(using= ToStringSerializer.class)
-    Long criminalId;
+    String reporterId;
+    String criminalId;
     String targetType;
     String faultType;
     String photoUrl;
@@ -39,6 +38,7 @@ public class Report implements Comparable{
     Date checkTime;
     Byte isPassed;
     String description;
+    String adminId;
 
     public Report(ReportDto reportDto){
         if(reportDto == null){
@@ -52,8 +52,9 @@ public class Report implements Comparable{
         StringBuilder stringBuilder = new StringBuilder();
         String[] faultTypeList = reportDto.getFaultTypeList();
         for(String str : faultTypeList){
-            stringBuilder.append(str);
+            stringBuilder.append(str + ",");
         }
+        stringBuilder.deleteCharAt(stringBuilder.length()-1);
         this.faultType = String.valueOf(stringBuilder);
 
         this.uploadTime = reportDto.getUploadTime();

@@ -48,7 +48,7 @@ public class Question {
     private String displayAvatar;
     private Integer likeTotal;
     private Integer replyTotal;
-    private Long userId;
+    private String userId;
 
 
 

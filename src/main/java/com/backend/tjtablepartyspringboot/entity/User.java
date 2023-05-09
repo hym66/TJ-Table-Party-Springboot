@@ -16,9 +16,9 @@ import lombok.NoArgsConstructor;
 @TableName(value = "user")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class User {
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.INPUT)
     @JsonSerialize(using=ToStringSerializer.class)
-    private Long userId;
+    private String userId;
     private String nickName;
     private String avatarUrl;
     private String province;

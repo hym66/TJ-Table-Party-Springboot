@@ -22,7 +22,7 @@ import java.util.List;
 @NoArgsConstructor
 public class PublicSiteDto {
     Long publicSiteId;
-    Long creatorId;
+    String creatorId;
     String name;
     String city;
     String location;

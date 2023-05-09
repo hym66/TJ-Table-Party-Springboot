@@ -15,6 +15,7 @@ import com.qcloud.cos.model.PutObjectResult;
 import com.qcloud.cos.model.StorageClass;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
@@ -46,8 +47,8 @@ public class ReportController {
     @ApiOperation("新增一个举报单")
     @PostMapping("addReport")
     public Result<Map> addReport(@RequestBody ReportDto reportDto) {
-        int res = reportService.addReport(reportDto);
-        Long reportId = reportDto.getReportId();
+        reportDto.setUploadTime(new Date());
+        Long reportId = reportService.addReport(reportDto);
 
         Map<String, Long> hashMap = new HashMap();
         hashMap.put("reportId", reportId);
@@ -58,19 +59,25 @@ public class ReportController {
     @ApiOperation("新增一个举报单图片")
     @PostMapping("addReportPhoto")
     public Result<String> addReportPhoto(@RequestParam("file") MultipartFile multipartFile, @RequestParam("reportId") Long reportId){
-        //更新数据库中存储的图片url
-        Report report = reportService.selectReportByReportId(reportId);
+        String lock = "";
 
-        String url = FileUtil.uploadFile("/report/"+reportId.toString()+"/", multipartFile);
+        synchronized (lock) {
+            //更新数据库中存储的图片url
+            Report report = reportService.selectReportByReportId(reportId);
 
-        String oldUrl = report.getPhotoUrl();
-        String newUrl = oldUrl == null ? url : oldUrl + url;
-        report.setPhotoUrl(oldUrl + newUrl + ";");
-        reportService.updateReport(report);
+            String url = FileUtil.uploadFile("/report/" + reportId.toString() + "/", multipartFile);
 
-        return Result.success(url);
+            String oldUrl = report.getPhotoUrl();
+            String newUrl = oldUrl == null ? url : oldUrl + url;
+            report.setPhotoUrl(newUrl + ";");
+            reportService.updateReport(report);
+            return Result.success(url);
+        }
+
+
 
     }
+
 
     @ApiOperation("根据举报单id，获取举报单")
     @GetMapping("getReportById")
@@ -89,5 +96,23 @@ public class ReportController {
         //按时间升序
         reportDtoList.stream().sorted().collect(Collectors.toList());
         return Result.success(reportDtoList);
+    }
+
+    @ApiOperation("审核举报单")
+    @GetMapping("checkReport")
+    public Result<String> checkReport(@ApiParam(name="reportId", value="举报单id", required = true)
+                                   @RequestParam("reportId") Long reportId,
+                                   @ApiParam(name="agree", value="是否同意该场地入驻", required = true)
+                                   @RequestParam("agree") Boolean agree,
+                                   @ApiParam(name="adminId", value="审核的管理员id", required = true)
+                                   @RequestParam("adminId") String adminId)
+    {
+        int res = reportService.checkReport(reportId, agree, adminId);
+        if(res > 0){
+            return Result.success("审核保存成功！");
+        }
+        else{
+            return Result.fail(500,"审核失败！检查后端");
+        }
     }
 }

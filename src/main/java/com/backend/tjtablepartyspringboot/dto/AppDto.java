@@ -21,7 +21,7 @@ public class AppDto {
     @JsonSerialize(using= ToStringSerializer.class)
     Long publicSiteId;
     @JsonSerialize(using= ToStringSerializer.class)
-    Long creatorId;
+    String creatorId;
     String name;
     String city;
     String location;

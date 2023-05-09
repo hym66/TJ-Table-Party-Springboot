@@ -55,4 +55,28 @@ public interface TrpgService {
                              Map<String,String>sortData,
                              Integer pageSize,Integer pageNo);
 
+    /**
+     * 新增一条trpg private
+     */
+    Map<String,Object>addTrpgPrivate(TrpgPrivate trpg);
+
+    /**
+     * 输入trpg id，删除这个私人 trpg
+     */
+    Integer deleteTrpgPrivate(String trpgId);
+
+
+    /**
+     * 输入userId，返回该user所有的private trpg 简要信息
+     */
+    Map<String,Object>getPrivateTrpgByUserId(String userId);
+
+    /**
+     * 重置一个 trpg 的poster字段
+     */
+    Map<String,Object>updatePoster(String posterUrl,String trpgId);
+
+
+
+
 }

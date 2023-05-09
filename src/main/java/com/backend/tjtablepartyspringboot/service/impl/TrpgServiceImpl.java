@@ -2,12 +2,15 @@ package com.backend.tjtablepartyspringboot.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.backend.tjtablepartyspringboot.entity.Activity;
 import com.backend.tjtablepartyspringboot.entity.TrpgPrivate;
 import com.backend.tjtablepartyspringboot.entity.TrpgPublic;
 import com.backend.tjtablepartyspringboot.mapper.TrpgPrivateMapper;
 import com.backend.tjtablepartyspringboot.mapper.TrpgPublicMapper;
 import com.backend.tjtablepartyspringboot.service.TrpgService;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -268,6 +271,24 @@ public class TrpgServiceImpl implements TrpgService {
     public Map<String,Object>search(String key,Map<String,String>filterData,
                                     Map<String,String>sortData,
                                   Integer pageSize,Integer pageNo){
+
+        //解析filter数据
+        List<String>filter_supportPeople=List.of(filterData.get("filter_supportPeople").split(","));
+        filter_supportPeople=filter_supportPeople.stream().filter(ele->ele!="").collect(Collectors.toList());
+
+        List<String>filter_recommendPeople=List.of(filterData.get("filter_recommendPeople").split(","));
+        filter_recommendPeople=filter_recommendPeople.stream().filter(ele->ele!="").collect(Collectors.toList());
+
+
+        List<String>filter_genre=List.of(filterData.get("filter_genre").split(","));
+        filter_genre=filter_genre.stream().filter(ele->ele!="").collect(Collectors.toList());
+
+
+        List<String>filter_difficulty=List.of(filterData.get("filter_difficulty").split(","));
+        filter_difficulty=filter_difficulty.stream().filter(ele->ele!="").collect(Collectors.toList());
+
+
+
         Map<String,Object>map=new HashMap<>();
 
         List<TrpgPublic>resultList=new ArrayList<>();
@@ -277,10 +298,53 @@ public class TrpgServiceImpl implements TrpgService {
 
         //遍历public trpg 表，任何标题包含了key的，都add
         QueryWrapper<TrpgPublic>qw1=new QueryWrapper<>();
-        qw1.select("trpg_id","title_name","poster","genre","support_num","recommend_num","average_duration");
+        qw1.select("trpg_id","title_name","poster","genre","support_num","recommend_num","average_duration","publish_year");
 
         resultList=trpgPublicMapper.selectList(qw1);
         resultList=resultList.stream().filter(t->t.getTitleName().toLowerCase().contains(_key)).collect(Collectors.toList());
+
+
+        //filter
+        //filter_supportPeople_str
+        for (String supportPeople :filter_supportPeople){
+            resultList=resultList.stream().filter(t->t.getSupportNum().contains("#"+supportPeople+"#")).collect(Collectors.toList());
+        }
+
+        //filter_recommendPeople_str
+        for (String recommendPeople :filter_recommendPeople){
+            List<TrpgPublic>notNullList=resultList.stream().filter(t->t.getRecommendNum()!=null).collect(Collectors.toList());
+            resultList=notNullList.stream().filter(t->t.getRecommendNum().contains("#"+recommendPeople+"#")).collect(Collectors.toList());
+        }
+
+        //filter_genre_str
+        for (String genre :filter_genre){
+            List<TrpgPublic>notNullList=resultList.stream().filter(t->t.getGenre()!=null).collect(Collectors.toList());
+            resultList=notNullList.stream().filter(t->t.getGenre().contains("#"+genre)).collect(Collectors.toList());
+        }
+
+
+
+        //sort 排序
+        //0 不排序，-1逆序，1正序
+        String sort_titleName=sortData.get("sort_titleName");
+        String sort_publishYear=sortData.get("sort_publishYear");
+
+        if (sort_titleName.equals("1")){
+            resultList=resultList.stream().sorted(Comparator.comparing(TrpgPublic::getTitleName)).collect(Collectors.toList());
+
+        }else if (sort_titleName.equals("-1")){
+            resultList=resultList.stream().sorted(Comparator.comparing(TrpgPublic::getTitleName).reversed()).collect(Collectors.toList());
+
+        }
+
+        if (sort_publishYear.equals("1")){
+            resultList=resultList.stream().sorted(Comparator.comparing(TrpgPublic::getPublishYear)).collect(Collectors.toList());
+
+
+        }else if (sort_publishYear.equals("-1")){
+            resultList=resultList.stream().sorted(Comparator.comparing(TrpgPublic::getPublishYear).reversed()).collect(Collectors.toList());
+
+        }
 
 
 
@@ -307,6 +371,19 @@ public class TrpgServiceImpl implements TrpgService {
 
     }
 
+
+    @Override
+    public Map<String,Object>getPrivateTrpgByUserId(String userId){
+        Map<String,Object>map=new HashMap<>();
+        List<TrpgPrivate>resultList=new ArrayList<>();
+        QueryWrapper<TrpgPrivate>qw=new QueryWrapper<>();
+        qw.select("trpg_id","title_name","poster","genre","support_num","recommend_num","average_duration")
+                .eq("user_id",userId);
+
+        resultList=trpgPrivateMapper.selectList(qw);
+        map.put("list",resultList);
+        return map;
+    }
 
     @Override
     public  Map<String,Object>parseTrpgEntity(TrpgPublic trpg){
@@ -397,4 +474,65 @@ public class TrpgServiceImpl implements TrpgService {
 
         return map;
     }
+
+
+    @Override
+    public Map<String,Object>addTrpgPrivate(TrpgPrivate trpg){
+        Map<String,Object>resultMap=new HashMap<>();
+        Integer i=trpgPrivateMapper.insert(trpg);
+        String trpgId=trpg.getTrpgId();
+        //修改id，保证A开头
+        trpgPrivateMapper.update(
+                null,
+                Wrappers.<TrpgPrivate>lambdaUpdate()
+                        .eq(TrpgPrivate::getTrpgId,trpgId)
+                        .set(TrpgPrivate::getTrpgId,"A"+trpgId)
+                );
+        trpgId="A"+trpgId;
+        resultMap.put("i",i);
+        resultMap.put("trpgId",trpgId);
+        return resultMap;
+    }
+
+
+
+
+
+    @Override
+    public Map<String,Object>updatePoster(String posterUrl,String trpgId){
+        Map<String,Object>resultMap=new HashMap<>();
+        Integer i=0;
+        //区分private 和public
+        if (trpgId.charAt(0)=='A'){
+            i = trpgPrivateMapper.update(
+                    null,
+                    Wrappers.<TrpgPrivate>lambdaUpdate()
+                            .eq(TrpgPrivate::getTrpgId,trpgId)
+                            .set(TrpgPrivate::getPoster,posterUrl)
+            );
+        }
+        else {
+            i = trpgPublicMapper.update(
+                    null,
+                    Wrappers.<TrpgPublic>lambdaUpdate()
+                            .eq(TrpgPublic::getTrpgId,trpgId)
+                            .set(TrpgPublic::getPoster,posterUrl)
+            );
+        }
+        resultMap.put("i",i);
+
+        return resultMap;
+    }
+
+
+
+    @Override
+    public Integer deleteTrpgPrivate(String trpgId){
+        QueryWrapper<TrpgPrivate>qw=new QueryWrapper<>();
+        qw.eq("trpg_id",trpgId);
+        Integer i=trpgPrivateMapper.delete(qw);
+
+        return i;
+    }
+
 }

@@ -22,7 +22,7 @@ import java.util.Date;
 @TableName(value = "user_like_reply")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserLikeReply {
-    private Long userId;
+    private String userId;
     private Long replyId;
 
     @DateTimeFormat(pattern="yyyy-MM-dd hh:mm:ss")
