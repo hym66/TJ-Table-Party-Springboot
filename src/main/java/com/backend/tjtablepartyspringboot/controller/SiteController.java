@@ -2,12 +2,13 @@ package com.backend.tjtablepartyspringboot.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.backend.tjtablepartyspringboot.common.Result;
-import com.backend.tjtablepartyspringboot.dto.PublicSiteBriefDto;
-import com.backend.tjtablepartyspringboot.dto.PublicSiteDto;
-import com.backend.tjtablepartyspringboot.dto.SiteTimeDto;
+import com.backend.tjtablepartyspringboot.dto.*;
 import com.backend.tjtablepartyspringboot.entity.*;
+import com.backend.tjtablepartyspringboot.mapper.PublicSiteMapper;
+import com.backend.tjtablepartyspringboot.mapper.SiteTypeMapper;
 import com.backend.tjtablepartyspringboot.service.SiteService;
 import com.backend.tjtablepartyspringboot.util.FileUtil;
+import com.backend.tjtablepartyspringboot.util.GeoUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -21,6 +22,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author 2051196 刘一飞
@@ -45,6 +47,9 @@ public class SiteController {
 
     @Autowired
     private SiteService siteService;
+
+    @Autowired
+    private SiteTypeMapper siteTypeMapper;
 
     @ApiOperation("获取所有公共场地信息")
     @GetMapping("getPublicSiteList")
@@ -151,6 +156,48 @@ public class SiteController {
         int res = siteService.deletePrivateSite(privateSiteId);
         if (res == 0) return Result.fail(400, "删除私人场地失败");
         else return Result.success("删除私人场地成功");
+    }
+
+    @ApiOperation("场地条件筛选")
+    @PostMapping("getConditionSites")
+    public Result<List<PublicSiteBriefDto>> getConditionSites(@RequestBody SiteConditionDto siteConditionDto) {
+        Integer maxCapacity = siteConditionDto.getMaxCapacity();
+        Integer minCapacity = siteConditionDto.getMinCapacity();
+        String city = siteConditionDto.getCity();
+        String keyword = siteConditionDto.getKeyword();
+        Float latitude = siteConditionDto.getLatitude();
+        Float longitude = siteConditionDto.getLongitude();
+        Float maxDistance = siteConditionDto.getMaxDistance();
+        Float minDistance = siteConditionDto.getMinDistance();
+
+        //1.关键词筛选
+        List<PublicSite> publicSiteList = siteService.selectByKeyword(keyword);
+
+
+        //2.容量筛选
+        publicSiteList = publicSiteList.stream()
+                .filter((PublicSite c) -> ((c.getCapacity() <= maxCapacity) && (c.getCapacity() >= minCapacity)))
+                .collect(Collectors.toList());
+
+        //3.距离筛选
+        if (maxDistance != null || minDistance != null) {
+            publicSiteList = publicSiteList.stream()
+                    .filter((PublicSite c) -> {
+                        float dis = GeoUtil.getDistance(longitude, latitude, c.getLongitude(), c.getLatitude());
+                        return dis >= minDistance && dis <= maxDistance;
+                    })
+                    .collect(Collectors.toList());
+        }
+        ArrayList<PublicSiteBriefDto> res = new ArrayList<>();
+        for (PublicSite ps : publicSiteList) {
+            String[] type = ps.getType().split(",");
+            for (int i = 0; i < type.length; i++) {
+                type[i] = siteTypeMapper.selectTypeNameById(Long.valueOf(type[i]));
+            }
+            PublicSiteBriefDto publicSiteBriefDto = new PublicSiteBriefDto(ps.getPublicSiteId(), ps.getName(), ps.getPicture(), ps.getCity(), ps.getLocation(), type, ps.getAvgCost(), ps.getCapacity(), ps.getGameNum());
+            res.add(publicSiteBriefDto);
+        }
+        return Result.success(res);
     }
 
 }

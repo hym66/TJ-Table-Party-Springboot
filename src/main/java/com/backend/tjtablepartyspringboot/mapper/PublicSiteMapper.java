@@ -25,4 +25,7 @@ public interface PublicSiteMapper extends BaseMapper<PublicSite>{
     @Options(useGeneratedKeys = true, keyProperty = "publicSite.publicSiteId")
     int insertPublicSite(@Param("publicSite") PublicSite publicSite);
 
+    @Select("SELECT * FROM public_site WHERE name LIKE '%${keyword}%'")
+    List<PublicSite> selectByKeyword(@Param("keyword") String keyword);
+
 }

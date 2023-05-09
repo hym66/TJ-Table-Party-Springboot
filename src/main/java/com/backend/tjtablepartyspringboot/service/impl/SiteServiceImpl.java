@@ -124,4 +124,9 @@ public class SiteServiceImpl implements SiteService {
     public int deletePrivateSite(Long privateSiteId) {
         return privateSiteMapper.deletePrivateSite(privateSiteId);
     }
+
+    @Override
+    public List<PublicSite> selectByKeyword(String keyword) {
+        return publicSiteMapper.selectByKeyword(keyword);
+    }
 }

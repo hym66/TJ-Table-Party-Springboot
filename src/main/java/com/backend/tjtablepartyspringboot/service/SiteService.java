@@ -30,4 +30,6 @@ public interface SiteService {
     int insertPrivateSite(PrivateSite privateSite);
 
     int deletePrivateSite(Long privateSiteId);
+
+    public List<PublicSite> selectByKeyword(String keyword);
 }
