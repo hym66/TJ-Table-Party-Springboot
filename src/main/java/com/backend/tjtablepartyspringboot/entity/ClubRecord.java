@@ -19,7 +19,7 @@ import java.util.Date;
 @NoArgsConstructor
 @TableName(value = "club_record")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ClubRecord {
+public class ClubRecord implements Comparable {
     @TableId(type = IdType.AUTO)
     @JsonSerialize(using= ToStringSerializer.class)
     Long recordId;
@@ -29,4 +29,18 @@ public class ClubRecord {
     @DateTimeFormat(pattern="yyyy-MM-dd hh:mm:ss")
     @JsonFormat(shape = JsonFormat.Shape.STRING , pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     Date time;
+
+    @Override
+    public int compareTo(Object o) {
+        ClubRecord c = (ClubRecord) o;
+        if(time.before(c.getTime())){
+            return -1;
+        }
+        else if(time.after(c.getTime())){
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
 }
