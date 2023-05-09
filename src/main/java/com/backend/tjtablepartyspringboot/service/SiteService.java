@@ -28,4 +28,6 @@ public interface SiteService {
     int insertPublicSite(PublicSite publicSite);
     int insertPublicSiteTime(PublicSiteTime publicSiteTime);
     int insertPrivateSite(PrivateSite privateSite);
+
+    int deletePrivateSite(Long privateSiteId);
 }

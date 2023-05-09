@@ -23,4 +23,7 @@ public interface PrivateSiteMapper {
     @Options(useGeneratedKeys = true, keyProperty = "privateSite.privateSiteId")
     int insertPrivateSite(@Param("privateSite") PrivateSite privateSite);
 
+    @Delete("DELETE FROM private_site WHERE private_site_id=#{privateSiteId}")
+    int deletePrivateSite(@Param("privateSiteId") Long privateSiteId);
+
 }

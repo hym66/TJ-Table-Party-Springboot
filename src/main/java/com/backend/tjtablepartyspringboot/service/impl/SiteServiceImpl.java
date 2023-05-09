@@ -119,4 +119,9 @@ public class SiteServiceImpl implements SiteService {
     public int insertPrivateSite(PrivateSite privateSite) {
         return privateSiteMapper.insertPrivateSite(privateSite);
     }
+
+    @Override
+    public int deletePrivateSite(Long privateSiteId) {
+        return privateSiteMapper.deletePrivateSite(privateSiteId);
+    }
 }

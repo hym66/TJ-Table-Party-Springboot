@@ -62,14 +62,14 @@ public class SiteController {
     @ApiOperation("根据用户ID获取私人场地信息")
     @GetMapping("getPrivateSiteByCreatorId")
     public Result<List<PrivateSite>> getPrivateSiteByCreatorId(@ApiParam(name = "creatorId", value = "创建者id", required = true)
-                                                   @RequestParam("creatorId") Long creatorId) {
+                                                               @RequestParam("creatorId") Long creatorId) {
         return Result.success(siteService.selectPrivateSiteByCreatorId(creatorId));
     }
 
     @ApiOperation("根据ID获取私人场地详细信息")
     @GetMapping("getPrivateSiteById")
     public Result<PrivateSite> getPrivateSiteById(@ApiParam(name = "privateSiteId", value = "私人场地id", required = true)
-                                                   @RequestParam("privateSiteId") Long privateSiteId) {
+                                                  @RequestParam("privateSiteId") Long privateSiteId) {
         return Result.success(siteService.selectPrivateSiteById(privateSiteId));
     }
 
@@ -89,7 +89,7 @@ public class SiteController {
     @ApiOperation("创建公共场地")
     @PostMapping("createPublicSite")
     public Result<String> createPublicSite(@RequestParam("file") MultipartFile multipartFile,
-                                           @RequestParam("creatorId") Long creatorId,
+                                           @RequestParam("creatorId") String creatorId,
                                            @RequestParam("name") String name,
                                            @RequestParam("type") String type,
                                            @RequestParam("introduction") String introduction,
@@ -102,7 +102,7 @@ public class SiteController {
                                            @RequestParam("openTime") String openTime,
                                            @RequestParam("latitude") float latitude,
                                            @RequestParam("longitude") float longitude
-                                           ) throws ParseException {
+    ) throws ParseException {
         List<SiteTimeDto> openTime_new = new ArrayList<SiteTimeDto>(JSONArray.parseArray(openTime, SiteTimeDto.class));
 
         // 图片云存储 返回url
@@ -131,7 +131,7 @@ public class SiteController {
     @ApiOperation("创建私人场地")
     @PostMapping("createPrivateSite")
     public Result<String> createPrivateSite(@RequestParam("file") MultipartFile multipartFile,
-                                            @RequestParam("creatorId") Long creatorId,
+                                            @RequestParam("creatorId") String creatorId,
                                             @RequestParam("name") String name,
                                             @RequestParam("location") String location,
                                             @RequestParam("latitude") float latitude,
@@ -143,4 +143,14 @@ public class SiteController {
         if (res == 0) return Result.fail(400, "创建私人场地失败");
         else return Result.success("创建私人场地成功");
     }
+
+    @ApiOperation("删除私人场地")
+    @DeleteMapping("deletePrivateSite")
+    public Result<String> deletePrivateSite(@ApiParam(name = "privateSiteId", value = "私人场地Id", required = true)
+                                            @RequestParam("privateSiteId") Long privateSiteId) {
+        int res = siteService.deletePrivateSite(privateSiteId);
+        if (res == 0) return Result.fail(400, "删除私人场地失败");
+        else return Result.success("删除私人场地成功");
+    }
+
 }

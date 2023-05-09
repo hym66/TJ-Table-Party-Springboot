@@ -29,7 +29,7 @@ public class PrivateSite {
     float latitude;
     float longitude;
 
-    public PrivateSite(Long creatorId, String name, String location, String picture, float latitude, float longitude) {
+    public PrivateSite(String creatorId, String name, String location, String picture, float latitude, float longitude) {
         this.creatorId = creatorId;
         this.name = name;
         this.location = location;
