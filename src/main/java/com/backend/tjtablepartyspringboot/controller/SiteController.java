@@ -175,12 +175,15 @@ public class SiteController {
 
 
         //2.容量筛选
-        publicSiteList = publicSiteList.stream()
-                .filter((PublicSite c) -> ((c.getCapacity() <= maxCapacity) && (c.getCapacity() >= minCapacity)))
-                .collect(Collectors.toList());
+        if (maxCapacity != -1 && minCapacity != -1) {
+            publicSiteList = publicSiteList.stream()
+                    .filter((PublicSite c) -> ((c.getCapacity() <= maxCapacity) && (c.getCapacity() >= minCapacity)))
+                    .collect(Collectors.toList());
+        }
+
 
         //3.距离筛选
-        if (maxDistance != null || minDistance != null) {
+        if (maxDistance != -1 && minDistance != -1) {
             publicSiteList = publicSiteList.stream()
                     .filter((PublicSite c) -> {
                         float dis = GeoUtil.getDistance(longitude, latitude, c.getLongitude(), c.getLatitude());
