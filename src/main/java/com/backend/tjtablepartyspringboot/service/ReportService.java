@@ -13,5 +13,5 @@ public interface ReportService {
     Report selectReportByReportId(Long reportId);
     int updateReport(Report report);
     List<ReportDto> selectUnchecked();
-    int checkReport(Long reportId, Boolean agree, String adminId);
+    int checkReport(Long reportId, Boolean agree, String adminId, String punishment);
 }

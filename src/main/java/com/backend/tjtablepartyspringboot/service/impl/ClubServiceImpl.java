@@ -47,9 +47,14 @@ public class ClubServiceImpl implements ClubService {
         for(Announce a : announceList){
             String uid = a.getAnnounceUserId();
             //查询人名和头像
-            User user = userMapper.selectById(uid);
-            String name = user.getNickName();
-            String avatar = user.getAvatarUrl();
+//            User user = userMapper.selectById(uid);
+//            String name = user.getNickName();
+//            String avatar = user.getAvatarUrl();
+
+            String name = "姓名";
+            String avatar = "";
+
+
             ClubAnnounceDto dto = new ClubAnnounceDto(a, name, avatar);
             clubAnnounceDtoList.add(dto);
         }
