@@ -305,6 +305,66 @@ public class ActivityController {
 
     }
 
+
+    @ApiOperation("喜欢或者取消喜欢activity")
+    @PostMapping("/doInterest")
+    public Result<Map<String,Object>>doInterest(
+            @ApiParam(name = "activityId", value = "活动id", required = true)
+            @RequestParam("activityId") Long activityId,
+            @ApiParam(name = "userId", value = "user id", required = true)
+            @RequestParam("userId") String userId
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            Integer i=activityService.interest(userId,activityId);
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+
+    }
+
+    @ApiOperation("参与 或者 取消参与activity")
+    @PostMapping("/doJoin")
+    public Result<Map<String,Object>>doJoin(
+            @ApiParam(name = "activityId", value = "活动id", required = true)
+            @RequestParam("activityId") Long activityId,
+            @ApiParam(name = "userId", value = "user id", required = true)
+            @RequestParam("userId") String userId
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            Integer i=activityService.doJoin(userId,activityId);
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+
+    }
+
+
+
+    @ApiOperation("修改活动")
+    @PostMapping("/modify")
+    public Result<Map<String,Object>> modify(
+            @ApiParam(name = "activity", value = "activity entity", required = true)
+            @RequestBody(required = true) Activity activity,
+            @ApiParam(name = "wishGame", value = "wishGame", required = true)
+            @RequestParam(name = "wishGame",required = false) String wishGame
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            resultMap=activityService.addActivity(activity,wishGame);
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+    }
+
+
 //    @ApiOperation("")
 //    @GetMapping("/getByActivityId")
 //    public Result<Map<String,Object>>getByActivityId(

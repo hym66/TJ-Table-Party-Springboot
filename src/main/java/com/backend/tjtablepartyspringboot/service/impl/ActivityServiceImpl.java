@@ -164,7 +164,7 @@ public class ActivityServiceImpl implements ActivityService {
 
         //passer
 
-        if(userId==creatorId){
+        if(userId.equals(creatorId)){
             roles.add("creator");
         }
         if (interestAct!=null){
@@ -175,9 +175,8 @@ public class ActivityServiceImpl implements ActivityService {
             roles.add("participator");
 
         }
-        if (roles.size()==0){
+        if (!roles.contains("creator")&&!roles.contains("participator")){
             roles.add("passer");
-
         }
 
         detailMap.put("roles",roles);
@@ -752,7 +751,54 @@ public class ActivityServiceImpl implements ActivityService {
         return i;
     }
 
+    @Override
+    public Integer interest(String userId,Long activityId){
+        Integer i=0;
+        //判断是否interest过
+        QueryWrapper<UserInterestActivity>qw=new QueryWrapper<>();
+        qw.eq("user_id",userId).eq("activity_id",activityId);
+        UserInterestActivity oldOne=userInterestActivityMapper.selectOne(qw);
+        if (oldOne==null){
+            UserInterestActivity userInterestActivity=new UserInterestActivity(userId,activityId,new Date());
+            i = userInterestActivityMapper.insert(userInterestActivity);
+        }else {
+            i=userInterestActivityMapper.delete(qw);
+        }
+
+        return i;
+    }
+
+    @Override
+    public Integer doJoin(String userId,Long activityId){
+        Integer i=0;
+        QueryWrapper<UserJoinActivity>qw=new QueryWrapper<>();
+        qw.eq("user_id",userId).eq("activity_id",activityId);
+        UserJoinActivity oldOne=userJoinActivityMapper.selectOne(qw);
+        if (oldOne==null){
+            UserJoinActivity userJoinActivity=new UserJoinActivity(userId,activityId,new Date());
+            i=userJoinActivityMapper.insert(userJoinActivity);
+        }
+        else {
+            i=userJoinActivityMapper.delete(qw);
+        }
+
+
+        return i;
+    }
+
+
+    @Override
+    public Map<String,Object>modify(Activity activity,String wishGame){
+        Map<String,Object>resultMap=new HashMap<>();
+        //修改activity表内容
+
+
+        //修改activity has trpg
 
 
 
+        return resultMap;
+
+
+    }
 }

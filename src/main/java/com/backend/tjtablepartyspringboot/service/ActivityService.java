@@ -130,6 +130,21 @@ public interface ActivityService {
                                Integer pageSize,Integer pageNo);
 
 
+    /**
+     *  喜欢 或者 取消喜欢
+     */
+    Integer interest(String userId,Long activityId);
 
+
+    /**
+     * 参与 / 取消参与
+     */
+    Integer doJoin(String userId,Long activityId);
+
+    /**
+     * 修改活动,不包括图片
+     *  不是完全覆盖，传入的activity含有什么字段，才更新什么字段
+     */
+    Map<String,Object>modify(Activity activity,String wishGame);
 
 }
