@@ -47,9 +47,14 @@ public class ClubServiceImpl implements ClubService {
         for(Announce a : announceList){
             String uid = a.getAnnounceUserId();
             //查询人名和头像
-            User user = userMapper.selectById(uid);
-            String name = user.getNickName();
-            String avatar = user.getAvatarUrl();
+//            User user = userMapper.selectById(uid);
+//            String name = user.getNickName();
+//            String avatar = user.getAvatarUrl();
+
+            String name = "姓名";
+            String avatar = "";
+
+
             ClubAnnounceDto dto = new ClubAnnounceDto(a, name, avatar);
             clubAnnounceDtoList.add(dto);
         }
@@ -93,6 +98,9 @@ public class ClubServiceImpl implements ClubService {
     @Override
     public ClubRecordDetailDto selectClubRecord(Long clubId) {
         List<ClubRecord> clubRecordList = clubRecordMapper.selectRecordsByClubId(clubId);
+        //按时间降序排序
+        clubRecordList.stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
+
         ClubRecordDetailDto clubRecordDetailDto = new ClubRecordDetailDto(clubRecordList);
         return clubRecordDetailDto;
     }
@@ -217,6 +225,7 @@ public class ClubServiceImpl implements ClubService {
         ClubRecord clubRecord = new ClubRecord();
         clubRecord.setClubId(clubId);
         clubRecord.setContent(content);
+
         clubRecord.setTime(new Date());
 
         int res = clubRecordMapper.insert(clubRecord);

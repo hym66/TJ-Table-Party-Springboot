@@ -20,10 +20,8 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import javax.imageio.plugins.tiff.GeoTIFFTagSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Api(tags = {"Club"})
@@ -152,7 +150,7 @@ public class ClubController {
         return Result.success(clubAnnounceDtoList);
     }
 
-    @ApiOperation("返回同城俱乐部，按距离排序（但是按距离排序还没做）")
+    @ApiOperation("返回同城俱乐部，按距离排序")
     @GetMapping("getCityClubs")
     public Result<List<ClubSimpleDto>> getCityClubs(@ApiParam(name="city", value="城市", required = true)
                                                           @RequestParam("city") String city,
@@ -162,6 +160,17 @@ public class ClubController {
                                                             @RequestParam("latitude") Float latitude)
     {
         List<ClubSimpleDto> clubInfoDetailDtoList = clubService.getCityClubSimpleDtos(city, longitude, latitude);
+        for(ClubSimpleDto c : clubInfoDetailDtoList){
+            c.setDistance(GeoUtil.getDistance(latitude, longitude, c.getLatitude(), c.getLongitude()));
+        }
+        // 使用匿名比较器排序，按俱乐部按距离升序排序
+        Collections.sort(clubInfoDetailDtoList, new Comparator<ClubSimpleDto>() {
+            @Override
+            public int compare(ClubSimpleDto p1, ClubSimpleDto p2) {
+                return (int) (p2.getDistance() - p1.getDistance());
+            }
+        });
+
         return Result.success(clubInfoDetailDtoList);
     }
 
