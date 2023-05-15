@@ -15,5 +15,6 @@ public class UserInfoDto {
     private String province;
     private String city;
     private String gender;
+    private String ban;
     // getter and setter methods
 }
