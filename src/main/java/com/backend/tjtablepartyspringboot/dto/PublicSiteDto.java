@@ -42,4 +42,6 @@ public class PublicSiteDto {
     String[] tag;
     int status;
     List<PublicSiteTimeDto> openTime;
+    float latitude;
+    float longitude;
 }

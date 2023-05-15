@@ -81,7 +81,7 @@ public class SiteServiceImpl implements SiteService {
             PublicSiteTimeDto publicSiteTimeDto = new PublicSiteTimeDto(weekdayTrans(pst.getWeekday()), pst.getStartTime(), pst.getEndTime(), pst.isOpen());
             openTime.add(publicSiteTimeDto);
         }
-        PublicSiteDto publicSiteDto = new PublicSiteDto(ps.getPublicSiteId(), ps.getCreatorId(), ps.getName(), ps.getCity(), ps.getLocation(), ps.getPicture(), ps.getIntroduction(), ps.getAvgCost(), ps.getCapacity(), ps.getGameNum(), ps.getPhone(), ps.getUploadTime(), ps.getCheckTime(), type, tag, ps.getStatus(), openTime);
+        PublicSiteDto publicSiteDto = new PublicSiteDto(ps.getPublicSiteId(), ps.getCreatorId(), ps.getName(), ps.getCity(), ps.getLocation(), ps.getPicture(), ps.getIntroduction(), ps.getAvgCost(), ps.getCapacity(), ps.getGameNum(), ps.getPhone(), ps.getUploadTime(), ps.getCheckTime(), type, tag, ps.getStatus(), openTime, ps.getLatitude(), ps.getLongitude());
         return publicSiteDto;
     }
 
