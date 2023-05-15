@@ -19,7 +19,7 @@ public interface SiteService {
 
     PublicSiteDto selectPublicSiteById(Long publicSiteId);
 
-    List<PrivateSite> selectPrivateSiteByCreatorId(Long creatorId);
+    List<PrivateSite> selectPrivateSiteByCreatorId(String creatorId);
 
     PrivateSite selectPrivateSiteById(Long privateSiteId);
     List<SiteType> selectAllSiteType();

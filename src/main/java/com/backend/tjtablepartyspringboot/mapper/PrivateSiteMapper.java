@@ -14,7 +14,7 @@ import java.util.List;
 public interface PrivateSiteMapper {
 
     @Select("SELECT * FROM private_site WHERE creator_id=#{creatorId}")
-    List<PrivateSite> selectPrivateSiteByCreatorId(@Param("creatorId") Long creatorId);
+    List<PrivateSite> selectPrivateSiteByCreatorId(@Param("creatorId") String creatorId);
 
     @Select("SELECT * FROM private_site WHERE private_site_id=#{privateSiteId}")
     PrivateSite selectPrivateSiteById(@Param("privateSiteId") Long privateSiteId);

@@ -67,7 +67,7 @@ public class SiteController {
     @ApiOperation("根据用户ID获取私人场地信息")
     @GetMapping("getPrivateSiteByCreatorId")
     public Result<List<PrivateSite>> getPrivateSiteByCreatorId(@ApiParam(name = "creatorId", value = "创建者id", required = true)
-                                                               @RequestParam("creatorId") Long creatorId) {
+                                                               @RequestParam("creatorId") String creatorId) {
         return Result.success(siteService.selectPrivateSiteByCreatorId(creatorId));
     }
 
