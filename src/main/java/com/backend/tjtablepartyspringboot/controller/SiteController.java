@@ -140,10 +140,11 @@ public class SiteController {
                                             @RequestParam("name") String name,
                                             @RequestParam("location") String location,
                                             @RequestParam("latitude") float latitude,
-                                            @RequestParam("longitude") float longitude) {
+                                            @RequestParam("longitude") float longitude,
+                                            @RequestParam("locationTitle") String locationTitle) {
         // 图片云存储 返回url
         String picture = FileUtil.uploadFile("/report/" + creatorId.toString() + "/", multipartFile);
-        PrivateSite privateSite = new PrivateSite(creatorId, name, location, picture, latitude, longitude);
+        PrivateSite privateSite = new PrivateSite(creatorId, name, location, picture, latitude, longitude, locationTitle);
         int res = siteService.insertPrivateSite(privateSite);
         if (res == 0) return Result.fail(400, "创建私人场地失败");
         else return Result.success("创建私人场地成功");
