@@ -26,4 +26,7 @@ public interface PrivateSiteMapper {
     @Delete("DELETE FROM private_site WHERE private_site_id=#{privateSiteId}")
     int deletePrivateSite(@Param("privateSiteId") Long privateSiteId);
 
+    @Update("UPDATE private_site SET name=#{privateSite.name}, location=#{privateSite.location}, picture=#{privateSite.picture}, latitude=#{privateSite.latitude}, longitude=#{privateSite.longitude}, location_title=#{privateSite.locationTitle}  WHERE private_site_id='${privateSite.privateSiteId}'")
+    int updatePrivateSiteInfo(@Param("privateSite") PrivateSite privateSite);
+
 }
