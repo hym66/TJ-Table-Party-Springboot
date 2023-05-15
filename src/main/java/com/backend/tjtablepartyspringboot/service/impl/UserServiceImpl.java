@@ -65,4 +65,29 @@ public class       UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public void updateUser(User userInfo){
+        User user = userMapper.selectOne(new QueryWrapper<User>().eq("user_id", userInfo.getUserId()));
+        if (user == null) {
+            throw new RuntimeException("User not found.");
+        }
+        user.setNickName(userInfo.getNickName());
+        user.setAvatarUrl(userInfo.getAvatarUrl());
+        user.setProvince(userInfo.getProvince());
+        user.setCity(userInfo.getCity());
+        user.setGender(userInfo.getGender());
+        userMapper.updateById(user);
+    }
+
+    @Override
+    public void createUser(User userNew){
+        User user =userMapper.selectOne(new QueryWrapper<User>().eq("user_id", userNew.getUserId()));
+        if (user == null) {
+            user = new User();
+            user.setUserId(userNew.getUserId());
+            user.setNickName(userNew.getNickName());
+            user.setAvatarUrl(userNew.getAvatarUrl());
+            userMapper.insert(user);
+        }
+    }
 }
