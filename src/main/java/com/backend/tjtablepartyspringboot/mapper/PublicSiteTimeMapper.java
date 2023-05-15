@@ -15,10 +15,10 @@ import java.util.List;
  */
 @Mapper
 public interface PublicSiteTimeMapper {
-    @Select("SELECT weekday, start_time, end_time FROM public_site_time WHERE public_site_id=#{publicSiteId}")
+    @Select("SELECT weekday, start_time, end_time, open FROM public_site_time WHERE public_site_id=#{publicSiteId}")
     List<PublicSiteTime> selectTimeById(@Param("publicSiteId") Long publicSiteId);
 
-    @Insert("INSERT INTO public_site_time (public_site_id, weekday, start_time, end_time) VALUES (#{publicSiteTime.publicSiteId}, #{publicSiteTime.weekday}, #{publicSiteTime.startTime}, #{publicSiteTime.endTime})")
+    @Insert("INSERT INTO public_site_time (public_site_id, weekday, start_time, end_time, open) VALUES (#{publicSiteTime.publicSiteId}, #{publicSiteTime.weekday}, #{publicSiteTime.startTime}, #{publicSiteTime.endTime}, #{publicSiteTime.open})")
     int insertPublicSiteTime(@Param("publicSiteTime") PublicSiteTime publicSiteTime);
 
 }

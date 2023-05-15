@@ -39,6 +39,7 @@ public class PublicSiteDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING , pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     Date checkTime;
     String[] type;
+    String[] tag;
     int status;
     List<PublicSiteTimeDto> openTime;
 }

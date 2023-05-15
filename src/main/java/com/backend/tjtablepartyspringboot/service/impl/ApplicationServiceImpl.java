@@ -59,7 +59,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         List<PublicSiteTime> publicSiteTimes = publicSiteTimeMapper.selectTimeById(ps.getPublicSiteId());
         ArrayList<PublicSiteTimeDto> openTime = new ArrayList<>();
         for (PublicSiteTime pst : publicSiteTimes) {
-            PublicSiteTimeDto publicSiteTimeDto = new PublicSiteTimeDto(weekdayTrans(pst.getWeekday()), pst.getStartTime(), pst.getEndTime());
+            PublicSiteTimeDto publicSiteTimeDto = new PublicSiteTimeDto(weekdayTrans(pst.getWeekday()), pst.getStartTime(), pst.getEndTime(), pst.isOpen());
             openTime.add(publicSiteTimeDto);
         }
 

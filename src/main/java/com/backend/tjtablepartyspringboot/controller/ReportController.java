@@ -18,6 +18,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -100,18 +102,24 @@ public class ReportController {
 
     @ApiOperation("审核举报单")
     @GetMapping("checkReport")
+    @Transactional
     public Result<String> checkReport(@ApiParam(name="reportId", value="举报单id", required = true)
                                    @RequestParam("reportId") Long reportId,
                                    @ApiParam(name="agree", value="是否同意该场地入驻", required = true)
                                    @RequestParam("agree") Boolean agree,
                                    @ApiParam(name="adminId", value="审核的管理员id", required = true)
-                                   @RequestParam("adminId") String adminId)
+                                   @RequestParam("adminId") String adminId,
+                                      @ApiParam(name="punishment", value="惩罚内容", required = true)
+                                          @RequestParam("punishment") String punishment)
+
     {
-        int res = reportService.checkReport(reportId, agree, adminId);
-        if(res > 0){
+        try {
+            int res = reportService.checkReport(reportId, agree, adminId, punishment);
             return Result.success("审核保存成功！");
         }
-        else{
+        catch (Exception e){
+            System.out.println(e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return Result.fail(500,"审核失败！检查后端");
         }
     }

@@ -24,20 +24,16 @@ public class PrivateSite {
     @JsonSerialize(using= ToStringSerializer.class)
     String creatorId;
     String name;
-    String city;
     String location;
     String picture;
-    String introduction;
     float latitude;
     float longitude;
 
-    public PrivateSite(String creatorId, String name, String city, String location, String picture, String introduction, float latitude, float longitude) {
+    public PrivateSite(String creatorId, String name, String location, String picture, float latitude, float longitude) {
         this.creatorId = creatorId;
         this.name = name;
-        this.city = city;
         this.location = location;
         this.picture = picture;
-        this.introduction = introduction;
         this.latitude = latitude;
         this.longitude = longitude;
     }
