@@ -49,4 +49,11 @@ public class UserController {
         userService.updateUser(userInfo);
         return Result.success("User information updated successfully.");
     }
+
+    @ApiOperation("创建新用户")
+    @PostMapping("/createUser")
+    public Result<String> createUser(@RequestBody(required = true) User userNew) {
+        userService.createUser(userNew);
+        return Result.success("创建用户成功");
+    }
 }

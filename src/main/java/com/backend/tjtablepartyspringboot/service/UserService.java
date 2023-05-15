@@ -12,4 +12,5 @@ public interface UserService {
     UserInfoDto getUserInfo(String userId);
     String login(String code);
     void updateUser(User userInfo);
+    void createUser(User userNew);
 }

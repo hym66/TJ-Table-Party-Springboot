@@ -78,4 +78,16 @@ public class       UserServiceImpl implements UserService {
         user.setGender(userInfo.getGender());
         userMapper.updateById(user);
     }
+
+    @Override
+    public void createUser(User userNew){
+        User user =userMapper.selectOne(new QueryWrapper<User>().eq("user_id", userNew.getUserId()));
+        if (user == null) {
+            user = new User();
+            user.setUserId(userNew.getUserId());
+            user.setNickName(userNew.getNickName());
+            user.setAvatarUrl(userNew.getAvatarUrl());
+            userMapper.insert(user);
+        }
+    }
 }
