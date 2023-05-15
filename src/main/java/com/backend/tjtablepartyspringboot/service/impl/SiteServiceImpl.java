@@ -86,7 +86,7 @@ public class SiteServiceImpl implements SiteService {
     }
 
     @Override
-    public List<PrivateSite> selectPrivateSiteByCreatorId(Long creatorId) {
+    public List<PrivateSite> selectPrivateSiteByCreatorId(String creatorId) {
         return privateSiteMapper.selectPrivateSiteByCreatorId(creatorId);
     }
 
@@ -118,6 +118,11 @@ public class SiteServiceImpl implements SiteService {
     @Override
     public int insertPrivateSite(PrivateSite privateSite) {
         return privateSiteMapper.insertPrivateSite(privateSite);
+    }
+
+    @Override
+    public int modifyPrivateSite(PrivateSite privateSite) {
+        return privateSiteMapper.updatePrivateSiteInfo(privateSite);
     }
 
     @Override
