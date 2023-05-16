@@ -64,6 +64,13 @@ public class SiteController {
         return Result.success(siteService.selectPublicSiteById(publicSiteId));
     }
 
+    @ApiOperation("根据用户ID获取公共场地信息")
+    @GetMapping("getPublicSiteByCreatorId")
+    public Result<List<PublicSiteBriefDto>> getPublicSiteByCreatorId(@ApiParam(name = "creatorId", value = "创建者id", required = true)
+                                                                     @RequestParam("creatorId") String creatorId) {
+        return Result.success(siteService.selectPublicSiteByCreatorId(creatorId));
+    }
+
     @ApiOperation("根据用户ID获取私人场地信息")
     @GetMapping("getPrivateSiteByCreatorId")
     public Result<List<PrivateSite>> getPrivateSiteByCreatorId(@ApiParam(name = "creatorId", value = "创建者id", required = true)
@@ -225,7 +232,7 @@ public class SiteController {
             for (int i = 0; i < type.length; i++) {
                 type[i] = siteTypeMapper.selectTypeNameById(Long.valueOf(type[i]));
             }
-            PublicSiteBriefDto publicSiteBriefDto = new PublicSiteBriefDto(ps.getPublicSiteId(), ps.getName(), ps.getPicture(), ps.getCity(), ps.getLocation(), type, ps.getAvgCost(), ps.getCapacity(), ps.getGameNum());
+            PublicSiteBriefDto publicSiteBriefDto = new PublicSiteBriefDto(ps.getPublicSiteId(), ps.getName(), ps.getPicture(), ps.getCity(), ps.getLocation(), type, ps.getAvgCost(), ps.getCapacity(), ps.getGameNum(), ps.getStatus());
             res.add(publicSiteBriefDto);
         }
         return Result.success(res);
