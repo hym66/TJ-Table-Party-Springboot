@@ -14,4 +14,5 @@ public class ClubUserDto {
     String role;
     String name;
     String avatar;
+    Byte status;
 }

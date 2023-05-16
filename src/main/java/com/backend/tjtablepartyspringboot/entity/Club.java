@@ -27,7 +27,6 @@ public class Club {
     String city;
     Byte isPublic;
     int capacity;
-    @JsonSerialize(using=ToStringSerializer.class)
     float longitude;
     float latitude;
     String managerId;

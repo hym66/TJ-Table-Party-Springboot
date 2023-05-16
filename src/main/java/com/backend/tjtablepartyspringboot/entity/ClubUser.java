@@ -18,4 +18,5 @@ public class ClubUser {
     String userId;
     @JsonSerialize(using= ToStringSerializer.class)
     Long clubId;
+    Byte status;
 }

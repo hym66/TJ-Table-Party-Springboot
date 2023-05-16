@@ -12,6 +12,7 @@ import java.util.List;
 public interface ClubService {
     ClubInfoDetailDto selectClubInfo(Long clubId);
     ClubUserDetailDto selectClubUser(Long clubId);
+    ClubUserDetailDto selectWaitingClubUser(Long clubId);
     ClubRecordDetailDto selectClubRecord(Long clubId);
     Long insertOneNewClub(Club club);
     int addAnnounce(Announce announce);
@@ -23,7 +24,11 @@ public interface ClubService {
     List<Activity> selectCurrentActivities(Long clubId);
     int patchClub(Club club);
     List<ClubSimpleDto> selectByKeyword(String keyword);
-    int addUser(Long clubId, String userId);
+    int askToJoin(Long clubId, String userId);
+    int agreeToJoin(Long clubId, String userId);
     int removeUser(Long clubId, String userId);
     int addRecord(Long clubId, String content);
+    boolean clubIsFull(Long clubId);
+    int dissolveClub(Long clubId);
+    int transferManager(Long clubId, String userId);
 }
