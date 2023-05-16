@@ -20,7 +20,7 @@ public interface ClubMapper extends BaseMapper<Club> {
     List<Club> selectUserClubs(@Param("userId") String userId);
 
     //查找俱乐部当前人数
-    @Select("SELECT COUNT(user_id) FROM club_user WHERE club_id=#{clubId}")
+    @Select("SELECT COUNT(user_id) FROM club_user WHERE club_id=#{clubId} AND status=1")
     Integer selectClubPersonNum(@Param("clubId") Long clubId);
     //添加俱乐部游戏
     @Insert("INSERT INTO club_trpg (club_id, trpg_id) VALUES (#{clubId}, #{trpgId)")
