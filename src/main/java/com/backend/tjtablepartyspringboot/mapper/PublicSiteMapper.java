@@ -15,7 +15,7 @@ import java.util.List;
 @Mapper
 public interface PublicSiteMapper extends BaseMapper<PublicSite>{
 
-    @Select("SELECT * FROM public_site")
+    @Select("SELECT * FROM public_site WHERE status=0")
     List<PublicSite> selectAllPublicSite();
 
     @Select("SELECT * FROM public_site WHERE public_site_id=#{publicSiteId}")
