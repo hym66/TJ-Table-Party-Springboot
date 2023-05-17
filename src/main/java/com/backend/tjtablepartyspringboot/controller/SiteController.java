@@ -6,6 +6,7 @@ import com.backend.tjtablepartyspringboot.dto.*;
 import com.backend.tjtablepartyspringboot.entity.*;
 import com.backend.tjtablepartyspringboot.mapper.PublicSiteMapper;
 import com.backend.tjtablepartyspringboot.mapper.SiteTypeMapper;
+import com.backend.tjtablepartyspringboot.service.MessageService;
 import com.backend.tjtablepartyspringboot.service.SiteService;
 import com.backend.tjtablepartyspringboot.util.FileUtil;
 import com.backend.tjtablepartyspringboot.util.GeoUtil;
@@ -50,6 +51,9 @@ public class SiteController {
 
     @Autowired
     private SiteTypeMapper siteTypeMapper;
+
+    @Autowired
+    private MessageService messageService;
 
     @ApiOperation("获取所有公共场地信息")
     @GetMapping("getPublicSiteList")
@@ -236,6 +240,21 @@ public class SiteController {
             res.add(publicSiteBriefDto);
         }
         return Result.success(res);
+    }
+
+    @ApiOperation("场地信息反馈")
+    @PostMapping("siteInfoFeedback")
+    public Result<String> siteInfoFeedback(@RequestBody HashMap<String, String> map) {
+        String creatorId = map.get("creatorId");
+        Long publicSiteId = Long.valueOf(map.get("publicSiteId"));
+        String name = map.get("name");
+        String content = map.get("content");
+        Date time = new Date();
+
+        Message message = new Message(publicSiteId, name + " 信息反馈", content, time, 2);
+        int res = messageService.sendMessage(creatorId, message);
+        if (res == 0) return Result.fail(400, "公共场地信息反馈失败");
+        else return Result.success("公共场地信息反馈成功");
     }
 
 }
