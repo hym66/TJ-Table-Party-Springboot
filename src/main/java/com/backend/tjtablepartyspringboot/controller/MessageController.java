@@ -4,6 +4,7 @@ import com.backend.tjtablepartyspringboot.common.Result;
 import com.backend.tjtablepartyspringboot.dto.MessageDto;
 import com.backend.tjtablepartyspringboot.dto.PublicSiteBriefDto;
 import com.backend.tjtablepartyspringboot.entity.Message;
+import com.backend.tjtablepartyspringboot.entity.PrivateSite;
 import com.backend.tjtablepartyspringboot.service.MessageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -12,6 +13,8 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -61,4 +64,18 @@ public class MessageController {
         if (res == 1) return Result.success("消息状态更新成功");
         else return Result.success("消息状态更新失败");
     }
+
+    @ApiOperation("添加消息")
+    @PostMapping("sendMessageView")
+    public int addUserMessage(@RequestBody HashMap<String, String> map) {
+        String userId = map.get("userId");
+        Long sourceId = Long.valueOf(map.get("sourceId"));
+        String title = map.get("title");
+        String content = map.get("content");
+        Date time = new Date();
+        int type = Integer.parseInt(map.get("type"));
+        Message message = new Message(sourceId, title, content, time, type);
+        return messageService.sendMessage(userId, message);
+    }
+
 }

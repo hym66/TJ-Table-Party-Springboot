@@ -29,4 +29,12 @@ public class Message {
     String content;
     Date time;
     int type;
+
+    public Message(Long sourceId, String title, String content, Date time, int type) {
+        this.sourceId = sourceId;
+        this.title = title;
+        this.content = content;
+        this.time = time;
+        this.type = type;
+    }
 }
