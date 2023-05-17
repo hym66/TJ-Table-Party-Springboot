@@ -27,6 +27,16 @@ public class UserController {
             UserDto userDto =userService.getNameAndAvatarUrl(userId);
             return Result.success(userDto);
         }
+
+    @ApiOperation("获取该userid对应的role")
+    @GetMapping("/getRole")
+    public Result<String> getRole(
+            @ApiParam(name = "userId", value = "用户id", required = true)
+            @RequestParam(name="userId")  String userId
+    ){
+        String role=userService.getRole(userId);
+        return Result.success(role);
+    }
     @ApiOperation("获取该userid对应的全部信息")
     @GetMapping("/getUserInfo")
     public Result<UserInfoDto> getUserInfo(

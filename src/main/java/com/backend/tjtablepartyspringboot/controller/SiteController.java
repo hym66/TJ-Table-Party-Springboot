@@ -64,10 +64,17 @@ public class SiteController {
         return Result.success(siteService.selectPublicSiteById(publicSiteId));
     }
 
+    @ApiOperation("根据用户ID获取公共场地信息")
+    @GetMapping("getPublicSiteByCreatorId")
+    public Result<List<PublicSiteBriefDto>> getPublicSiteByCreatorId(@ApiParam(name = "creatorId", value = "创建者id", required = true)
+                                                                     @RequestParam("creatorId") String creatorId) {
+        return Result.success(siteService.selectPublicSiteByCreatorId(creatorId));
+    }
+
     @ApiOperation("根据用户ID获取私人场地信息")
     @GetMapping("getPrivateSiteByCreatorId")
     public Result<List<PrivateSite>> getPrivateSiteByCreatorId(@ApiParam(name = "creatorId", value = "创建者id", required = true)
-                                                               @RequestParam("creatorId") Long creatorId) {
+                                                               @RequestParam("creatorId") String creatorId) {
         return Result.success(siteService.selectPrivateSiteByCreatorId(creatorId));
     }
 
@@ -113,7 +120,7 @@ public class SiteController {
         // 图片云存储 返回url
         String picture = FileUtil.uploadFile("/report/" + creatorId.toString() + "/", multipartFile);
         // 创建新的公共场地
-        PublicSite publicSite = new PublicSite(creatorId, name, city, location, picture, introduction, avgCost, capacity, 0, phone, new Date(), 0, type, tag, latitude, longitude);
+        PublicSite publicSite = new PublicSite(creatorId, name, city, location, picture, introduction, avgCost, capacity, 0, phone, new Date(), 2, type, tag, latitude, longitude);
         // 插入数据库
         int res = siteService.insertPublicSite(publicSite);
         if (res == 0) return Result.fail(400, "插入公共场地失败");
@@ -140,13 +147,41 @@ public class SiteController {
                                             @RequestParam("name") String name,
                                             @RequestParam("location") String location,
                                             @RequestParam("latitude") float latitude,
-                                            @RequestParam("longitude") float longitude) {
+                                            @RequestParam("longitude") float longitude,
+                                            @RequestParam("locationTitle") String locationTitle) {
         // 图片云存储 返回url
         String picture = FileUtil.uploadFile("/report/" + creatorId.toString() + "/", multipartFile);
-        PrivateSite privateSite = new PrivateSite(creatorId, name, location, picture, latitude, longitude);
+        PrivateSite privateSite = new PrivateSite(creatorId, name, location, picture, latitude, longitude, locationTitle);
         int res = siteService.insertPrivateSite(privateSite);
         if (res == 0) return Result.fail(400, "创建私人场地失败");
         else return Result.success("创建私人场地成功");
+    }
+
+    @ApiOperation("修改私人场地的基本信息，场地图片不修改")
+    @PutMapping("modifyPrivateSiteWithoutPicture")
+    public Result<String> modifyPrivateSiteWithoutPicture(@RequestBody PrivateSite privateSite) {
+
+        int res = siteService.modifyPrivateSite(privateSite);
+        if (res == 0) return Result.fail(400, "修改私人场地信息失败");
+        else return Result.success("修改私人场地信息成功");
+    }
+
+    @ApiOperation("修改私人场地的所有信息")
+    @PostMapping("modifyPrivateSite")
+    public Result<String> modifyPrivateSite(@RequestParam("file") MultipartFile multipartFile,
+                                            @RequestParam("privateSiteId") Long privateSiteId,
+                                            @RequestParam("creatorId") String creatorId,
+                                            @RequestParam("name") String name,
+                                            @RequestParam("location") String location,
+                                            @RequestParam("latitude") float latitude,
+                                            @RequestParam("longitude") float longitude,
+                                            @RequestParam("locationTitle") String locationTitle) {
+        // 图片云存储 返回url
+        String picture = FileUtil.uploadFile("/report/" + creatorId + "/", multipartFile);
+        PrivateSite privateSite = new PrivateSite(privateSiteId, creatorId, name, location, picture, latitude, longitude, locationTitle);
+        int res = siteService.modifyPrivateSite(privateSite);
+        if (res == 0) return Result.fail(400, "修改私人场地信息失败");
+        else return Result.success("修改私人场地信息成功");
     }
 
     @ApiOperation("删除私人场地")
@@ -197,7 +232,7 @@ public class SiteController {
             for (int i = 0; i < type.length; i++) {
                 type[i] = siteTypeMapper.selectTypeNameById(Long.valueOf(type[i]));
             }
-            PublicSiteBriefDto publicSiteBriefDto = new PublicSiteBriefDto(ps.getPublicSiteId(), ps.getName(), ps.getPicture(), ps.getCity(), ps.getLocation(), type, ps.getAvgCost(), ps.getCapacity(), ps.getGameNum());
+            PublicSiteBriefDto publicSiteBriefDto = new PublicSiteBriefDto(ps.getPublicSiteId(), ps.getName(), ps.getPicture(), ps.getCity(), ps.getLocation(), type, ps.getAvgCost(), ps.getCapacity(), ps.getGameNum(), ps.getStatus());
             res.add(publicSiteBriefDto);
         }
         return Result.success(res);

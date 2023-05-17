@@ -15,11 +15,14 @@ import java.util.List;
 @Mapper
 public interface PublicSiteMapper extends BaseMapper<PublicSite>{
 
-    @Select("SELECT * FROM public_site")
+    @Select("SELECT * FROM public_site WHERE status=0")
     List<PublicSite> selectAllPublicSite();
 
     @Select("SELECT * FROM public_site WHERE public_site_id=#{publicSiteId}")
     PublicSite selectPublicSiteById(@Param("publicSiteId") Long publicSiteId);
+
+    @Select("SELECT * FROM public_site WHERE creator_id=#{creatorId}")
+    List<PublicSite> selectPublicSiteByCreatorId(@Param("creatorId") String creatorId);
 
     @Insert("INSERT INTO public_site (creator_id, name, city, location, picture, introduction, avg_cost, capacity, phone, game_num, upload_time, status, type, tag, latitude, longitude) VALUES (#{publicSite.creatorId}, #{publicSite.name}, #{publicSite.city}, #{publicSite.location}, #{publicSite.picture}, #{publicSite.introduction}, #{publicSite.avgCost}, #{publicSite.capacity}, #{publicSite.phone}, #{publicSite.gameNum}, #{publicSite.uploadTime}, #{publicSite.status}, #{publicSite.type}, #{publicSite.tag}, #{publicSite.latitude}, #{publicSite.longitude})")
     @Options(useGeneratedKeys = true, keyProperty = "publicSite.publicSiteId")

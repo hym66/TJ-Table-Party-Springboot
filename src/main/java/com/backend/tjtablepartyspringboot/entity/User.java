@@ -28,6 +28,7 @@ public class User {
     private String province;
     private String city;
     private String gender;
+    private String role;
     @DateTimeFormat(pattern="yyyy-MM-dd hh:mm:ss")
     @JsonFormat(shape = JsonFormat.Shape.STRING , pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     Date bantime;

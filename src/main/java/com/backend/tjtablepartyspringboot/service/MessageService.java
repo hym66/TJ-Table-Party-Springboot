@@ -20,4 +20,6 @@ public interface MessageService {
    int deleteUserViewMessage(String userId, Long messageId);
 
    int updateMessageView(String userId, Long messageId);
+
+   int sendMessage(String userId, Message message);
 }
