@@ -45,6 +45,28 @@ public class TrpgPublic {
     private String setDuration;
     private String languageRequirement;
 
-    
+    public TrpgPublic(TrpgPublicWaiting t){
+        this.trpgId = t.getTrpgId();
+        this.poster = t.getPoster();
+        this.titleName = t.getTitleName();
+        this.synopsis = t.getSynopsis();
+        this.pictures = t.getPictures();
+        this.designers = t.getDesigners();
+        this.publishers = t.getPublishers();
+        this.publishLanguages = t.getPublishLanguages();
+        this.publishYear = t.getPublishYear();
+        this.publishState = t.getPublishState();
+        this.genre = t.getGenre();
+        this.gameMode = t.getGameMode();
+        this.portability = t.getPortability();
+        this.desktopRequirement = t.getDesktopRequirement();
+        this.suitableAge = t.getSuitableAge();
+        this.supportNum = t.getSupportNum();
+        this.recommendNum = t.getRecommendNum();
+        this.averageDuration = t.getAverageDuration();
+        this.difficulty = t.getDifficulty();
+        this.setDuration = t.getSetDuration();
+        this.languageRequirement = t.getLanguageRequirement();
+    }
 
 }

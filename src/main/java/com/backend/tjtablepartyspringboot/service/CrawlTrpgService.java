@@ -10,4 +10,6 @@ import java.util.List;
 public interface CrawlTrpgService {
     List<TrpgWaitingSimpleDto> findAll();
     TrpgPublicWaiting findById(String trpgId);
+    int addTrpgPublic(String trpgId);
+    int refuseTrpgPublic(String trpgId);
 }

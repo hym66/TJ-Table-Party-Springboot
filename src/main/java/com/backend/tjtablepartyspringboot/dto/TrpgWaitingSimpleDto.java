@@ -30,8 +30,12 @@ public class TrpgWaitingSimpleDto {
         this.poster = trpgPublicWaiting.getPoster();
         this.titleName = trpgPublicWaiting.getTitleName();
         this.genre = trpgPublicWaiting.getGenre();
-        this.averageDuration = trpgPublicWaiting.getSetDuration();
-        this.supportNum = trpgPublicWaiting.getRecommendNum();
-        this.recommendNum = trpgPublicWaiting.getSupportNum();
+        this.averageDuration = trpgPublicWaiting.getAverageDuration();
+
+        String[] supportNumList = trpgPublicWaiting.getSupportNum().split("#");
+        this.supportNum = "支持" + supportNumList[1] + "-" + supportNumList[supportNumList.length-1] + "人";
+
+        String[] recommentNumList = trpgPublicWaiting.getRecommendNum().split("#");
+        this.recommendNum = "推荐" + recommentNumList[1] + "-" + recommentNumList[recommentNumList.length-1] + "人";
     }
 }
