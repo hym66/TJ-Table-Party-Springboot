@@ -158,8 +158,7 @@ public class ClubServiceImpl implements ClubService {
     @Override
     public List<ClubSimpleDto> getCityClubSimpleDtos(String city, float longitude, float latitude) {
         List<Club> clubList = clubMapper.selectByCity(city);
-        //todo:按经纬度排序
-        //...
+
         List<ClubSimpleDto> clubSimpleDtoList = new ArrayList<>();
         //查询currentPersons, managerAvatar, managerName
         for(Club c : clubList){

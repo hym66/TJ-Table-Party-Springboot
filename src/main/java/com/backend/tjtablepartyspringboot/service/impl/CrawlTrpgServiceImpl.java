@@ -52,4 +52,11 @@ public class CrawlTrpgServiceImpl implements CrawlTrpgService {
         int res = trpgPublicWaitingMapper.deleteById(trpgId);
         return res;
     }
+
+    @Override
+    public int removeTrpgPublic(String trpgId) {
+        //把waiting表里的游戏删掉
+        int res = trpgPublicWaitingMapper.deleteById(trpgId);
+        return res;
+    }
 }

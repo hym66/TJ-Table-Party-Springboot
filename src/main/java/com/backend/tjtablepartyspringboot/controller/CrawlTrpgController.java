@@ -5,6 +5,7 @@ import com.backend.tjtablepartyspringboot.dto.MessageDto;
 import com.backend.tjtablepartyspringboot.dto.TrpgWaitingSimpleDto;
 import com.backend.tjtablepartyspringboot.entity.TrpgPublic;
 import com.backend.tjtablepartyspringboot.entity.TrpgPublicWaiting;
+import com.backend.tjtablepartyspringboot.mapper.TrpgPublicMapper;
 import com.backend.tjtablepartyspringboot.service.CrawlTrpgService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -22,6 +23,9 @@ import java.util.List;
 public class CrawlTrpgController {
     @Autowired
     CrawlTrpgService crawlTrpgService;
+
+    @Autowired
+    TrpgPublicMapper trpgPublicMapper;
 
     @ApiOperation("获取所有待审核的游戏")
     @GetMapping("getAllTrpgWaiting")
@@ -44,7 +48,13 @@ public class CrawlTrpgController {
     public Result<String> addTrpgPublic(@ApiParam(name="trpgId", value="桌游id", required = true)
                                         @RequestParam("trpgId") String trpgId){
         try {
-            int res = crawlTrpgService.addTrpgPublic(trpgId);
+            TrpgPublic trpgPublic = trpgPublicMapper.selectById(trpgId);
+            //如果这个游戏已经在库中了，就不再重复添加了
+            if(trpgPublic == null) {
+                int res = crawlTrpgService.addTrpgPublic(trpgId);
+            }
+
+            int res = crawlTrpgService.removeTrpgPublic(trpgId);
             return Result.success("游戏入库成功！");
         }
         catch (Exception e){
