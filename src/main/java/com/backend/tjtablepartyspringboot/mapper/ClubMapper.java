@@ -12,7 +12,7 @@ public interface ClubMapper extends BaseMapper<Club> {
     Club selectById(@Param("clubId") Long clubId);
 
     //查找某个城市的所有俱乐部
-    @Select("SELECT * FROM club WHERE city=#{city}")
+    @Select("SELECT * FROM club WHERE city=#{city} AND is_public=1")
     List<Club> selectByCity(@Param("city") String city);
 
     //查找某个用户参与的所有俱乐部
@@ -29,6 +29,6 @@ public interface ClubMapper extends BaseMapper<Club> {
     @Delete("DELETE FROM club_trpg WHERE club_id=#{clubId} AND trpg_id=#{trpgId}")
     Integer deleteClubTrpg(@Param("clubId") Long clubId, @Param("trpgId") String trpgId);
     //关键词搜索
-    @Select("SELECT * FROM club WHERE club_title LIKE '%${keyword}%'")
+    @Select("SELECT * FROM club WHERE club_title LIKE '%${keyword}%' AND is_public=1")
     List<Club> selectByKeyword(@Param("keyword") String keyword);
 }
