@@ -50,20 +50,18 @@ public class ActivityServiceImpl implements ActivityService {
         String stateLabel="";
         switch (state){
             case "0":
-                stateLabel="报名中";
+                stateLabel="集合中";
                 break;
             case "1":
-                stateLabel="报名结束";
-                break;
-            case "2":
                 stateLabel="正在进行";
                 break;
-            case "3":
-                stateLabel="已结束";
+            case "2":
+                stateLabel="活动结束";
                 break;
-            case "4":
+            case "3":
                 stateLabel="已删除";
                 break;
+
 
         }
         return stateLabel;
@@ -98,6 +96,7 @@ public class ActivityServiceImpl implements ActivityService {
         detailMap.put("fee",act.getFee());
         detailMap.put("maxPeople",act.getMaxPeople());
         detailMap.put("minPeople",act.getMinPeople());
+        detailMap.put("nowPeople",act.getNowPeople());
 
 
 
@@ -308,21 +307,38 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<UserInterestActivity> getUserInterestActivityList(Long activityId){
-        QueryWrapper<UserInterestActivity>qw=new QueryWrapper<>();
-        qw.eq("activity_id",activityId);
-        List<UserInterestActivity>list=userInterestActivityMapper.selectList(qw);
-
-        return list;
-    }
-
-    @Override
     public List<UserJoinActivity> getUserJoinActivityList(Long activityId){
         QueryWrapper<UserJoinActivity>qw=new QueryWrapper<>();
         qw.eq("activity_id",activityId);
         List<UserJoinActivity>list=userJoinActivityMapper.selectList(qw);
 
         return list;
+    }
+
+    @Override
+    public List<Map<String,Object>> getUserInterestActivityList(Long activityId){
+        List<Map<String,Object>> result=new ArrayList<>();
+
+        QueryWrapper<UserInterestActivity>qw=new QueryWrapper<>();
+        qw.eq("activity_id",activityId);
+        List<UserInterestActivity>entityList=userInterestActivityMapper.selectList(qw);
+
+        //check user table
+        for (UserInterestActivity userInterest:entityList){
+            Map<String,Object>oneData=new HashMap<>();
+            String userId=userInterest.getUserId();
+            UserDto userDto=userService.getNameAndAvatarUrl(userId);
+
+            oneData.put("userId",userId);
+            oneData.put("interestTime",userInterest.getInterestTime());
+            oneData.put("avatar",userDto.getAvatarUrl());
+            oneData.put("name",userDto.getNickName());
+
+
+
+            result.add(oneData);
+        }
+        return result;
     }
 
     public static String activityTimeFormate(Date date){
@@ -574,7 +590,7 @@ public class ActivityServiceImpl implements ActivityService {
     public Map<String,Object> addActivity(Activity activity,String wishGame){
         Map<String,Object> resultMap=new HashMap<>();
         //补全信息
-        Integer nowPeople=1;
+        Integer nowPeople=0;
         Date createTime=new Date();
         String state="0";
         activity.setNowPeople(nowPeople);
@@ -654,8 +670,23 @@ public class ActivityServiceImpl implements ActivityService {
                 .eq("user_id",userId);
         UserJoinActivity oldOne=userJoinActivityMapper.selectOne(qw);
         if (oldOne==null){
-            userJoinActivityMapper.insert(new UserJoinActivity(userId,activityId,new Date()));
+            i=userJoinActivityMapper.insert(new UserJoinActivity(userId,activityId,new Date()));
         }
+        //参与人数+1
+        if (i.equals(1)){
+            QueryWrapper<Activity>qw_act=new QueryWrapper<>();
+            qw_act.eq("activity_id",activityId);
+            Activity activity=activityMapper.selectOne(qw_act);
+            Integer nowPeople=activity.getNowPeople();
+            activityMapper.update(
+                    null,
+                    Wrappers.<Activity>lambdaUpdate()
+                            .eq(Activity::getActivityId,activityId)
+                            .set(Activity::getNowPeople,nowPeople+1)
+            );
+
+        }
+
 
 
         return i;
@@ -748,6 +779,21 @@ public class ActivityServiceImpl implements ActivityService {
         qw.eq("activity_id",activityId)
                 .eq("user_id",userId);
         i=userJoinActivityMapper.delete(qw);
+        //参与人数-1
+        if (i.equals(1)){
+            QueryWrapper<Activity>qw_act=new QueryWrapper<>();
+            qw_act.eq("activity_id",activityId);
+            Activity activity=activityMapper.selectOne(qw_act);
+            Integer nowPeople=activity.getNowPeople();
+            activityMapper.update(
+                    null,
+                    Wrappers.<Activity>lambdaUpdate()
+                            .eq(Activity::getActivityId,activityId)
+                            .set(Activity::getNowPeople,nowPeople-1)
+            );
+
+        }
+
         return i;
     }
 
@@ -777,9 +823,37 @@ public class ActivityServiceImpl implements ActivityService {
         if (oldOne==null){
             UserJoinActivity userJoinActivity=new UserJoinActivity(userId,activityId,new Date());
             i=userJoinActivityMapper.insert(userJoinActivity);
+            //参与人数+1
+            if (i.equals(1)){
+                QueryWrapper<Activity>qw_act=new QueryWrapper<>();
+                qw_act.eq("activity_id",activityId);
+                Activity activity=activityMapper.selectOne(qw_act);
+                Integer nowPeople=activity.getNowPeople();
+                activityMapper.update(
+                        null,
+                        Wrappers.<Activity>lambdaUpdate()
+                                .eq(Activity::getActivityId,activityId)
+                                .set(Activity::getNowPeople,nowPeople+1)
+                );
+
+            }
         }
         else {
             i=userJoinActivityMapper.delete(qw);
+            //参与人数-1
+            if (i.equals(1)){
+                QueryWrapper<Activity>qw_act=new QueryWrapper<>();
+                qw_act.eq("activity_id",activityId);
+                Activity activity=activityMapper.selectOne(qw_act);
+                Integer nowPeople=activity.getNowPeople();
+                activityMapper.update(
+                        null,
+                        Wrappers.<Activity>lambdaUpdate()
+                                .eq(Activity::getActivityId,activityId)
+                                .set(Activity::getNowPeople,nowPeople-1)
+                );
+
+            }
         }
 
 
@@ -823,5 +897,20 @@ public class ActivityServiceImpl implements ActivityService {
         return resultMap;
 
 
+    }
+
+
+    @Override
+    public Integer modifyState(Long activityId,String state){
+        Integer i=0;
+        i=activityMapper.update(
+                null,
+                Wrappers.<Activity>lambdaUpdate()
+                        .eq(Activity::getActivityId,activityId)
+                        .set(Activity::getState,state)
+                );
+
+
+        return i;
     }
 }

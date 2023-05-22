@@ -67,7 +67,7 @@ public interface ActivityService {
      * @return List of user entity
      *
      */
-    List<UserInterestActivity> getUserInterestActivityList(Long activityId);
+    List<Map<String,Object>> getUserInterestActivityList(Long activityId);
 
 
     /**
@@ -146,5 +146,11 @@ public interface ActivityService {
      *  不是完全覆盖，传入的activity含有什么字段，才更新什么字段
      */
     Map<String,Object>modify(Activity activity,String wishGame);
+
+
+    /**
+     * 修改活动的状态
+     */
+    Integer modifyState(Long activityId,String state);
 
 }
