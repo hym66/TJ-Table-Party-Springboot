@@ -39,6 +39,7 @@ public class Report implements Comparable{
     Byte isPassed;
     String description;
     String adminId;
+    String punishment;
 
     public Report(ReportDto reportDto){
         if(reportDto == null){
@@ -61,6 +62,7 @@ public class Report implements Comparable{
         this.checkTime = reportDto.getCheckTime();
         this.isPassed = reportDto.getIsPassed();
         this.description = reportDto.getDescription();
+        this.punishment = reportDto.getPunishment();
     }
 
     @Override

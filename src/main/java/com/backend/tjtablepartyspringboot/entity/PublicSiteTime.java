@@ -27,4 +27,5 @@ public class PublicSiteTime {
     int weekday;
     Time startTime;
     Time endTime;
+    boolean open;
 }

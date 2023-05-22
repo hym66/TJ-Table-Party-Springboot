@@ -1,10 +1,12 @@
 package com.backend.tjtablepartyspringboot.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.sql.Time;
 import java.util.Date;
@@ -21,4 +23,5 @@ public class PublicSiteTimeDto {
     String weekday;
     Time startTime;
     Time endTime;
+    boolean open;
 }

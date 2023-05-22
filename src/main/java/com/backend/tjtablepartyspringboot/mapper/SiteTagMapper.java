@@ -18,6 +18,6 @@ public interface SiteTagMapper {
     @Select("SELECT * FROM site_tag")
     List<SiteTag> selectAllSiteTag();
 
-    @Select("SELECT site_type_name FROM site_type WHERE site_type_id=#{typeId}")
-    String selectTypeNameById(@Param("typeId") Long typeId);
+    @Select("SELECT site_tag_name FROM site_tag WHERE site_tag_id=#{tagId}")
+    String selectTagNameById(@Param("tagId") Long tagId);
 }

@@ -56,7 +56,7 @@ public class SiteServiceImpl implements SiteService {
             for (int i = 0; i < type.length; i++) {
                 type[i] = siteTypeMapper.selectTypeNameById(Long.valueOf(type[i]));
             }
-            PublicSiteBriefDto publicSiteBriefDto = new PublicSiteBriefDto(ps.getPublicSiteId(), ps.getName(), ps.getPicture(), ps.getCity(), ps.getLocation(), type, ps.getAvgCost(), ps.getCapacity(), ps.getGameNum());
+            PublicSiteBriefDto publicSiteBriefDto = new PublicSiteBriefDto(ps.getPublicSiteId(), ps.getName(), ps.getPicture(), ps.getCity(), ps.getLocation(), type, ps.getAvgCost(), ps.getCapacity(), ps.getGameNum(), ps.getStatus());
             res.add(publicSiteBriefDto);
         }
         return res;
@@ -65,18 +65,49 @@ public class SiteServiceImpl implements SiteService {
     @Override
     public PublicSiteDto selectPublicSiteById(Long publicSiteId) {
         PublicSite ps = publicSiteMapper.selectPublicSiteById(publicSiteId);
+        // 转换场地类型
         String[] type = ps.getType().split(",");
         for (int i = 0; i < type.length; i++) {
             type[i] = siteTypeMapper.selectTypeNameById(Long.valueOf(type[i]));
         }
+        // 转换场地标签
+        String[] tag = ps.getTag().split(",");
+        for (int i = 0; i < tag.length; i++) {
+            tag[i] = siteTagMapper.selectTagNameById(Long.valueOf(tag[i]));
+        }
         List<PublicSiteTime> publicSiteTimes = publicSiteTimeMapper.selectTimeById(ps.getPublicSiteId());
         ArrayList<PublicSiteTimeDto> openTime = new ArrayList<>();
         for (PublicSiteTime pst : publicSiteTimes) {
-            PublicSiteTimeDto publicSiteTimeDto = new PublicSiteTimeDto(weekdayTrans(pst.getWeekday()), pst.getStartTime(), pst.getEndTime());
+            PublicSiteTimeDto publicSiteTimeDto = new PublicSiteTimeDto(weekdayTrans(pst.getWeekday()), pst.getStartTime(), pst.getEndTime(), pst.isOpen());
             openTime.add(publicSiteTimeDto);
         }
-        PublicSiteDto publicSiteDto = new PublicSiteDto(ps.getPublicSiteId(), ps.getCreatorId(), ps.getName(), ps.getCity(), ps.getLocation(), ps.getPicture(), ps.getIntroduction(), ps.getAvgCost(), ps.getCapacity(), ps.getGameNum(), ps.getPhone(), ps.getUploadTime(), ps.getCheckTime(), type, ps.getStatus(), openTime);
+        PublicSiteDto publicSiteDto = new PublicSiteDto(ps.getPublicSiteId(), ps.getCreatorId(), ps.getName(), ps.getCity(), ps.getLocation(), ps.getPicture(), ps.getIntroduction(), ps.getAvgCost(), ps.getCapacity(), ps.getGameNum(), ps.getPhone(), ps.getUploadTime(), ps.getCheckTime(), type, tag, ps.getStatus(), openTime, ps.getLatitude(), ps.getLongitude());
         return publicSiteDto;
+    }
+
+    @Override
+    public List<PublicSiteBriefDto> selectPublicSiteByCreatorId(String creatorId) {
+        List<PublicSite> publicSiteList = publicSiteMapper.selectPublicSiteByCreatorId(creatorId);
+        ArrayList<PublicSiteBriefDto> res = new ArrayList<>();
+        for (PublicSite ps : publicSiteList) {
+            String[] type = ps.getType().split(",");
+            for (int i = 0; i < type.length; i++) {
+                type[i] = siteTypeMapper.selectTypeNameById(Long.valueOf(type[i]));
+            }
+            PublicSiteBriefDto publicSiteBriefDto = new PublicSiteBriefDto(ps.getPublicSiteId(), ps.getName(), ps.getPicture(), ps.getCity(), ps.getLocation(), type, ps.getAvgCost(), ps.getCapacity(), ps.getGameNum(), ps.getStatus());
+            res.add(publicSiteBriefDto);
+        }
+        return res;
+    }
+
+    @Override
+    public List<PrivateSite> selectPrivateSiteByCreatorId(String creatorId) {
+        return privateSiteMapper.selectPrivateSiteByCreatorId(creatorId);
+    }
+
+    @Override
+    public PrivateSite selectPrivateSiteById(Long privateSiteId) {
+        return privateSiteMapper.selectPrivateSiteById(privateSiteId);
     }
 
     @Override
@@ -102,5 +133,20 @@ public class SiteServiceImpl implements SiteService {
     @Override
     public int insertPrivateSite(PrivateSite privateSite) {
         return privateSiteMapper.insertPrivateSite(privateSite);
+    }
+
+    @Override
+    public int modifyPrivateSite(PrivateSite privateSite) {
+        return privateSiteMapper.updatePrivateSiteInfo(privateSite);
+    }
+
+    @Override
+    public int deletePrivateSite(Long privateSiteId) {
+        return privateSiteMapper.deletePrivateSite(privateSiteId);
+    }
+
+    @Override
+    public List<PublicSite> selectByKeyword(String keyword) {
+        return publicSiteMapper.selectByKeyword(keyword);
     }
 }

@@ -28,6 +28,7 @@ public class ClubSimpleDto {
     String managerName;
     float longitude;
     float latitude;
+    float distance;
 
     public ClubSimpleDto(Club club, int currentPersons, String managerName, String managerAvatar){
         this.clubId = club.getClubId();

@@ -10,5 +10,8 @@ import java.util.Map;
 public interface UserService {
     UserDto getNameAndAvatarUrl(String userId);
     UserInfoDto getUserInfo(String userId);
+    String getRole(String userId);
     String login(String code);
+    void updateUser(User userInfo);
+    void createUser(User userNew);
 }

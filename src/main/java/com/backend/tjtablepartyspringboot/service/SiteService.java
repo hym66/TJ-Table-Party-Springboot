@@ -19,10 +19,21 @@ public interface SiteService {
 
     PublicSiteDto selectPublicSiteById(Long publicSiteId);
 
+    List<PublicSiteBriefDto> selectPublicSiteByCreatorId(String creatorId);
+
+
+    List<PrivateSite> selectPrivateSiteByCreatorId(String creatorId);
+
+    PrivateSite selectPrivateSiteById(Long privateSiteId);
     List<SiteType> selectAllSiteType();
     List<SiteTag> selectAllSiteTag();
 
     int insertPublicSite(PublicSite publicSite);
     int insertPublicSiteTime(PublicSiteTime publicSiteTime);
     int insertPrivateSite(PrivateSite privateSite);
+
+    int modifyPrivateSite(PrivateSite privateSite);
+    int deletePrivateSite(Long privateSiteId);
+
+    public List<PublicSite> selectByKeyword(String keyword);
 }

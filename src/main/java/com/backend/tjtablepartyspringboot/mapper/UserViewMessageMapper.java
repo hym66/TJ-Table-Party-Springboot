@@ -1,6 +1,7 @@
 package com.backend.tjtablepartyspringboot.mapper;
 
 import com.backend.tjtablepartyspringboot.entity.Club;
+import com.backend.tjtablepartyspringboot.entity.Message;
 import com.backend.tjtablepartyspringboot.entity.UserViewMessage;
 import org.apache.ibatis.annotations.*;
 
@@ -13,13 +14,16 @@ import java.util.List;
  */
 @Mapper
 public interface UserViewMessageMapper {
-    @Select("SELECT * FROM user_view_message WHERE user_id=${userId}")
+    @Select("SELECT * FROM user_view_message WHERE user_id='${userId}'")
     List<UserViewMessage> selectMessageByUserId(@Param("userId") String userId);
 
-    @Delete("DELETE FROM user_view_message WHERE user_id=${userId} AND message_id=${messageId}")
+    @Delete("DELETE FROM user_view_message WHERE user_id='${userId}' AND message_id=${messageId}")
     int deleteUserViewMessage(@Param("userId") String userId, @Param("messageId") Long messageId);
 
-    @Update("UPDATE user_view_message SET is_view=1 WHERE user_id=${userId} AND message_id=${messageId}")
+    @Update("UPDATE user_view_message SET is_view=1 WHERE user_id='${userId}' AND message_id=${messageId}")
     int updateMessageView(@Param("userId") String userId, @Param("messageId") Long messageId);
+
+    @Insert("INSERT INTO user_view_message (user_id, message_id, is_view) VALUES (#{userViewMessage.userId}, #{userViewMessage.messageId}, #{userViewMessage.isView})")
+    int insertUserViewMessage(@Param("userViewMessage") UserViewMessage userViewMessage);
 
 }
