@@ -36,4 +36,6 @@ public interface SiteService {
     int deletePrivateSite(Long privateSiteId);
 
     public List<PublicSite> selectByKeyword(String keyword);
+
+    public Integer addSiteTrpg(Long siteId, String trpgId, int siteType);
 }

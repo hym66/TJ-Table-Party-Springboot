@@ -35,6 +35,8 @@ public class SiteServiceImpl implements SiteService {
     @Autowired
     private PrivateSiteMapper privateSiteMapper;
 
+    @Autowired SiteHasTrpgMapper siteHasTrpgMapper;
+
     private static String weekdayTrans(int weekday) {
         if (weekday == 1) return "周一";
         else if (weekday == 2) return "周二";
@@ -148,5 +150,9 @@ public class SiteServiceImpl implements SiteService {
     @Override
     public List<PublicSite> selectByKeyword(String keyword) {
         return publicSiteMapper.selectByKeyword(keyword);
+    }
+
+    public Integer addSiteTrpg(Long siteId, String trpgId, int siteType) {
+        return siteHasTrpgMapper.addSiteTrpg(siteId, trpgId, siteType);
     }
 }

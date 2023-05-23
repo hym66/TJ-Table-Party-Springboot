@@ -19,6 +19,6 @@ public interface SiteHasTrpgMapper {
     @Select("SELECT * FROM site_has_trpg WHERE site_id=#{siteId} AND site_type=#{siteType}")
     List<SiteHasTrpg> selectTrpgsBySite(@Param("siteId") Long siteId, @Param("siteType") int siteType);
 
-    @Insert("INSERT INTO site_has_trpg (site_id, trpg_id, site_type) VALUES (#{clubId}, #{trpgId}, #{siteType})")
+    @Insert("INSERT INTO site_has_trpg (site_id, trpg_id, site_type) VALUES (#{siteId}, #{trpgId}, #{siteType})")
     Integer addSiteTrpg(@Param("siteId") Long siteId, @Param("trpgId") String trpgId, @Param("siteType") int siteType);
 }

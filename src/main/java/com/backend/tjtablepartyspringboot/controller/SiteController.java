@@ -117,9 +117,11 @@ public class SiteController {
                                            @RequestParam("tag") String tag,
                                            @RequestParam("openTime") String openTime,
                                            @RequestParam("latitude") float latitude,
-                                           @RequestParam("longitude") float longitude
+                                           @RequestParam("longitude") float longitude,
+                                           @RequestParam("siteTrpgList") String siteTrpgList
     ) throws ParseException {
         List<SiteTimeDto> openTime_new = new ArrayList<SiteTimeDto>(JSONArray.parseArray(openTime, SiteTimeDto.class));
+        List<String> siteTrpgList_new = new ArrayList<>(JSONArray.parseArray(siteTrpgList, String.class));
 
         // 图片云存储 返回url
         String picture = FileUtil.uploadFile("/report/" + creatorId.toString() + "/", multipartFile);
@@ -131,7 +133,7 @@ public class SiteController {
         // 获取插入后自增的ID
         Long publicSiteId = publicSite.getPublicSiteId();
 
-
+        // 插入公共场地的时间信息
         DateFormat sdf = new SimpleDateFormat("HH:mm");
         for (SiteTimeDto op : openTime_new) {
             Time startTime = new Time(sdf.parse(op.getStartTime()).getTime());
@@ -141,6 +143,13 @@ public class SiteController {
             int res_ = siteService.insertPublicSiteTime(publicSiteTime);
             if (res_ == 0) return Result.fail(400, "插入公共场地失败");
         }
+
+        // 插入公共场地的游戏信息
+        for (String trpgId: siteTrpgList_new) {
+            int res_ = siteService.addSiteTrpg(publicSiteId, trpgId, 0);
+            if (res_ == 0) return Result.fail(400, "插入公共场地失败");
+        }
+
         return Result.success("插入公共场地成功");
     }
 
