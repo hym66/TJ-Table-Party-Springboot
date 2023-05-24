@@ -115,10 +115,9 @@ public class ActivityController {
         Map<String,Object>resultMap=new HashMap<>();
         try
         {
-            //获取UserInterestActivity，只有user 的id
-            List<UserInterestActivity>list =activityService.getUserInterestActivityList(activityId);
-            //查user表，获取user具体信息
-            resultMap.put("data",list);
+            List<Map<String,Object>>list=activityService.getUserInterestActivityList(activityId);
+
+            resultMap.put("list",list);
             return Result.success(resultMap);
         }catch (Exception e){
             return Result.fail(0,e.getMessage());
@@ -357,12 +356,34 @@ public class ActivityController {
         Map<String,Object>resultMap=new HashMap<>();
         try
         {
-            resultMap=activityService.addActivity(activity,wishGame);
+            resultMap=activityService.modify(activity,wishGame);
             return Result.success(resultMap);
         }catch (Exception e){
             return Result.fail(0,e.getMessage());
         }
     }
+
+
+    @ApiOperation("修改活动的state")
+    @PostMapping("/modifyState")
+    public Result<Map<String,Object>>modifyState(
+            @ApiParam(name = "activityId", value = "活动id", required = true)
+            @RequestParam("activityId") Long activityId,
+            @ApiParam(name = "state", value = "state", required = true)
+            @RequestParam("state") String state
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            Integer i=activityService.modifyState(activityId,state);
+            resultMap.put("i",i);
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+
+    }
+
 
 
 //    @ApiOperation("")
