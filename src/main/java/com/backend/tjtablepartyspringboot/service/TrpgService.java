@@ -31,7 +31,7 @@ public interface TrpgService {
      * 输入public trpg id，获取一个trpg public的详细信息
      *
      */
-    TrpgPublic getDetail_public(String trpgId );
+    TrpgPublic getDetail_public(String trpgId);
     TrpgPrivate getDetail_private(String trpgId );
 
     /**

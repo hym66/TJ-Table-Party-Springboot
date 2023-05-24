@@ -19,7 +19,6 @@ import lombok.NoArgsConstructor;
 public class SiteHasTrpg {
     @JsonSerialize(using= ToStringSerializer.class)
     Long siteId;
-    @JsonSerialize(using= ToStringSerializer.class)
-    Long trpgId;
+    String trpgId;
     int siteType;
 }

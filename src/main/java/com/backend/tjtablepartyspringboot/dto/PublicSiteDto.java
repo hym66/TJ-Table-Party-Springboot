@@ -1,6 +1,7 @@
 package com.backend.tjtablepartyspringboot.dto;
 
 import com.backend.tjtablepartyspringboot.entity.PublicSiteTime;
+import com.backend.tjtablepartyspringboot.entity.TrpgPublic;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -44,4 +45,5 @@ public class PublicSiteDto {
     List<PublicSiteTimeDto> openTime;
     float latitude;
     float longitude;
+    List<TrpgPublic> games;
 }

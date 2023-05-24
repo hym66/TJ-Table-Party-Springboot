@@ -37,5 +37,7 @@ public interface SiteService {
 
     public List<PublicSite> selectByKeyword(String keyword);
 
+    List<SiteHasTrpg> selectTrpgsBySite(Long siteId, int siteType);
+
     public Integer addSiteTrpg(Long siteId, String trpgId, int siteType);
 }
