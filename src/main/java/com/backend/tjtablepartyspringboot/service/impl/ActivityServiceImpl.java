@@ -1106,4 +1106,17 @@ public class ActivityServiceImpl implements ActivityService {
 
         return i;
     }
+
+    @Override
+    public List<Activity> getActBySite(Long siteId,Integer siteType){
+        List<Activity>resultList=new ArrayList<>();
+        QueryWrapper<Activity>qw=new QueryWrapper<>();
+        qw.eq("site_id",siteId)
+                .eq("site_type",siteType);
+
+        resultList=activityMapper.selectList(qw);
+
+        return resultList;
+    }
+
 }

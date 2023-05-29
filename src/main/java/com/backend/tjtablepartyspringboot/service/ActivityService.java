@@ -168,4 +168,13 @@ public interface ActivityService {
      */
     Integer modifyState(Long activityId,String state);
 
+
+    /**
+     * 输入场地id，场地类型
+     * 返回相应的活动列表
+     */
+    List<Activity> getActBySite(Long siteId,Integer siteType);
+
+
+
 }

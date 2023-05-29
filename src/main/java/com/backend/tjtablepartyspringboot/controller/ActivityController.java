@@ -458,6 +458,25 @@ public class ActivityController {
     }
 
 
+    @ApiOperation("输入场地id场地类型，获取相关活动")
+    @GetMapping("/getActBySite")
+    public Result<List<Activity>>getActBySite(
+            @ApiParam(name = "siteId", value = "场地id", required = true)
+            @RequestParam("siteId") Long siteId,
+            @ApiParam(name = "siteType", value = "场地类型", required = true)
+            @RequestParam("siteType") Integer siteType
+    ){
+        List<Activity>resultList=new ArrayList<>();
+        try
+        {
+            resultList=activityService.getActBySite(siteId,siteType);
+            return Result.success(resultList);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+
+    }
+
 
 //    @ApiOperation("")
 //    @GetMapping("/getByActivityId")
