@@ -75,9 +75,6 @@ public class ReportController {
             reportService.updateReport(report);
             return Result.success(url);
         }
-
-
-
     }
 
 
