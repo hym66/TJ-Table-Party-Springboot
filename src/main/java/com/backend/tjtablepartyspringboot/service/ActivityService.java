@@ -47,10 +47,25 @@ public interface ActivityService {
 
 
     /**
-     * 输入user id，返回该user的所有活动
+     * 输入user id，返回该user的所有的活动
      */
     Map<String,Object> getUserList(String userId);
 
+    /**
+     * 输入user id，返回该user的所有的 “集合中”、“正在进行”  活动
+     */
+    Map<String,Object> getUserDoingList(String userId);
+
+    /**
+     * 输入user id，返回该user的所有的 “已经完成” 的活动
+     */
+    Map<String,Object> getUserDoneList(String userId);
+
+
+    /**
+     * 输入user id，返回该user 关注的活动
+     */
+    Map<String,Object> getUserInterestList(String userId);
 
 
     /**
@@ -67,7 +82,7 @@ public interface ActivityService {
      * @return List of user entity
      *
      */
-    List<Map<String,Object>> getUserInterestActivityList(Long activityId);
+    List<Map<String,Object>> getUserInterestorList(Long activityId);
 
 
     /**

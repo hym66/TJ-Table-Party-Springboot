@@ -316,7 +316,7 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<Map<String,Object>> getUserInterestActivityList(Long activityId){
+    public List<Map<String,Object>> getUserInterestorList(Long activityId){
         List<Map<String,Object>> result=new ArrayList<>();
 
         QueryWrapper<UserInterestActivity>qw=new QueryWrapper<>();
@@ -522,21 +522,7 @@ public class ActivityServiceImpl implements ActivityService {
          * 筛选
          */
 
-
-
-
-        //用户参与的
-
-
-
-
-
         //sort排序
-
-
-        //得到最后的list
-
-
 
         //结合其他表信息
         List<Map<String,Object>> datalist=new ArrayList<>();
@@ -585,6 +571,213 @@ public class ActivityServiceImpl implements ActivityService {
         return map;
 
     }
+
+
+
+    @Override
+    public Map<String,Object> getUserDoingList(String userId){
+        Map<String,Object>map=new HashMap<>();
+        List<Activity> actList=new ArrayList<>();
+
+        //用户自己创建的
+        QueryWrapper<Activity>qw=new QueryWrapper<>();
+        qw.select("activity_id","title","summary","poster","start_time",
+                        "user_id","site_id","fee","max_people","now_people","state")
+                .eq("user_id",userId)
+                .ne("state","2");
+        actList=activityMapper.selectList(qw);
+
+        /**
+         * 筛选
+         */
+
+        //sort排序
+
+        //结合其他表信息
+        List<Map<String,Object>> datalist=new ArrayList<>();
+        for (Activity act: actList){
+            //对每一个activity，再获取相关的user、site信息
+            Map<String,Object>oneActData=new HashMap<>();
+            oneActData.put("activityId",act.getActivityId());
+            oneActData.put("title",act.getTitle());
+            oneActData.put("summary",act.getSummary());
+            oneActData.put("poster",act.getPoster());
+            oneActData.put("userId",act.getUserId());
+            oneActData.put("siteId",act.getSiteId());
+            oneActData.put("fee",act.getFee());
+            oneActData.put("maxPeople",act.getMaxPeople());
+            oneActData.put("nowPeople",act.getNowPeople());
+            //state
+            String state=act.getState();
+            oneActData.put("state",state);
+
+            oneActData.put("stateLabel",toStateLabel(state));
+
+            //start time
+            Date startTime=act.getStartTime();
+            oneActData.put("startTime",startTime);
+            oneActData.put("startTimeLabel",activityTimeFormate(startTime));
+
+            //user信息
+            Map<String,Object>userData=new HashMap<>();
+
+            UserDto userDto =userService.getNameAndAvatarUrl(userId);
+            userData.put("id",userId);
+            userData.put("avatar",userDto.getAvatarUrl());
+            userData.put("name",userDto.getNickName());
+            oneActData.put("creatorInfo",userData);
+
+
+            //site信息
+            Map<String,Object>siteData=new HashMap<>();
+            oneActData.put("mapAddress","测试用地址"+act.getActivityId());
+
+
+            datalist.add(oneActData);
+        }
+
+        map.put("list",datalist);
+        return map;
+
+
+
+    }
+
+
+    @Override
+    public Map<String,Object> getUserDoneList(String userId){
+        Map<String,Object>map=new HashMap<>();
+        List<Activity> actList=new ArrayList<>();
+
+        //用户自己创建的
+        QueryWrapper<Activity>qw=new QueryWrapper<>();
+        qw.select("activity_id","title","summary","poster","start_time",
+                        "user_id","site_id","fee","max_people","now_people","state")
+                .eq("user_id",userId)
+                .eq("state","2");
+        actList=activityMapper.selectList(qw);
+
+        /**
+         * 筛选
+         */
+
+        //sort排序
+
+        //结合其他表信息
+        List<Map<String,Object>> datalist=new ArrayList<>();
+        for (Activity act: actList){
+            //对每一个activity，再获取相关的user、site信息
+            Map<String,Object>oneActData=new HashMap<>();
+            oneActData.put("activityId",act.getActivityId());
+            oneActData.put("title",act.getTitle());
+            oneActData.put("summary",act.getSummary());
+            oneActData.put("poster",act.getPoster());
+            oneActData.put("userId",act.getUserId());
+            oneActData.put("siteId",act.getSiteId());
+            oneActData.put("fee",act.getFee());
+            oneActData.put("maxPeople",act.getMaxPeople());
+            oneActData.put("nowPeople",act.getNowPeople());
+            //state
+            String state=act.getState();
+            oneActData.put("state",state);
+
+            oneActData.put("stateLabel",toStateLabel(state));
+
+            //start time
+            Date startTime=act.getStartTime();
+            oneActData.put("startTime",startTime);
+            oneActData.put("startTimeLabel",activityTimeFormate(startTime));
+
+            //user信息
+            Map<String,Object>userData=new HashMap<>();
+
+            UserDto userDto =userService.getNameAndAvatarUrl(userId);
+            userData.put("id",userId);
+            userData.put("avatar",userDto.getAvatarUrl());
+            userData.put("name",userDto.getNickName());
+            oneActData.put("creatorInfo",userData);
+
+
+            //site信息
+            Map<String,Object>siteData=new HashMap<>();
+            oneActData.put("mapAddress","测试用地址"+act.getActivityId());
+
+
+            datalist.add(oneActData);
+        }
+
+        map.put("list",datalist);
+        return map;
+
+    }
+
+
+    @Override
+    public Map<String,Object> getUserInterestList(String userId){
+        Map<String,Object>map=new HashMap<>();
+        List<Activity> actList=new ArrayList<>();
+
+        // 关注的所有活动
+        QueryWrapper<UserInterestActivity>qw_interest=new QueryWrapper<>();
+        qw_interest.eq("user_id",userId);
+        List<UserInterestActivity>interestActivities=userInterestActivityMapper.selectList(qw_interest);
+        List<Long>activityIdList=interestActivities.stream().map(ele->ele.getActivityId()).collect(Collectors.toList());
+
+
+        List<Map<String,Object>> datalist=new ArrayList<>();
+        for (Long activityId:activityIdList){
+            // 每一个activity id
+            QueryWrapper<Activity>qw_activity=new QueryWrapper<>();
+            qw_activity.eq("activity_id",activityId);
+            Activity act=activityMapper.selectOne(qw_activity);
+
+            //对每一个activity，再获取相关的user、site信息
+            Map<String,Object>oneActData=new HashMap<>();
+            oneActData.put("activityId",act.getActivityId());
+            oneActData.put("title",act.getTitle());
+            oneActData.put("summary",act.getSummary());
+            oneActData.put("poster",act.getPoster());
+            oneActData.put("userId",act.getUserId());
+            oneActData.put("siteId",act.getSiteId());
+            oneActData.put("fee",act.getFee());
+            oneActData.put("maxPeople",act.getMaxPeople());
+            oneActData.put("nowPeople",act.getNowPeople());
+            //state
+            String state=act.getState();
+            oneActData.put("state",state);
+
+            oneActData.put("stateLabel",toStateLabel(state));
+
+            //start time
+            Date startTime=act.getStartTime();
+            oneActData.put("startTime",startTime);
+            oneActData.put("startTimeLabel",activityTimeFormate(startTime));
+
+            //user信息
+            Map<String,Object>userData=new HashMap<>();
+
+            UserDto userDto =userService.getNameAndAvatarUrl(userId);
+            userData.put("id",userId);
+            userData.put("avatar",userDto.getAvatarUrl());
+            userData.put("name",userDto.getNickName());
+            oneActData.put("creatorInfo",userData);
+
+
+            //site信息
+            Map<String,Object>siteData=new HashMap<>();
+            oneActData.put("mapAddress","测试用地址"+act.getActivityId());
+
+
+            datalist.add(oneActData);
+        }
+
+
+
+        map.put("list",datalist);
+        return map;
+
+    }
+
 
     @Override
     public Map<String,Object> addActivity(Activity activity,String wishGame){
