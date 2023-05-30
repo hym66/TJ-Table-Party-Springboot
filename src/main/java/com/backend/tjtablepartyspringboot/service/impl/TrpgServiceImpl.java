@@ -338,13 +338,13 @@ public class TrpgServiceImpl implements TrpgService {
         }
 
         if (sort_publishYear.equals("1")){
-            resultList=resultList.stream().sorted(Comparator.comparing(TrpgPublic::getPublishYear)).collect(Collectors.toList());
-
-
-        }else if (sort_publishYear.equals("-1")){
-            resultList=resultList.stream().sorted(Comparator.comparing(TrpgPublic::getPublishYear).reversed()).collect(Collectors.toList());
-
+            resultList=resultList.stream().sorted(Comparator.comparing(trpg -> Integer.parseInt(trpg.getPublishYear()))).collect(Collectors.toList());
+        } else if (sort_publishYear.equals("-1")){
+            resultList=resultList.stream().sorted(Comparator.comparing(trpg -> Integer.parseInt(trpg.getPublishYear()), Comparator.reverseOrder())).collect(Collectors.toList());
         }
+
+
+
 
 
 
@@ -534,5 +534,22 @@ public class TrpgServiceImpl implements TrpgService {
 
         return i;
     }
+
+    @Override
+    public List<TrpgPublic> getIndexListByMode(String mode){
+        List<TrpgPublic>resultList=new ArrayList<>();
+        //根据不同的mode，执行不同的策略
+        if (mode.equals("0")){
+            //最新游戏
+            //按发布年份，选择最新的
+
+        } else if (mode.equals("1")) {
+
+
+        }
+
+        return resultList;
+    }
+
 
 }

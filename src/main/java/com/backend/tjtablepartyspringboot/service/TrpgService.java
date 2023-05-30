@@ -1,5 +1,6 @@
 package com.backend.tjtablepartyspringboot.service;
 
+import com.backend.tjtablepartyspringboot.entity.Activity;
 import com.backend.tjtablepartyspringboot.entity.TrpgPrivate;
 import com.backend.tjtablepartyspringboot.entity.TrpgPublic;
 import org.springframework.stereotype.Service;
@@ -75,6 +76,14 @@ public interface TrpgService {
      * 重置一个 trpg 的poster字段
      */
     Map<String,Object>updatePoster(String posterUrl,String trpgId);
+
+
+
+
+    /**
+     * 获取首页推送的游戏
+     */
+    List<TrpgPublic> getIndexListByMode(String mode);
 
 
 

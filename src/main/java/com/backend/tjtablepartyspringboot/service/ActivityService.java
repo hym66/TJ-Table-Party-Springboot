@@ -176,5 +176,4 @@ public interface ActivityService {
     List<Activity> getActBySite(Long siteId,Integer siteType);
 
 
-
 }
