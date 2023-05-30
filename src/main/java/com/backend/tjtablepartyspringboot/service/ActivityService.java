@@ -173,7 +173,12 @@ public interface ActivityService {
      * 输入场地id，场地类型
      * 返回相应的活动列表
      */
-    List<Activity> getActBySite(Long siteId,Integer siteType);
+    List<Activity> getActBySite(Long siteId,int siteType);
 
+
+    /**
+     * 输入siteId，siteType，返回site 详细信息
+     */
+    Map<String,Object>getSite(Long siteId,Integer siteType);
 
 }

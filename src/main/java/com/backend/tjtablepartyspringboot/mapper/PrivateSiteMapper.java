@@ -2,6 +2,7 @@ package com.backend.tjtablepartyspringboot.mapper;
 
 import com.backend.tjtablepartyspringboot.entity.PrivateSite;
 import com.backend.tjtablepartyspringboot.entity.PublicSite;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.*;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import java.util.List;
  * @JDKVersion 17.0.4
  */
 @Mapper
-public interface PrivateSiteMapper {
+public interface PrivateSiteMapper extends BaseMapper<PrivateSite> {
 
     @Select("SELECT * FROM private_site WHERE creator_id=#{creatorId}")
     List<PrivateSite> selectPrivateSiteByCreatorId(@Param("creatorId") String creatorId);

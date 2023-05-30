@@ -464,7 +464,7 @@ public class ActivityController {
             @ApiParam(name = "siteId", value = "场地id", required = true)
             @RequestParam("siteId") Long siteId,
             @ApiParam(name = "siteType", value = "场地类型", required = true)
-            @RequestParam("siteType") Integer siteType
+            @RequestParam("siteType") int siteType
     ){
         List<Activity>resultList=new ArrayList<>();
         try

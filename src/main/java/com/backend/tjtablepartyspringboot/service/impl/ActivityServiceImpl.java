@@ -27,6 +27,13 @@ import java.util.stream.Collectors;
 public class ActivityServiceImpl implements ActivityService {
     @Autowired
     ActivityMapper activityMapper;
+
+    @Autowired
+    PublicSiteMapper publicSiteMapper;
+
+    @Autowired
+    PrivateSiteMapper privateSiteMapper;
+
     @Autowired
     ActivityHasTrpgMapper activityHasTrpgMapper;
 
@@ -120,6 +127,7 @@ public class ActivityServiceImpl implements ActivityService {
         detailMap.put("poster",act.getPoster());
         detailMap.put("pictures",act.getPictures());
         detailMap.put("siteId",act.getSiteId());
+        detailMap.put("siteType",act.getSiteType());
         detailMap.put("clubId",act.getClubId());
 
         //state
@@ -188,7 +196,11 @@ public class ActivityServiceImpl implements ActivityService {
 
 
         //联系site 表
-        detailMap.put("mapAddress","测试用地址"+act.getActivityId());
+        Long siteId=act.getSiteId();
+        int siteType=act.getSiteType();
+        Map<String,Object> siteData=getSite(siteId,siteType);
+        detailMap.put("mapAddress",siteData.get("location"));
+        detailMap.put("siteData",siteData);
 
 
 
@@ -466,6 +478,7 @@ public class ActivityServiceImpl implements ActivityService {
             oneActData.put("poster",act.getPoster());
             oneActData.put("userId",act.getUserId());
             oneActData.put("siteId",act.getSiteId());
+            oneActData.put("siteType",act.getSiteType());
             oneActData.put("fee",act.getFee());
             oneActData.put("maxPeople",act.getMaxPeople());
             oneActData.put("nowPeople",act.getNowPeople());
@@ -492,8 +505,12 @@ public class ActivityServiceImpl implements ActivityService {
 
 
             //site信息
-            Map<String,Object>siteData=new HashMap<>();
-            oneActData.put("mapAddress","测试用地址"+act.getActivityId());
+            Long siteId=act.getSiteId();
+            int siteType=act.getSiteType();
+            Map<String,Object> siteData=getSite(siteId,siteType);
+            oneActData.put("mapAddress",siteData.get("location"));
+            oneActData.put("siteData",siteData);
+
 
 
             datalist.add(oneActData);
@@ -560,9 +577,12 @@ public class ActivityServiceImpl implements ActivityService {
 
 
             //site信息
-            Map<String,Object>siteData=new HashMap<>();
-            oneActData.put("mapAddress","测试用地址"+act.getActivityId());
 
+            Long siteId=act.getSiteId();
+            int siteType=act.getSiteType();
+            Map<String,Object> siteData=getSite(siteId,siteType);
+            oneActData.put("mapAddress",siteData.get("location"));
+            oneActData.put("siteData",siteData);
 
             datalist.add(oneActData);
         }
@@ -629,9 +649,11 @@ public class ActivityServiceImpl implements ActivityService {
 
 
             //site信息
-            Map<String,Object>siteData=new HashMap<>();
-            oneActData.put("mapAddress","测试用地址"+act.getActivityId());
-
+            Long siteId=act.getSiteId();
+            int siteType=act.getSiteType();
+            Map<String,Object> siteData=getSite(siteId,siteType);
+            oneActData.put("mapAddress",siteData.get("location"));
+            oneActData.put("siteData",siteData);
 
             datalist.add(oneActData);
         }
@@ -699,8 +721,11 @@ public class ActivityServiceImpl implements ActivityService {
 
 
             //site信息
-            Map<String,Object>siteData=new HashMap<>();
-            oneActData.put("mapAddress","测试用地址"+act.getActivityId());
+            Long siteId=act.getSiteId();
+            int siteType=act.getSiteType();
+            Map<String,Object> siteData=getSite(siteId,siteType);
+            oneActData.put("mapAddress",siteData.get("location"));
+            oneActData.put("siteData",siteData);
 
 
             datalist.add(oneActData);
@@ -764,8 +789,11 @@ public class ActivityServiceImpl implements ActivityService {
 
 
             //site信息
-            Map<String,Object>siteData=new HashMap<>();
-            oneActData.put("mapAddress","测试用地址"+act.getActivityId());
+            Long siteId=act.getSiteId();
+            int siteType=act.getSiteType();
+            Map<String,Object> siteData=getSite(siteId,siteType);
+            oneActData.put("mapAddress",siteData.get("location"));
+            oneActData.put("siteData",siteData);
 
 
             datalist.add(oneActData);
@@ -1108,7 +1136,7 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<Activity> getActBySite(Long siteId,Integer siteType){
+    public List<Activity> getActBySite(Long siteId,int siteType){
         List<Activity>resultList=new ArrayList<>();
         QueryWrapper<Activity>qw=new QueryWrapper<>();
         qw.eq("site_id",siteId)
@@ -1119,4 +1147,51 @@ public class ActivityServiceImpl implements ActivityService {
         return resultList;
     }
 
+
+    @Override
+    public Map<String,Object>getSite(Long siteId,Integer siteType){
+        Map<String,Object> resultMap=new HashMap<>();
+        resultMap.put("siteId",siteId);
+        resultMap.put("siteType",siteType);
+
+        String name="";
+        String location="";
+        String picture="";
+        float latitude=-1f;
+        float longitude=-1f;
+
+        //区分public和private
+        if (siteType.equals(0)){
+            //public
+            QueryWrapper<PublicSite>qw=new QueryWrapper<>();
+            qw.eq("public_site_id",siteId);
+            PublicSite site=publicSiteMapper.selectOne(qw);
+            name=site.getName();
+            location=site.getLocation();
+            picture=site.getPicture();
+            latitude=site.getLatitude();
+            longitude=site.getLongitude();
+
+        } else if (siteType.equals(0)) {
+            //private
+            QueryWrapper<PrivateSite>qw=new QueryWrapper<>();
+            qw.eq("private_site_id",siteId);
+            PrivateSite site=privateSiteMapper.selectOne(qw);
+
+            name=site.getName();
+            location=site.getLocation();
+            picture=site.getPicture();
+            latitude=site.getLatitude();
+            longitude=site.getLongitude();
+        }
+        resultMap.put("name",name);
+        resultMap.put("location",location);
+        resultMap.put("picture",picture);
+        resultMap.put("latitude",latitude);
+        resultMap.put("longitude",longitude);
+
+
+
+        return resultMap;
+    }
 }
