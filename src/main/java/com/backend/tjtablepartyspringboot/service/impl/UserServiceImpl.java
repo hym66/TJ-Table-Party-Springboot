@@ -45,6 +45,7 @@ public class       UserServiceImpl implements UserService {
         userInfoDto.setProvince(user.getProvince());
         userInfoDto.setCity(user.getCity());
         userInfoDto.setGender(user.getGender());
+        userInfoDto.setRole(user.getRole());
         Date now = new Date();
         if (user.getBantime() != null && now.before(user.getBantime())) {
             userInfoDto.setBan("yes");
@@ -99,6 +100,7 @@ public class       UserServiceImpl implements UserService {
             user.setUserId(userNew.getUserId());
             user.setNickName(userNew.getNickName());
             user.setAvatarUrl(userNew.getAvatarUrl());
+            user.setRole("user");
             userMapper.insert(user);
         }
     }
