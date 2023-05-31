@@ -47,10 +47,25 @@ public interface ActivityService {
 
 
     /**
-     * 输入user id，返回该user的所有活动
+     * 输入user id，返回该user的所有的活动
      */
     Map<String,Object> getUserList(String userId);
 
+    /**
+     * 输入user id，返回该user的所有的 “集合中”、“正在进行”  活动
+     */
+    Map<String,Object> getUserDoingList(String userId);
+
+    /**
+     * 输入user id，返回该user的所有的 “已经完成” 的活动
+     */
+    Map<String,Object> getUserDoneList(String userId);
+
+
+    /**
+     * 输入user id，返回该user 关注的活动
+     */
+    Map<String,Object> getUserInterestList(String userId);
 
 
     /**
@@ -67,7 +82,7 @@ public interface ActivityService {
      * @return List of user entity
      *
      */
-    List<UserInterestActivity> getUserInterestActivityList(Long activityId);
+    List<Map<String,Object>> getUserInterestorList(Long activityId);
 
 
     /**
@@ -146,5 +161,19 @@ public interface ActivityService {
      *  不是完全覆盖，传入的activity含有什么字段，才更新什么字段
      */
     Map<String,Object>modify(Activity activity,String wishGame);
+
+
+    /**
+     * 修改活动的状态
+     */
+    Integer modifyState(Long activityId,String state);
+
+
+    /**
+     * 输入场地id，场地类型
+     * 返回相应的活动列表
+     */
+    List<Activity> getActBySite(Long siteId,Integer siteType);
+
 
 }

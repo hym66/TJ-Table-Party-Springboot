@@ -52,4 +52,12 @@ public class MessageServiceImpl implements MessageService {
     public int updateMessageView(String userId, Long messageId) {
         return userViewMessageMapper.updateMessageView(userId, messageId);
     }
+
+    @Override
+    public int sendMessage(String userId, Message message) {
+        int res1 = messageMapper.insertMessage(message);
+        UserViewMessage userViewMessage = new UserViewMessage(userId, message.getMessageId(), 0);
+        int res2 = userViewMessageMapper.insertUserViewMessage(userViewMessage);
+        return res1 & res2;
+    }
 }

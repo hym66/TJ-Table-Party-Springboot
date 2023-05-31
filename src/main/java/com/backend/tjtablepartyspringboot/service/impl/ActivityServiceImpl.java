@@ -50,20 +50,18 @@ public class ActivityServiceImpl implements ActivityService {
         String stateLabel="";
         switch (state){
             case "0":
-                stateLabel="报名中";
+                stateLabel="集合中";
                 break;
             case "1":
-                stateLabel="报名结束";
-                break;
-            case "2":
                 stateLabel="正在进行";
                 break;
-            case "3":
-                stateLabel="已结束";
+            case "2":
+                stateLabel="活动结束";
                 break;
-            case "4":
+            case "3":
                 stateLabel="已删除";
                 break;
+
 
         }
         return stateLabel;
@@ -98,6 +96,7 @@ public class ActivityServiceImpl implements ActivityService {
         detailMap.put("fee",act.getFee());
         detailMap.put("maxPeople",act.getMaxPeople());
         detailMap.put("minPeople",act.getMinPeople());
+        detailMap.put("nowPeople",act.getNowPeople());
 
 
 
@@ -308,21 +307,38 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<UserInterestActivity> getUserInterestActivityList(Long activityId){
-        QueryWrapper<UserInterestActivity>qw=new QueryWrapper<>();
-        qw.eq("activity_id",activityId);
-        List<UserInterestActivity>list=userInterestActivityMapper.selectList(qw);
-
-        return list;
-    }
-
-    @Override
     public List<UserJoinActivity> getUserJoinActivityList(Long activityId){
         QueryWrapper<UserJoinActivity>qw=new QueryWrapper<>();
         qw.eq("activity_id",activityId);
         List<UserJoinActivity>list=userJoinActivityMapper.selectList(qw);
 
         return list;
+    }
+
+    @Override
+    public List<Map<String,Object>> getUserInterestorList(Long activityId){
+        List<Map<String,Object>> result=new ArrayList<>();
+
+        QueryWrapper<UserInterestActivity>qw=new QueryWrapper<>();
+        qw.eq("activity_id",activityId);
+        List<UserInterestActivity>entityList=userInterestActivityMapper.selectList(qw);
+
+        //check user table
+        for (UserInterestActivity userInterest:entityList){
+            Map<String,Object>oneData=new HashMap<>();
+            String userId=userInterest.getUserId();
+            UserDto userDto=userService.getNameAndAvatarUrl(userId);
+
+            oneData.put("userId",userId);
+            oneData.put("interestTime",userInterest.getInterestTime());
+            oneData.put("avatar",userDto.getAvatarUrl());
+            oneData.put("name",userDto.getNickName());
+
+
+
+            result.add(oneData);
+        }
+        return result;
     }
 
     public static String activityTimeFormate(Date date){
@@ -506,21 +522,7 @@ public class ActivityServiceImpl implements ActivityService {
          * 筛选
          */
 
-
-
-
-        //用户参与的
-
-
-
-
-
         //sort排序
-
-
-        //得到最后的list
-
-
 
         //结合其他表信息
         List<Map<String,Object>> datalist=new ArrayList<>();
@@ -570,11 +572,218 @@ public class ActivityServiceImpl implements ActivityService {
 
     }
 
+
+
+    @Override
+    public Map<String,Object> getUserDoingList(String userId){
+        Map<String,Object>map=new HashMap<>();
+        List<Activity> actList=new ArrayList<>();
+
+        //用户自己创建的
+        QueryWrapper<Activity>qw=new QueryWrapper<>();
+        qw.select("activity_id","title","summary","poster","start_time",
+                        "user_id","site_id","fee","max_people","now_people","state")
+                .eq("user_id",userId)
+                .ne("state","2");
+        actList=activityMapper.selectList(qw);
+
+        /**
+         * 筛选
+         */
+
+        //sort排序
+
+        //结合其他表信息
+        List<Map<String,Object>> datalist=new ArrayList<>();
+        for (Activity act: actList){
+            //对每一个activity，再获取相关的user、site信息
+            Map<String,Object>oneActData=new HashMap<>();
+            oneActData.put("activityId",act.getActivityId());
+            oneActData.put("title",act.getTitle());
+            oneActData.put("summary",act.getSummary());
+            oneActData.put("poster",act.getPoster());
+            oneActData.put("userId",act.getUserId());
+            oneActData.put("siteId",act.getSiteId());
+            oneActData.put("fee",act.getFee());
+            oneActData.put("maxPeople",act.getMaxPeople());
+            oneActData.put("nowPeople",act.getNowPeople());
+            //state
+            String state=act.getState();
+            oneActData.put("state",state);
+
+            oneActData.put("stateLabel",toStateLabel(state));
+
+            //start time
+            Date startTime=act.getStartTime();
+            oneActData.put("startTime",startTime);
+            oneActData.put("startTimeLabel",activityTimeFormate(startTime));
+
+            //user信息
+            Map<String,Object>userData=new HashMap<>();
+
+            UserDto userDto =userService.getNameAndAvatarUrl(userId);
+            userData.put("id",userId);
+            userData.put("avatar",userDto.getAvatarUrl());
+            userData.put("name",userDto.getNickName());
+            oneActData.put("creatorInfo",userData);
+
+
+            //site信息
+            Map<String,Object>siteData=new HashMap<>();
+            oneActData.put("mapAddress","测试用地址"+act.getActivityId());
+
+
+            datalist.add(oneActData);
+        }
+
+        map.put("list",datalist);
+        return map;
+
+
+
+    }
+
+
+    @Override
+    public Map<String,Object> getUserDoneList(String userId){
+        Map<String,Object>map=new HashMap<>();
+        List<Activity> actList=new ArrayList<>();
+
+        //用户自己创建的
+        QueryWrapper<Activity>qw=new QueryWrapper<>();
+        qw.select("activity_id","title","summary","poster","start_time",
+                        "user_id","site_id","fee","max_people","now_people","state")
+                .eq("user_id",userId)
+                .eq("state","2");
+        actList=activityMapper.selectList(qw);
+
+        /**
+         * 筛选
+         */
+
+        //sort排序
+
+        //结合其他表信息
+        List<Map<String,Object>> datalist=new ArrayList<>();
+        for (Activity act: actList){
+            //对每一个activity，再获取相关的user、site信息
+            Map<String,Object>oneActData=new HashMap<>();
+            oneActData.put("activityId",act.getActivityId());
+            oneActData.put("title",act.getTitle());
+            oneActData.put("summary",act.getSummary());
+            oneActData.put("poster",act.getPoster());
+            oneActData.put("userId",act.getUserId());
+            oneActData.put("siteId",act.getSiteId());
+            oneActData.put("fee",act.getFee());
+            oneActData.put("maxPeople",act.getMaxPeople());
+            oneActData.put("nowPeople",act.getNowPeople());
+            //state
+            String state=act.getState();
+            oneActData.put("state",state);
+
+            oneActData.put("stateLabel",toStateLabel(state));
+
+            //start time
+            Date startTime=act.getStartTime();
+            oneActData.put("startTime",startTime);
+            oneActData.put("startTimeLabel",activityTimeFormate(startTime));
+
+            //user信息
+            Map<String,Object>userData=new HashMap<>();
+
+            UserDto userDto =userService.getNameAndAvatarUrl(userId);
+            userData.put("id",userId);
+            userData.put("avatar",userDto.getAvatarUrl());
+            userData.put("name",userDto.getNickName());
+            oneActData.put("creatorInfo",userData);
+
+
+            //site信息
+            Map<String,Object>siteData=new HashMap<>();
+            oneActData.put("mapAddress","测试用地址"+act.getActivityId());
+
+
+            datalist.add(oneActData);
+        }
+
+        map.put("list",datalist);
+        return map;
+
+    }
+
+
+    @Override
+    public Map<String,Object> getUserInterestList(String userId){
+        Map<String,Object>map=new HashMap<>();
+        List<Activity> actList=new ArrayList<>();
+
+        // 关注的所有活动
+        QueryWrapper<UserInterestActivity>qw_interest=new QueryWrapper<>();
+        qw_interest.eq("user_id",userId);
+        List<UserInterestActivity>interestActivities=userInterestActivityMapper.selectList(qw_interest);
+        List<Long>activityIdList=interestActivities.stream().map(ele->ele.getActivityId()).collect(Collectors.toList());
+
+
+        List<Map<String,Object>> datalist=new ArrayList<>();
+        for (Long activityId:activityIdList){
+            // 每一个activity id
+            QueryWrapper<Activity>qw_activity=new QueryWrapper<>();
+            qw_activity.eq("activity_id",activityId);
+            Activity act=activityMapper.selectOne(qw_activity);
+
+            //对每一个activity，再获取相关的user、site信息
+            Map<String,Object>oneActData=new HashMap<>();
+            oneActData.put("activityId",act.getActivityId());
+            oneActData.put("title",act.getTitle());
+            oneActData.put("summary",act.getSummary());
+            oneActData.put("poster",act.getPoster());
+            oneActData.put("userId",act.getUserId());
+            oneActData.put("siteId",act.getSiteId());
+            oneActData.put("fee",act.getFee());
+            oneActData.put("maxPeople",act.getMaxPeople());
+            oneActData.put("nowPeople",act.getNowPeople());
+            //state
+            String state=act.getState();
+            oneActData.put("state",state);
+
+            oneActData.put("stateLabel",toStateLabel(state));
+
+            //start time
+            Date startTime=act.getStartTime();
+            oneActData.put("startTime",startTime);
+            oneActData.put("startTimeLabel",activityTimeFormate(startTime));
+
+            //user信息
+            Map<String,Object>userData=new HashMap<>();
+
+            UserDto userDto =userService.getNameAndAvatarUrl(userId);
+            userData.put("id",userId);
+            userData.put("avatar",userDto.getAvatarUrl());
+            userData.put("name",userDto.getNickName());
+            oneActData.put("creatorInfo",userData);
+
+
+            //site信息
+            Map<String,Object>siteData=new HashMap<>();
+            oneActData.put("mapAddress","测试用地址"+act.getActivityId());
+
+
+            datalist.add(oneActData);
+        }
+
+
+
+        map.put("list",datalist);
+        return map;
+
+    }
+
+
     @Override
     public Map<String,Object> addActivity(Activity activity,String wishGame){
         Map<String,Object> resultMap=new HashMap<>();
         //补全信息
-        Integer nowPeople=1;
+        Integer nowPeople=0;
         Date createTime=new Date();
         String state="0";
         activity.setNowPeople(nowPeople);
@@ -654,8 +863,23 @@ public class ActivityServiceImpl implements ActivityService {
                 .eq("user_id",userId);
         UserJoinActivity oldOne=userJoinActivityMapper.selectOne(qw);
         if (oldOne==null){
-            userJoinActivityMapper.insert(new UserJoinActivity(userId,activityId,new Date()));
+            i=userJoinActivityMapper.insert(new UserJoinActivity(userId,activityId,new Date()));
         }
+        //参与人数+1
+        if (i.equals(1)){
+            QueryWrapper<Activity>qw_act=new QueryWrapper<>();
+            qw_act.eq("activity_id",activityId);
+            Activity activity=activityMapper.selectOne(qw_act);
+            Integer nowPeople=activity.getNowPeople();
+            activityMapper.update(
+                    null,
+                    Wrappers.<Activity>lambdaUpdate()
+                            .eq(Activity::getActivityId,activityId)
+                            .set(Activity::getNowPeople,nowPeople+1)
+            );
+
+        }
+
 
 
         return i;
@@ -748,6 +972,21 @@ public class ActivityServiceImpl implements ActivityService {
         qw.eq("activity_id",activityId)
                 .eq("user_id",userId);
         i=userJoinActivityMapper.delete(qw);
+        //参与人数-1
+        if (i.equals(1)){
+            QueryWrapper<Activity>qw_act=new QueryWrapper<>();
+            qw_act.eq("activity_id",activityId);
+            Activity activity=activityMapper.selectOne(qw_act);
+            Integer nowPeople=activity.getNowPeople();
+            activityMapper.update(
+                    null,
+                    Wrappers.<Activity>lambdaUpdate()
+                            .eq(Activity::getActivityId,activityId)
+                            .set(Activity::getNowPeople,nowPeople-1)
+            );
+
+        }
+
         return i;
     }
 
@@ -777,9 +1016,37 @@ public class ActivityServiceImpl implements ActivityService {
         if (oldOne==null){
             UserJoinActivity userJoinActivity=new UserJoinActivity(userId,activityId,new Date());
             i=userJoinActivityMapper.insert(userJoinActivity);
+            //参与人数+1
+            if (i.equals(1)){
+                QueryWrapper<Activity>qw_act=new QueryWrapper<>();
+                qw_act.eq("activity_id",activityId);
+                Activity activity=activityMapper.selectOne(qw_act);
+                Integer nowPeople=activity.getNowPeople();
+                activityMapper.update(
+                        null,
+                        Wrappers.<Activity>lambdaUpdate()
+                                .eq(Activity::getActivityId,activityId)
+                                .set(Activity::getNowPeople,nowPeople+1)
+                );
+
+            }
         }
         else {
             i=userJoinActivityMapper.delete(qw);
+            //参与人数-1
+            if (i.equals(1)){
+                QueryWrapper<Activity>qw_act=new QueryWrapper<>();
+                qw_act.eq("activity_id",activityId);
+                Activity activity=activityMapper.selectOne(qw_act);
+                Integer nowPeople=activity.getNowPeople();
+                activityMapper.update(
+                        null,
+                        Wrappers.<Activity>lambdaUpdate()
+                                .eq(Activity::getActivityId,activityId)
+                                .set(Activity::getNowPeople,nowPeople-1)
+                );
+
+            }
         }
 
 
@@ -791,14 +1058,65 @@ public class ActivityServiceImpl implements ActivityService {
     public Map<String,Object>modify(Activity activity,String wishGame){
         Map<String,Object>resultMap=new HashMap<>();
         //修改activity表内容
+        Long activityId=activity.getActivityId();
+        QueryWrapper<Activity>qw=new QueryWrapper<>();
+        qw.eq("activity_id",activityId);
+        Activity newAct=activityMapper.selectOne(qw);
+
+        newAct.setTitle(activity.getTitle());
+        newAct.setFee(activity.getFee());
+        newAct.setMaxPeople(activity.getMaxPeople());
+        newAct.setMinPeople(activity.getMinPeople());
+        newAct.setStartTime(activity.getStartTime());
+        newAct.setEndTime(activity.getEndTime());
+        newAct.setSummary(activity.getSummary());
+        newAct.setDescription(activity.getDescription());
+
+        activityMapper.update(newAct,qw);
 
 
         //修改activity has trpg
 
+        //联系trpg
+        List<String> trpgIdList=List.of(wishGame.split(","));
+        trpgIdList=trpgIdList.stream().filter(ele->!ele.equals("")).collect(Collectors.toList());
+
+        for (String trpgId:trpgIdList){
+            ActivityHasTrpg activityHasTrpg=new ActivityHasTrpg(activityId,trpgId);
+            activityHasTrpgMapper.insert(activityHasTrpg);
+        }
 
 
         return resultMap;
 
 
     }
+
+
+    @Override
+    public Integer modifyState(Long activityId,String state){
+        Integer i=0;
+        i=activityMapper.update(
+                null,
+                Wrappers.<Activity>lambdaUpdate()
+                        .eq(Activity::getActivityId,activityId)
+                        .set(Activity::getState,state)
+                );
+
+
+        return i;
+    }
+
+    @Override
+    public List<Activity> getActBySite(Long siteId,Integer siteType){
+        List<Activity>resultList=new ArrayList<>();
+        QueryWrapper<Activity>qw=new QueryWrapper<>();
+        qw.eq("site_id",siteId)
+                .eq("site_type",siteType);
+
+        resultList=activityMapper.selectList(qw);
+
+        return resultList;
+    }
+
 }

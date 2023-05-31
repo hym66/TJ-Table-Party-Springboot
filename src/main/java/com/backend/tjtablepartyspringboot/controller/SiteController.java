@@ -6,6 +6,7 @@ import com.backend.tjtablepartyspringboot.dto.*;
 import com.backend.tjtablepartyspringboot.entity.*;
 import com.backend.tjtablepartyspringboot.mapper.PublicSiteMapper;
 import com.backend.tjtablepartyspringboot.mapper.SiteTypeMapper;
+import com.backend.tjtablepartyspringboot.service.MessageService;
 import com.backend.tjtablepartyspringboot.service.SiteService;
 import com.backend.tjtablepartyspringboot.util.FileUtil;
 import com.backend.tjtablepartyspringboot.util.GeoUtil;
@@ -51,6 +52,9 @@ public class SiteController {
     @Autowired
     private SiteTypeMapper siteTypeMapper;
 
+    @Autowired
+    private MessageService messageService;
+
     @ApiOperation("获取所有公共场地信息")
     @GetMapping("getPublicSiteList")
     public Result<List<PublicSiteBriefDto>> getPublicSiteList() {
@@ -64,10 +68,17 @@ public class SiteController {
         return Result.success(siteService.selectPublicSiteById(publicSiteId));
     }
 
+    @ApiOperation("根据用户ID获取公共场地信息")
+    @GetMapping("getPublicSiteByCreatorId")
+    public Result<List<PublicSiteBriefDto>> getPublicSiteByCreatorId(@ApiParam(name = "creatorId", value = "创建者id", required = true)
+                                                                     @RequestParam("creatorId") String creatorId) {
+        return Result.success(siteService.selectPublicSiteByCreatorId(creatorId));
+    }
+
     @ApiOperation("根据用户ID获取私人场地信息")
     @GetMapping("getPrivateSiteByCreatorId")
     public Result<List<PrivateSite>> getPrivateSiteByCreatorId(@ApiParam(name = "creatorId", value = "创建者id", required = true)
-                                                               @RequestParam("creatorId") Long creatorId) {
+                                                               @RequestParam("creatorId") String creatorId) {
         return Result.success(siteService.selectPrivateSiteByCreatorId(creatorId));
     }
 
@@ -106,21 +117,23 @@ public class SiteController {
                                            @RequestParam("tag") String tag,
                                            @RequestParam("openTime") String openTime,
                                            @RequestParam("latitude") float latitude,
-                                           @RequestParam("longitude") float longitude
+                                           @RequestParam("longitude") float longitude,
+                                           @RequestParam("siteTrpgList") String siteTrpgList
     ) throws ParseException {
         List<SiteTimeDto> openTime_new = new ArrayList<SiteTimeDto>(JSONArray.parseArray(openTime, SiteTimeDto.class));
+        List<String> siteTrpgList_new = new ArrayList<>(JSONArray.parseArray(siteTrpgList, String.class));
 
         // 图片云存储 返回url
         String picture = FileUtil.uploadFile("/report/" + creatorId.toString() + "/", multipartFile);
         // 创建新的公共场地
-        PublicSite publicSite = new PublicSite(creatorId, name, city, location, picture, introduction, avgCost, capacity, 0, phone, new Date(), 0, type, tag, latitude, longitude);
+        PublicSite publicSite = new PublicSite(creatorId, name, city, location, picture, introduction, avgCost, capacity, siteTrpgList_new.size(), phone, new Date(), 2, type, tag, latitude, longitude);
         // 插入数据库
         int res = siteService.insertPublicSite(publicSite);
         if (res == 0) return Result.fail(400, "插入公共场地失败");
         // 获取插入后自增的ID
         Long publicSiteId = publicSite.getPublicSiteId();
 
-
+        // 插入公共场地的时间信息
         DateFormat sdf = new SimpleDateFormat("HH:mm");
         for (SiteTimeDto op : openTime_new) {
             Time startTime = new Time(sdf.parse(op.getStartTime()).getTime());
@@ -130,6 +143,13 @@ public class SiteController {
             int res_ = siteService.insertPublicSiteTime(publicSiteTime);
             if (res_ == 0) return Result.fail(400, "插入公共场地失败");
         }
+
+        // 插入公共场地的游戏信息
+        for (String trpgId: siteTrpgList_new) {
+            int res_ = siteService.addSiteTrpg(publicSiteId, trpgId, 0);
+            if (res_ == 0) return Result.fail(400, "插入公共场地失败");
+        }
+
         return Result.success("插入公共场地成功");
     }
 
@@ -140,13 +160,41 @@ public class SiteController {
                                             @RequestParam("name") String name,
                                             @RequestParam("location") String location,
                                             @RequestParam("latitude") float latitude,
-                                            @RequestParam("longitude") float longitude) {
+                                            @RequestParam("longitude") float longitude,
+                                            @RequestParam("locationTitle") String locationTitle) {
         // 图片云存储 返回url
         String picture = FileUtil.uploadFile("/report/" + creatorId.toString() + "/", multipartFile);
-        PrivateSite privateSite = new PrivateSite(creatorId, name, location, picture, latitude, longitude);
+        PrivateSite privateSite = new PrivateSite(creatorId, name, location, picture, latitude, longitude, locationTitle);
         int res = siteService.insertPrivateSite(privateSite);
         if (res == 0) return Result.fail(400, "创建私人场地失败");
         else return Result.success("创建私人场地成功");
+    }
+
+    @ApiOperation("修改私人场地的基本信息，场地图片不修改")
+    @PutMapping("modifyPrivateSiteWithoutPicture")
+    public Result<String> modifyPrivateSiteWithoutPicture(@RequestBody PrivateSite privateSite) {
+
+        int res = siteService.modifyPrivateSite(privateSite);
+        if (res == 0) return Result.fail(400, "修改私人场地信息失败");
+        else return Result.success("修改私人场地信息成功");
+    }
+
+    @ApiOperation("修改私人场地的所有信息")
+    @PostMapping("modifyPrivateSite")
+    public Result<String> modifyPrivateSite(@RequestParam("file") MultipartFile multipartFile,
+                                            @RequestParam("privateSiteId") Long privateSiteId,
+                                            @RequestParam("creatorId") String creatorId,
+                                            @RequestParam("name") String name,
+                                            @RequestParam("location") String location,
+                                            @RequestParam("latitude") float latitude,
+                                            @RequestParam("longitude") float longitude,
+                                            @RequestParam("locationTitle") String locationTitle) {
+        // 图片云存储 返回url
+        String picture = FileUtil.uploadFile("/report/" + creatorId + "/", multipartFile);
+        PrivateSite privateSite = new PrivateSite(privateSiteId, creatorId, name, location, picture, latitude, longitude, locationTitle);
+        int res = siteService.modifyPrivateSite(privateSite);
+        if (res == 0) return Result.fail(400, "修改私人场地信息失败");
+        else return Result.success("修改私人场地信息成功");
     }
 
     @ApiOperation("删除私人场地")
@@ -197,10 +245,25 @@ public class SiteController {
             for (int i = 0; i < type.length; i++) {
                 type[i] = siteTypeMapper.selectTypeNameById(Long.valueOf(type[i]));
             }
-            PublicSiteBriefDto publicSiteBriefDto = new PublicSiteBriefDto(ps.getPublicSiteId(), ps.getName(), ps.getPicture(), ps.getCity(), ps.getLocation(), type, ps.getAvgCost(), ps.getCapacity(), ps.getGameNum());
+            PublicSiteBriefDto publicSiteBriefDto = new PublicSiteBriefDto(ps.getPublicSiteId(), ps.getName(), ps.getPicture(), ps.getCity(), ps.getLocation(), type, ps.getAvgCost(), ps.getCapacity(), ps.getGameNum(), ps.getStatus());
             res.add(publicSiteBriefDto);
         }
         return Result.success(res);
+    }
+
+    @ApiOperation("场地信息反馈")
+    @PostMapping("siteInfoFeedback")
+    public Result<String> siteInfoFeedback(@RequestBody HashMap<String, String> map) {
+        String creatorId = map.get("creatorId");
+        Long publicSiteId = Long.valueOf(map.get("publicSiteId"));
+        String name = map.get("name");
+        String content = map.get("content");
+        Date time = new Date();
+
+        Message message = new Message(publicSiteId, name + " 信息反馈", content, time, 2);
+        int res = messageService.sendMessage(creatorId, message);
+        if (res == 0) return Result.fail(400, "公共场地信息反馈失败");
+        else return Result.success("公共场地信息反馈成功");
     }
 
 }

@@ -5,15 +5,14 @@ import com.backend.tjtablepartyspringboot.dto.AppSimpleDto;
 import com.backend.tjtablepartyspringboot.dto.PublicSiteTimeDto;
 import com.backend.tjtablepartyspringboot.entity.PublicSite;
 import com.backend.tjtablepartyspringboot.entity.PublicSiteTime;
-import com.backend.tjtablepartyspringboot.mapper.ApplicationMapper;
-import com.backend.tjtablepartyspringboot.mapper.PublicSiteMapper;
-import com.backend.tjtablepartyspringboot.mapper.PublicSiteTimeMapper;
-import com.backend.tjtablepartyspringboot.mapper.SiteTypeMapper;
+import com.backend.tjtablepartyspringboot.entity.SiteTag;
+import com.backend.tjtablepartyspringboot.mapper.*;
 import com.backend.tjtablepartyspringboot.service.ApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,6 +27,8 @@ public class ApplicationServiceImpl implements ApplicationService {
     PublicSiteTimeMapper publicSiteTimeMapper;
     @Autowired
     PublicSiteMapper publicSiteMapper;
+    @Autowired
+    SiteTagMapper siteTagMapper;
 
     private static String weekdayTrans(int weekday) {
         if (weekday == 1) return "周一";
@@ -64,6 +65,17 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
 
         AppDto appDto = new AppDto(ps, type, openTime);
+
+        //完成tagId到tagList的映射
+        String[] tagIdList = appDto.getTag();
+        List<String> tagList = new ArrayList<>();
+        for(String tagIdStr : tagIdList){
+            Long tagId = Long.valueOf(tagIdStr);
+            String tagName = siteTagMapper.selectTagNameById(tagId);
+            tagList.add(tagName);
+        }
+        appDto.setTag(tagList.toArray(new String[tagList.size()]));
+
         return appDto;
     }
 

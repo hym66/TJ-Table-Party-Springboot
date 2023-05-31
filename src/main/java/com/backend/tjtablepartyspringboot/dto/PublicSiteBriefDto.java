@@ -22,4 +22,5 @@ public class PublicSiteBriefDto {
     float avgCost;
     int capacity;
     int gameNum;
+    int status;
 }

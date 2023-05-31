@@ -55,6 +55,7 @@ public class Activity {
     private String poster;
     private String pictures;
     private Long siteId;
+    private Integer siteType;
     private Long clubId;
 
     /**

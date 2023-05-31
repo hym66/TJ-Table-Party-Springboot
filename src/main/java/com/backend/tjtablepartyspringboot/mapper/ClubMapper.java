@@ -12,7 +12,7 @@ public interface ClubMapper extends BaseMapper<Club> {
     Club selectById(@Param("clubId") Long clubId);
 
     //查找某个城市的所有俱乐部
-    @Select("SELECT * FROM club WHERE city=#{city}")
+    @Select("SELECT * FROM club WHERE city=#{city} AND is_public=1")
     List<Club> selectByCity(@Param("city") String city);
 
     //查找某个用户参与的所有俱乐部
@@ -20,15 +20,15 @@ public interface ClubMapper extends BaseMapper<Club> {
     List<Club> selectUserClubs(@Param("userId") String userId);
 
     //查找俱乐部当前人数
-    @Select("SELECT COUNT(user_id) FROM club_user WHERE club_id=#{clubId}")
+    @Select("SELECT COUNT(user_id) FROM club_user WHERE club_id=#{clubId} AND status=1")
     Integer selectClubPersonNum(@Param("clubId") Long clubId);
     //添加俱乐部游戏
-    @Insert("INSERT INTO club_trpg (club_id, trpg_id) VALUES (#{clubId}, #{trpgId)")
+    @Insert("INSERT INTO club_trpg (club_id, trpg_id) VALUES (#{clubId}, #{trpgId})")
     Integer addClubTrpg(@Param("clubId") Long clubId, @Param("trpgId") String trpgId);
     //删除俱乐部游戏
     @Delete("DELETE FROM club_trpg WHERE club_id=#{clubId} AND trpg_id=#{trpgId}")
     Integer deleteClubTrpg(@Param("clubId") Long clubId, @Param("trpgId") String trpgId);
     //关键词搜索
-    @Select("SELECT * FROM club WHERE club_title LIKE '%${keyword}%'")
+    @Select("SELECT * FROM club WHERE club_title LIKE '%${keyword}%' AND is_public=1")
     List<Club> selectByKeyword(@Param("keyword") String keyword);
 }

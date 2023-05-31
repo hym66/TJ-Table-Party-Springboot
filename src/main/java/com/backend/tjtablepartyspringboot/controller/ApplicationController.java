@@ -4,13 +4,19 @@ import com.backend.tjtablepartyspringboot.common.Result;
 import com.backend.tjtablepartyspringboot.dto.AppDto;
 import com.backend.tjtablepartyspringboot.dto.AppSimpleDto;
 import com.backend.tjtablepartyspringboot.dto.ReportDto;
+import com.backend.tjtablepartyspringboot.entity.PublicSite;
+import com.backend.tjtablepartyspringboot.entity.Report;
 import com.backend.tjtablepartyspringboot.mapper.ApplicationMapper;
+import com.backend.tjtablepartyspringboot.mapper.PublicSiteMapper;
 import com.backend.tjtablepartyspringboot.service.ApplicationService;
+import com.backend.tjtablepartyspringboot.service.SiteService;
+import com.backend.tjtablepartyspringboot.util.FileUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -20,6 +26,8 @@ import java.util.List;
 public class ApplicationController {
     @Autowired
     ApplicationService applicationService;
+    @Autowired
+    PublicSiteMapper publicSiteMapper;
 
     @ApiOperation("根据公用场地id，获取场地申请单内容")
     @GetMapping("getAppById")
@@ -53,6 +61,25 @@ public class ApplicationController {
         }
         else{
             return Result.fail(500,"审核失败！检查后端");
+        }
+    }
+
+    @ApiOperation("新增一个举报单图片")
+    @PostMapping("addAppPhoto")
+    public Result<String> addAppPhoto(@RequestParam("file") MultipartFile multipartFile, @RequestParam("publicSiteId") Long publicSiteId){
+        String lock = "";
+
+        synchronized (lock) {
+            //更新数据库中存储的图片url
+            PublicSite publicSite = publicSiteMapper.selectPublicSiteById(publicSiteId);
+
+            String url = FileUtil.uploadFile("/application/" + publicSiteId.toString() + "/", multipartFile);
+
+            String oldUrl = publicSite.getAdminPhotos();
+            String newUrl = oldUrl == null ? url : oldUrl + url;
+            publicSite.setAdminPhotos(newUrl + ";");
+            int res = publicSiteMapper.updateById(publicSite);
+            return Result.success(url);
         }
     }
 }

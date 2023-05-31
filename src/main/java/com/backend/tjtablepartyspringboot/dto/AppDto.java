@@ -25,6 +25,8 @@ public class AppDto {
     String name;
     String city;
     String location;
+    float longitude;
+    float latitude;
     String picture;
     String introduction;
     float avgCost;
@@ -55,6 +57,8 @@ public class AppDto {
         this.picture = publicSite.getPicture();
         this.city = publicSite.getCity();
         this.location = publicSite.getLocation();
+        this.longitude = publicSite.getLongitude();
+        this.latitude = publicSite.getLatitude();
         this.avgCost = publicSite.getAvgCost();
         this.capacity = publicSite.getCapacity();
         this.gameNum = publicSite.getGameNum();

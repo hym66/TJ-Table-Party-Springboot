@@ -106,25 +106,7 @@ public class ActivityController {
 
     }
 
-    @ApiOperation("所有喜欢这个活动的user的信息列表")
-    @GetMapping("/getUserInterestList")
-    public Result<Map<String,Object>>getUserInterestList(
-            @ApiParam(name = "activityId", value = "活动id", required = true)
-            @RequestParam("activityId") Long activityId
-    ){
-        Map<String,Object>resultMap=new HashMap<>();
-        try
-        {
-            //获取UserInterestActivity，只有user 的id
-            List<UserInterestActivity>list =activityService.getUserInterestActivityList(activityId);
-            //查user表，获取user具体信息
-            resultMap.put("data",list);
-            return Result.success(resultMap);
-        }catch (Exception e){
-            return Result.fail(0,e.getMessage());
-        }
 
-    }
 
     @ApiOperation("所有参与这个活动的user的信息列表")
     @GetMapping("/getUserJoinList")
@@ -147,6 +129,28 @@ public class ActivityController {
         }
 
     }
+
+    @ApiOperation("所有interest这个活动的user的信息列表")
+    @GetMapping("/getUserInterestorList")
+    public Result<Map<String,Object>>getUserInterestorList(
+            @ApiParam(name = "activityId", value = "活动id", required = true)
+            @RequestParam("activityId") Long activityId
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+
+            List<Map<String,Object>>list =activityService.getUserInterestorList(activityId);
+
+
+            resultMap.put("list",list);
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+
+    }
+
 
     @ApiOperation("输入 筛选参数、排序参数，分页返回list")
     @GetMapping("/getList")
@@ -187,9 +191,77 @@ public class ActivityController {
     }
 
 
-    @ApiOperation("输入userId,返回user的活动")
+    @ApiOperation("输入userId,返回user的所有的“已结束”活动")
+    @GetMapping("/getUserDoneList")
+    public Result<Map<String,Object>>getUserDoneList(
+            @ApiParam(name = "userId", value = " user ID", required = false)
+            @RequestParam(name = "userId",required = true) String userId
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            Map<String,String>filterData=new HashMap<>();
+            Map<String,String>sortData=new HashMap<>();
+
+            resultMap=activityService.getUserDoneList(userId);
+
+
+
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+    }
+
+
+    @ApiOperation("输入userId,返回user的所有的“集合中”、“正在进行”活动")
+    @GetMapping("/getUserDoingList")
+    public Result<Map<String,Object>>getUserDoingList(
+            @ApiParam(name = "userId", value = " user ID", required = false)
+            @RequestParam(name = "userId",required = true) String userId
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            Map<String,String>filterData=new HashMap<>();
+            Map<String,String>sortData=new HashMap<>();
+
+            resultMap=activityService.getUserDoingList(userId);
+
+
+
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+    }
+
+    @ApiOperation("输入userId,返回user 关注的活动")
+    @GetMapping("/getUserInterestList")
+    public Result<Map<String,Object>>getUserInterestList(
+            @ApiParam(name = "userId", value = " user ID", required = false)
+            @RequestParam(name = "userId",required = true) String userId
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            Map<String,String>filterData=new HashMap<>();
+            Map<String,String>sortData=new HashMap<>();
+
+            resultMap=activityService.getUserInterestList(userId);
+
+
+
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+    }
+
+
+    @ApiOperation("输入userId,返回user的所有活动")
     @GetMapping("/getUserList")
-    public Result<Map<String,Object>> getUserList(
+    public Result<Map<String,Object>>getUserList(
             @ApiParam(name = "userId", value = " user ID", required = false)
             @RequestParam(name = "userId",required = true) String userId
     ){
@@ -357,11 +429,52 @@ public class ActivityController {
         Map<String,Object>resultMap=new HashMap<>();
         try
         {
-            resultMap=activityService.addActivity(activity,wishGame);
+            resultMap=activityService.modify(activity,wishGame);
             return Result.success(resultMap);
         }catch (Exception e){
             return Result.fail(0,e.getMessage());
         }
+    }
+
+
+    @ApiOperation("修改活动的state")
+    @PostMapping("/modifyState")
+    public Result<Map<String,Object>>modifyState(
+            @ApiParam(name = "activityId", value = "活动id", required = true)
+            @RequestParam("activityId") Long activityId,
+            @ApiParam(name = "state", value = "state", required = true)
+            @RequestParam("state") String state
+    ){
+        Map<String,Object>resultMap=new HashMap<>();
+        try
+        {
+            Integer i=activityService.modifyState(activityId,state);
+            resultMap.put("i",i);
+            return Result.success(resultMap);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+
+    }
+
+
+    @ApiOperation("输入场地id场地类型，获取相关活动")
+    @GetMapping("/getActBySite")
+    public Result<List<Activity>>getActBySite(
+            @ApiParam(name = "siteId", value = "场地id", required = true)
+            @RequestParam("siteId") Long siteId,
+            @ApiParam(name = "siteType", value = "场地类型", required = true)
+            @RequestParam("siteType") Integer siteType
+    ){
+        List<Activity>resultList=new ArrayList<>();
+        try
+        {
+            resultList=activityService.getActBySite(siteId,siteType);
+            return Result.success(resultList);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+
     }
 
 

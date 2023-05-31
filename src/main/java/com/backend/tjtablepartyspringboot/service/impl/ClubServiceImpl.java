@@ -10,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.accessibility.AccessibleIcon;
-import java.util.Date;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,13 +44,9 @@ public class ClubServiceImpl implements ClubService {
         for(Announce a : announceList){
             String uid = a.getAnnounceUserId();
             //查询人名和头像
-//            User user = userMapper.selectById(uid);
-//            String name = user.getNickName();
-//            String avatar = user.getAvatarUrl();
-
-            String name = "姓名";
-            String avatar = "";
-
+            User user = userMapper.selectById(uid);
+            String name = user.getNickName();
+            String avatar = user.getAvatarUrl();
 
             ClubAnnounceDto dto = new ClubAnnounceDto(a, name, avatar);
             clubAnnounceDtoList.add(dto);
@@ -81,13 +74,37 @@ public class ClubServiceImpl implements ClubService {
 
         for(ClubUser u : clubUserList){
             //把role属性加上
+            String role = u.getUserId().equals(managerId) ? "manager" : "member";
+
+            User user = userMapper.selectById(u.getUserId());
+            String name = user.getNickName();
+            String avatar = user.getAvatarUrl();
+
+            ClubUserDto clubUserDto = new ClubUserDto(u.getClubId(), u.getUserId(), role, name, avatar, u.getStatus());
+            clubUserDtoList.add(clubUserDto);
+        }
+
+        ClubUserDetailDto clubUserDetailDto = new ClubUserDetailDto(clubUserDtoList);
+        return clubUserDetailDto;
+    }
+
+    @Override
+    public ClubUserDetailDto selectWaitingClubUser(Long clubId) {
+        Club club = clubMapper.selectById(clubId);
+        String managerId = club.getManagerId();
+
+        List<ClubUser> clubUserList = clubUserMapper.selectWaitingUsers(clubId);//实体类列表
+        List<ClubUserDto> clubUserDtoList = new ArrayList<>();//dto列表
+
+        for(ClubUser u : clubUserList){
+            //把role属性加上
             String role = u.getUserId() == managerId ? "manager" : "member";
 
             User user = userMapper.selectById(u.getUserId());
             String name = user.getNickName();
             String avatar = user.getAvatarUrl();
 
-            ClubUserDto clubUserDto = new ClubUserDto(u.getClubId(), u.getUserId(), role, name, avatar);
+            ClubUserDto clubUserDto = new ClubUserDto(u.getClubId(), u.getUserId(), role, name, avatar, u.getStatus());
             clubUserDtoList.add(clubUserDto);
         }
 
@@ -99,7 +116,7 @@ public class ClubServiceImpl implements ClubService {
     public ClubRecordDetailDto selectClubRecord(Long clubId) {
         List<ClubRecord> clubRecordList = clubRecordMapper.selectRecordsByClubId(clubId);
         //按时间降序排序
-        clubRecordList.stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
+        Collections.reverse(clubRecordList);
 
         ClubRecordDetailDto clubRecordDetailDto = new ClubRecordDetailDto(clubRecordList);
         return clubRecordDetailDto;
@@ -141,8 +158,7 @@ public class ClubServiceImpl implements ClubService {
     @Override
     public List<ClubSimpleDto> getCityClubSimpleDtos(String city, float longitude, float latitude) {
         List<Club> clubList = clubMapper.selectByCity(city);
-        //todo:按经纬度排序
-        //...
+
         List<ClubSimpleDto> clubSimpleDtoList = new ArrayList<>();
         //查询currentPersons, managerAvatar, managerName
         for(Club c : clubList){
@@ -190,9 +206,15 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public int addUser(Long clubId, String userId) {
-        ClubUser clubUser = new ClubUser(userId, clubId);
+    public int askToJoin(Long clubId, String userId) {
+        ClubUser clubUser = new ClubUser(userId, clubId, Byte.valueOf("0"));
         int res = clubUserMapper.insert(clubUser);
+        return res;
+    }
+
+    @Override
+    public int agreeToJoin(Long clubId, String userId){
+        int res = clubUserMapper.activateClubUser(clubId, userId);
         return res;
     }
 
@@ -229,6 +251,36 @@ public class ClubServiceImpl implements ClubService {
         clubRecord.setTime(new Date());
 
         int res = clubRecordMapper.insert(clubRecord);
+        return res;
+    }
+
+    @Override
+    public boolean clubIsFull(Long clubId) {
+        int currentPersons = clubMapper.selectClubPersonNum(clubId);
+        Club club = clubMapper.selectById(clubId);
+        int capacity = club.getCapacity();
+        return currentPersons >= capacity;
+    }
+
+    @Override
+    public int dissolveClub(Long clubId) {
+        int res = clubMapper.deleteById(clubId);
+        return res;
+    }
+
+    @Override
+    public int transferManager(Long clubId, String userId) {
+        Club club = clubMapper.selectById(clubId);
+
+        String oldManagerId = club.getManagerId();
+        club.setManagerId(userId);
+        int res = clubMapper.updateById(club);
+
+        User oldManager = userMapper.selectById(oldManagerId);
+        User newManager = userMapper.selectById(userId);
+
+        res = addRecord(clubId, oldManager.getNickName()+"将部长职位转让给了"+newManager.getNickName());
+
         return res;
     }
 
