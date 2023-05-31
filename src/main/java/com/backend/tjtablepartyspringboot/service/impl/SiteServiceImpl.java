@@ -1,5 +1,6 @@
 package com.backend.tjtablepartyspringboot.service.impl;
 
+import com.backend.tjtablepartyspringboot.dto.PrivateSiteDto;
 import com.backend.tjtablepartyspringboot.dto.PublicSiteBriefDto;
 import com.backend.tjtablepartyspringboot.dto.PublicSiteDto;
 import com.backend.tjtablepartyspringboot.dto.PublicSiteTimeDto;
@@ -53,7 +54,6 @@ public class SiteServiceImpl implements SiteService {
     }
 
 
-
     @Override
     public List<PublicSiteBriefDto> selectAllPublicSite() {
         List<PublicSite> publicSites = publicSiteMapper.selectAllPublicSite();
@@ -92,7 +92,7 @@ public class SiteServiceImpl implements SiteService {
         // 获取场地游戏信息
         List<SiteHasTrpg> siteHasTrpgs = siteHasTrpgMapper.selectTrpgsBySite(ps.getPublicSiteId(), 0);
         List<TrpgPublic> games = new ArrayList<>();
-        for (SiteHasTrpg sht: siteHasTrpgs) {
+        for (SiteHasTrpg sht : siteHasTrpgs) {
             TrpgPublic detail_public = trpgService.getDetail_public(sht.getTrpgId());
             games.add(detail_public);
         }
@@ -122,8 +122,17 @@ public class SiteServiceImpl implements SiteService {
     }
 
     @Override
-    public PrivateSite selectPrivateSiteById(Long privateSiteId) {
-        return privateSiteMapper.selectPrivateSiteById(privateSiteId);
+    public PrivateSiteDto selectPrivateSiteById(Long privateSiteId) {
+        PrivateSite ps = privateSiteMapper.selectPrivateSiteById(privateSiteId);
+        // 获取场地游戏信息
+        List<SiteHasTrpg> siteHasTrpgs = siteHasTrpgMapper.selectTrpgsBySite(ps.getPrivateSiteId(), 1);
+        List<TrpgPublic> games = new ArrayList<>();
+        for (SiteHasTrpg sht : siteHasTrpgs) {
+            TrpgPublic detail_public = trpgService.getDetail_public(sht.getTrpgId());
+            games.add(detail_public);
+        }
+        return new PrivateSiteDto(ps.getPrivateSiteId(), ps.getCreatorId(), ps.getName(), ps.getLocation(), ps.getPicture(), ps.getLatitude(), ps.getLongitude(), ps.getLocationTitle(), ps.getGameNum(), games);
+
     }
 
     @Override

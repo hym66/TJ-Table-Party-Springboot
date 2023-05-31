@@ -30,8 +30,8 @@ public class PrivateSite {
     float longitude;
 
     String locationTitle;
-
-    public PrivateSite(String creatorId, String name, String location, String picture, float latitude, float longitude, String locationTitle) {
+    int gameNum;
+    public PrivateSite(String creatorId, String name, String location, String picture, float latitude, float longitude, String locationTitle, int gameNum) {
         this.creatorId = creatorId;
         this.name = name;
         this.location = location;
@@ -39,5 +39,6 @@ public class PrivateSite {
         this.latitude = latitude;
         this.longitude = longitude;
         this.locationTitle = locationTitle;
+        this.gameNum = gameNum;
     }
 }
