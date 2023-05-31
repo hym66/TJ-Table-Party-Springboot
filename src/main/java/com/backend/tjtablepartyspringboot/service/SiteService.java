@@ -1,5 +1,6 @@
 package com.backend.tjtablepartyspringboot.service;
 
+import com.backend.tjtablepartyspringboot.dto.PrivateSiteDto;
 import com.backend.tjtablepartyspringboot.dto.PublicSiteBriefDto;
 import com.backend.tjtablepartyspringboot.dto.PublicSiteDto;
 import com.backend.tjtablepartyspringboot.entity.*;
@@ -24,7 +25,7 @@ public interface SiteService {
 
     List<PrivateSite> selectPrivateSiteByCreatorId(String creatorId);
 
-    PrivateSite selectPrivateSiteById(Long privateSiteId);
+    PrivateSiteDto selectPrivateSiteById(Long privateSiteId);
     List<SiteType> selectAllSiteType();
     List<SiteTag> selectAllSiteTag();
 

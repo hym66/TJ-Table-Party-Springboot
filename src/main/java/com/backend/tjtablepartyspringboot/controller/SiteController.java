@@ -84,8 +84,8 @@ public class SiteController {
 
     @ApiOperation("根据ID获取私人场地详细信息")
     @GetMapping("getPrivateSiteById")
-    public Result<PrivateSite> getPrivateSiteById(@ApiParam(name = "privateSiteId", value = "私人场地id", required = true)
-                                                  @RequestParam("privateSiteId") Long privateSiteId) {
+    public Result<PrivateSiteDto> getPrivateSiteById(@ApiParam(name = "privateSiteId", value = "私人场地id", required = true)
+                                                     @RequestParam("privateSiteId") Long privateSiteId) {
         return Result.success(siteService.selectPrivateSiteById(privateSiteId));
     }
 
@@ -145,7 +145,7 @@ public class SiteController {
         }
 
         // 插入公共场地的游戏信息
-        for (String trpgId: siteTrpgList_new) {
+        for (String trpgId : siteTrpgList_new) {
             int res_ = siteService.addSiteTrpg(publicSiteId, trpgId, 0);
             if (res_ == 0) return Result.fail(400, "插入公共场地失败");
         }
@@ -161,13 +161,26 @@ public class SiteController {
                                             @RequestParam("location") String location,
                                             @RequestParam("latitude") float latitude,
                                             @RequestParam("longitude") float longitude,
-                                            @RequestParam("locationTitle") String locationTitle) {
+                                            @RequestParam("locationTitle") String locationTitle,
+                                            @RequestParam("siteTrpgList") String siteTrpgList
+    ) {
+        List<String> siteTrpgList_new = new ArrayList<>(JSONArray.parseArray(siteTrpgList, String.class));
+
         // 图片云存储 返回url
         String picture = FileUtil.uploadFile("/report/" + creatorId.toString() + "/", multipartFile);
-        PrivateSite privateSite = new PrivateSite(creatorId, name, location, picture, latitude, longitude, locationTitle);
+        PrivateSite privateSite = new PrivateSite(creatorId, name, location, picture, latitude, longitude, locationTitle, siteTrpgList_new.size());
         int res = siteService.insertPrivateSite(privateSite);
         if (res == 0) return Result.fail(400, "创建私人场地失败");
-        else return Result.success("创建私人场地成功");
+
+        // 获取自增的ID
+        Long privateSiteId = privateSite.getPrivateSiteId();
+
+        // 插入私人场地的游戏信息
+        for (String trpgId : siteTrpgList_new) {
+            int res_ = siteService.addSiteTrpg(privateSiteId, trpgId, 1);
+            if (res_ == 0) return Result.fail(400, "插入私人场地失败");
+        }
+        return Result.success("插入私人场地成功");
     }
 
     @ApiOperation("修改私人场地的基本信息，场地图片不修改")
@@ -188,10 +201,13 @@ public class SiteController {
                                             @RequestParam("location") String location,
                                             @RequestParam("latitude") float latitude,
                                             @RequestParam("longitude") float longitude,
-                                            @RequestParam("locationTitle") String locationTitle) {
+                                            @RequestParam("locationTitle") String locationTitle,
+                                            @RequestParam("siteTrpgList") String siteTrpgList
+    ) {
         // 图片云存储 返回url
         String picture = FileUtil.uploadFile("/report/" + creatorId + "/", multipartFile);
-        PrivateSite privateSite = new PrivateSite(privateSiteId, creatorId, name, location, picture, latitude, longitude, locationTitle);
+        List<String> siteTrpgList_new = new ArrayList<>(JSONArray.parseArray(siteTrpgList, String.class));
+        PrivateSite privateSite = new PrivateSite(privateSiteId, creatorId, name, location, picture, latitude, longitude, locationTitle, siteTrpgList_new.size());
         int res = siteService.modifyPrivateSite(privateSite);
         if (res == 0) return Result.fail(400, "修改私人场地信息失败");
         else return Result.success("修改私人场地信息成功");
