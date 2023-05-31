@@ -51,15 +51,9 @@ public interface ActivityService {
      */
     Map<String,Object> getUserList(String userId);
 
-    /**
-     * 输入user id，返回该user的所有的 “集合中”、“正在进行”  活动
-     */
-    Map<String,Object> getUserDoingList(String userId);
 
-    /**
-     * 输入user id，返回该user的所有的 “已经完成” 的活动
-     */
-    Map<String,Object> getUserDoneList(String userId);
+
+
 
 
     /**
@@ -180,5 +174,16 @@ public interface ActivityService {
      * 输入siteId，siteType，返回site 详细信息
      */
     Map<String,Object>getSite(Long siteId,Integer siteType);
+
+
+    /**
+     * 输入 clubId，返回club信息
+     */
+    Map<String,Object>getClub(Long clubId);
+
+    /**
+     * 删除活动的所有游戏
+     */
+    Integer deleteAllTrpg(Long activityId);
 
 }

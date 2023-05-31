@@ -9,6 +9,7 @@ import com.backend.tjtablepartyspringboot.util.DateUtil;
 import com.backend.tjtablepartyspringboot.service.ActivityService;
 import com.backend.tjtablepartyspringboot.util.StringUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,9 @@ import java.util.stream.Collectors;
  */
 @Service
 public class ActivityServiceImpl implements ActivityService {
+    @Autowired
+    ClubMapper clubMapper;
+
     @Autowired
     ActivityMapper activityMapper;
 
@@ -193,6 +197,10 @@ public class ActivityServiceImpl implements ActivityService {
 
 
         //联系club 表
+        Long clubId=act.getClubId();
+        Map<String,Object>clubData=getClub(clubId);
+        detailMap.put("clubData",clubData);
+
 
 
         //联系site 表
@@ -388,6 +396,7 @@ public class ActivityServiceImpl implements ActivityService {
         //date数据解析成date型
         String startDate_str=filterData.get("startDate");
         String endDate_str=filterData.get("endDate");
+        String cityCode=filterData.get("cityCode");
         Date startDate=null;
         Date endDate=null;
 
@@ -418,7 +427,7 @@ public class ActivityServiceImpl implements ActivityService {
         //先获取所有的activity,list
         QueryWrapper<Activity>qw=new QueryWrapper<>();
         qw.select("activity_id","title","summary","poster","start_time",
-                "user_id","site_id","fee","max_people","now_people","state");
+                "user_id","site_id","site_type","fee","max_people","now_people","state");
         actList=activityMapper.selectList(qw);
 
         //key关键词匹配
@@ -442,6 +451,25 @@ public class ActivityServiceImpl implements ActivityService {
             ).collect(Collectors.toList());
 
         }
+
+        //city筛选
+        if (!cityCode.equals("")){
+            //先获取site信息
+            for (Activity act:actList){
+                Map<String,Object>siteData=getSite(act.getSiteId(),act.getSiteType());
+                if (siteData.containsKey("city")){
+                    if (!siteData.get("city").equals(cityCode)){
+                        act.setSiteId(-1l);
+                    }
+                }
+            }
+
+
+            actList=actList.stream().filter(t->
+                    !t.getSiteId().equals(Long.valueOf(-1l))
+            ).collect(Collectors.toList());
+        }
+
 
 
         //sort排序
@@ -502,7 +530,10 @@ public class ActivityServiceImpl implements ActivityService {
             userData.put("name",userDto.getNickName());
             oneActData.put("creatorInfo",userData);
 
-
+            //联系club 表
+            Long clubId=act.getClubId();
+            Map<String,Object>clubData=getClub(clubId);
+            oneActData.put("clubData",clubData);
 
             //site信息
             Long siteId=act.getSiteId();
@@ -531,7 +562,7 @@ public class ActivityServiceImpl implements ActivityService {
         //用户自己创建的
         QueryWrapper<Activity>qw=new QueryWrapper<>();
         qw.select("activity_id","title","summary","poster","start_time",
-                "user_id","site_id","fee","max_people","now_people","state")
+                "user_id","site_id","site_type","fee","max_people","now_people","state")
                 .eq("user_id",userId);
         actList=activityMapper.selectList(qw);
 
@@ -576,8 +607,13 @@ public class ActivityServiceImpl implements ActivityService {
             oneActData.put("creatorInfo",userData);
 
 
-            //site信息
 
+            //联系club 表
+            Long clubId=act.getClubId();
+            Map<String,Object>clubData=getClub(clubId);
+            oneActData.put("clubData",clubData);
+
+            //site信息
             Long siteId=act.getSiteId();
             int siteType=act.getSiteType();
             Map<String,Object> siteData=getSite(siteId,siteType);
@@ -594,147 +630,10 @@ public class ActivityServiceImpl implements ActivityService {
 
 
 
-    @Override
-    public Map<String,Object> getUserDoingList(String userId){
-        Map<String,Object>map=new HashMap<>();
-        List<Activity> actList=new ArrayList<>();
-
-        //用户自己创建的
-        QueryWrapper<Activity>qw=new QueryWrapper<>();
-        qw.select("activity_id","title","summary","poster","start_time",
-                        "user_id","site_id","fee","max_people","now_people","state")
-                .eq("user_id",userId)
-                .ne("state","2");
-        actList=activityMapper.selectList(qw);
-
-        /**
-         * 筛选
-         */
-
-        //sort排序
-
-        //结合其他表信息
-        List<Map<String,Object>> datalist=new ArrayList<>();
-        for (Activity act: actList){
-            //对每一个activity，再获取相关的user、site信息
-            Map<String,Object>oneActData=new HashMap<>();
-            oneActData.put("activityId",act.getActivityId());
-            oneActData.put("title",act.getTitle());
-            oneActData.put("summary",act.getSummary());
-            oneActData.put("poster",act.getPoster());
-            oneActData.put("userId",act.getUserId());
-            oneActData.put("siteId",act.getSiteId());
-            oneActData.put("fee",act.getFee());
-            oneActData.put("maxPeople",act.getMaxPeople());
-            oneActData.put("nowPeople",act.getNowPeople());
-            //state
-            String state=act.getState();
-            oneActData.put("state",state);
-
-            oneActData.put("stateLabel",toStateLabel(state));
-
-            //start time
-            Date startTime=act.getStartTime();
-            oneActData.put("startTime",startTime);
-            oneActData.put("startTimeLabel",activityTimeFormate(startTime));
-
-            //user信息
-            Map<String,Object>userData=new HashMap<>();
-
-            UserDto userDto =userService.getNameAndAvatarUrl(userId);
-            userData.put("id",userId);
-            userData.put("avatar",userDto.getAvatarUrl());
-            userData.put("name",userDto.getNickName());
-            oneActData.put("creatorInfo",userData);
-
-
-            //site信息
-            Long siteId=act.getSiteId();
-            int siteType=act.getSiteType();
-            Map<String,Object> siteData=getSite(siteId,siteType);
-            oneActData.put("mapAddress",siteData.get("location"));
-            oneActData.put("siteData",siteData);
-
-            datalist.add(oneActData);
-        }
-
-        map.put("list",datalist);
-        return map;
 
 
 
-    }
 
-
-    @Override
-    public Map<String,Object> getUserDoneList(String userId){
-        Map<String,Object>map=new HashMap<>();
-        List<Activity> actList=new ArrayList<>();
-
-        //用户自己创建的
-        QueryWrapper<Activity>qw=new QueryWrapper<>();
-        qw.select("activity_id","title","summary","poster","start_time",
-                        "user_id","site_id","fee","max_people","now_people","state")
-                .eq("user_id",userId)
-                .eq("state","2");
-        actList=activityMapper.selectList(qw);
-
-        /**
-         * 筛选
-         */
-
-        //sort排序
-
-        //结合其他表信息
-        List<Map<String,Object>> datalist=new ArrayList<>();
-        for (Activity act: actList){
-            //对每一个activity，再获取相关的user、site信息
-            Map<String,Object>oneActData=new HashMap<>();
-            oneActData.put("activityId",act.getActivityId());
-            oneActData.put("title",act.getTitle());
-            oneActData.put("summary",act.getSummary());
-            oneActData.put("poster",act.getPoster());
-            oneActData.put("userId",act.getUserId());
-            oneActData.put("siteId",act.getSiteId());
-            oneActData.put("fee",act.getFee());
-            oneActData.put("maxPeople",act.getMaxPeople());
-            oneActData.put("nowPeople",act.getNowPeople());
-            //state
-            String state=act.getState();
-            oneActData.put("state",state);
-
-            oneActData.put("stateLabel",toStateLabel(state));
-
-            //start time
-            Date startTime=act.getStartTime();
-            oneActData.put("startTime",startTime);
-            oneActData.put("startTimeLabel",activityTimeFormate(startTime));
-
-            //user信息
-            Map<String,Object>userData=new HashMap<>();
-
-            UserDto userDto =userService.getNameAndAvatarUrl(userId);
-            userData.put("id",userId);
-            userData.put("avatar",userDto.getAvatarUrl());
-            userData.put("name",userDto.getNickName());
-            oneActData.put("creatorInfo",userData);
-
-
-            //site信息
-            Long siteId=act.getSiteId();
-            int siteType=act.getSiteType();
-            Map<String,Object> siteData=getSite(siteId,siteType);
-            oneActData.put("mapAddress",siteData.get("location"));
-            oneActData.put("siteData",siteData);
-
-
-            datalist.add(oneActData);
-        }
-
-        map.put("list",datalist);
-        return map;
-
-    }
 
 
     @Override
@@ -787,6 +686,10 @@ public class ActivityServiceImpl implements ActivityService {
             userData.put("name",userDto.getNickName());
             oneActData.put("creatorInfo",userData);
 
+            //联系club 表
+            Long clubId=act.getClubId();
+            Map<String,Object>clubData=getClub(clubId);
+            oneActData.put("clubData",clubData);
 
             //site信息
             Long siteId=act.getSiteId();
@@ -1100,24 +1003,47 @@ public class ActivityServiceImpl implements ActivityService {
         newAct.setSummary(activity.getSummary());
         newAct.setDescription(activity.getDescription());
 
+        newAct.setSiteId(activity.getSiteId());
+        newAct.setSiteType(activity.getSiteType());
+        newAct.setClubId(activity.getClubId());
+
+        //club可能设置为空
+        Long clubId=activity.getClubId();
+        if (clubId==null){
+            activityMapper.update(
+                    null,
+                    Wrappers.<Activity>lambdaUpdate()
+                            .set(Activity::getClubId,null)
+                            .eq(Activity::getActivityId,activityId)
+            );
+        }
+
+
         activityMapper.update(newAct,qw);
 
 
-        //修改activity has trpg
-
-        //联系trpg
+        //activity has trpg
+        //先清空
+        deleteAllTrpg(activityId);
         List<String> trpgIdList=List.of(wishGame.split(","));
         trpgIdList=trpgIdList.stream().filter(ele->!ele.equals("")).collect(Collectors.toList());
-
+        //再
         for (String trpgId:trpgIdList){
-            ActivityHasTrpg activityHasTrpg=new ActivityHasTrpg(activityId,trpgId);
-            activityHasTrpgMapper.insert(activityHasTrpg);
+            activityHasTrpgMapper.insert(new ActivityHasTrpg(activityId,trpgId));
         }
 
 
         return resultMap;
 
 
+    }
+
+    @Override
+    public Integer deleteAllTrpg(Long activityId){
+        QueryWrapper<ActivityHasTrpg>qw=new QueryWrapper<>();
+        qw.eq("activity_id",activityId);
+        Integer i=activityHasTrpgMapper.delete(qw);
+        return i;
     }
 
 
@@ -1171,8 +1097,9 @@ public class ActivityServiceImpl implements ActivityService {
             picture=site.getPicture();
             latitude=site.getLatitude();
             longitude=site.getLongitude();
+            resultMap.put("city",site.getCity());
 
-        } else if (siteType.equals(0)) {
+        } else if (siteType.equals(1)) {
             //private
             QueryWrapper<PrivateSite>qw=new QueryWrapper<>();
             qw.eq("private_site_id",siteId);
@@ -1190,6 +1117,64 @@ public class ActivityServiceImpl implements ActivityService {
         resultMap.put("latitude",latitude);
         resultMap.put("longitude",longitude);
 
+
+
+        return resultMap;
+    }
+
+    @Override
+    public Map<String,Object>getClub(Long clubId){
+        Map<String,Object>resultMap=new HashMap<>();
+        if (clubId!=null){
+            resultMap.put("clubId",clubId);
+
+            QueryWrapper<Club>qw=new QueryWrapper<>();
+            qw.eq("club_id",clubId);
+            Club club=clubMapper.selectOne(qw);
+            resultMap.put("clubTitle",club.getClubTitle());
+            resultMap.put("posterUrl",club.getPosterUrl());
+
+            String mainTime=club.getMainTime();
+            List<String> timeList=new ArrayList<>();
+            String timeText="";
+            for (int i=0;i<mainTime.length();i++){
+                Character ch=mainTime.charAt(i);
+                String text="";
+                if (ch=='1'){
+                    if (i==0){
+                        text="周一";
+                    }
+                    else if (i==1) {
+                        text="周二";
+                    }
+                    else if (i==2) {
+                        text="周三";
+                    }
+                    else if (i==3) {
+                        text="周四";
+                    }
+                    else if (i==4) {
+                        text="周五";
+                    }
+                    else if (i==5) {
+                        text="周六";
+                    }
+                    else if (i==6) {
+                        text="周日";
+                    }
+
+                    timeList.add(text);
+                }
+            }
+            timeText=timeList.stream().collect(Collectors.joining(","));
+            resultMap.put("timeText",timeText);
+
+            resultMap.put("meetingPoint",club.getMeetingPoint());
+            resultMap.put("description",club.getDescription());
+        }
+        else{
+            return null;
+        }
 
 
         return resultMap;

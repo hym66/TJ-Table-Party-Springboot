@@ -163,6 +163,8 @@ public class ActivityController {
             @ApiParam(name = "endDate", value = "结束时间", required = false)
             @RequestParam(name = "endDate",required = false,defaultValue = "") String endDate,
 
+            @ApiParam(name = "cityCode", value = "城市id", required = true)
+            @RequestParam(name = "cityCode",required = false,defaultValue = "") String cityCode,
 
 
 
@@ -177,6 +179,7 @@ public class ActivityController {
             Map<String,String>filterData=new HashMap<>();
             filterData.put("startDate",startDate);
             filterData.put("endDate",endDate);
+            filterData.put("cityCode",cityCode);
             Map<String,String>sortData=new HashMap<>();
 
             Map<String,Object>actList=activityService.getList(key,filterData,sortData,pageSize,pageNo);
@@ -191,50 +194,10 @@ public class ActivityController {
     }
 
 
-    @ApiOperation("输入userId,返回user的所有的“已结束”活动")
-    @GetMapping("/getUserDoneList")
-    public Result<Map<String,Object>>getUserDoneList(
-            @ApiParam(name = "userId", value = " user ID", required = false)
-            @RequestParam(name = "userId",required = true) String userId
-    ){
-        Map<String,Object>resultMap=new HashMap<>();
-        try
-        {
-            Map<String,String>filterData=new HashMap<>();
-            Map<String,String>sortData=new HashMap<>();
-
-            resultMap=activityService.getUserDoneList(userId);
 
 
 
-            return Result.success(resultMap);
-        }catch (Exception e){
-            return Result.fail(0,e.getMessage());
-        }
-    }
 
-
-    @ApiOperation("输入userId,返回user的所有的“集合中”、“正在进行”活动")
-    @GetMapping("/getUserDoingList")
-    public Result<Map<String,Object>>getUserDoingList(
-            @ApiParam(name = "userId", value = " user ID", required = false)
-            @RequestParam(name = "userId",required = true) String userId
-    ){
-        Map<String,Object>resultMap=new HashMap<>();
-        try
-        {
-            Map<String,String>filterData=new HashMap<>();
-            Map<String,String>sortData=new HashMap<>();
-
-            resultMap=activityService.getUserDoingList(userId);
-
-
-
-            return Result.success(resultMap);
-        }catch (Exception e){
-            return Result.fail(0,e.getMessage());
-        }
-    }
 
     @ApiOperation("输入userId,返回user 关注的活动")
     @GetMapping("/getUserInterestList")
