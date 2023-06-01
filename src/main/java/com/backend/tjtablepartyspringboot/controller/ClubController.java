@@ -209,7 +209,6 @@ public class ClubController {
                                        @RequestParam("clubId") Long clubId,
                                        @ApiParam(name="trpgId", value="桌游id", required = true)
                                        @RequestParam("trpgId") String trpgId)
-
     {
         try {
             int res = clubService.addClubTrpg(clubId, trpgId);
@@ -418,18 +417,18 @@ public class ClubController {
                 .collect(Collectors.toList());
 
         //3.距离筛选
-//        if(maxDistance != null || minDistance != null) {
-//            clubList = clubList.stream()
-//                    .filter((ClubSimpleDto c) -> {
-//                        float dis = GeoUtil.getDistance(longitude, latitude, c.getLongitude(), c.getLatitude());
-//                        if (dis >= minDistance && dis <= maxDistance) {
-//                            return true;
-//                        } else {
-//                            return false;
-//                        }
-//                    })
-//                    .collect(Collectors.toList());
-//        }
+        if((maxDistance != null || minDistance != null) && (maxDistance >= 0) && (minDistance >= 0)) {
+            clubList = clubList.stream()
+                    .filter((ClubSimpleDto c) -> {
+                        float dis = GeoUtil.getDistance(longitude, latitude, c.getLongitude(), c.getLatitude());
+                        if (dis >= minDistance && dis <= maxDistance) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    })
+                    .collect(Collectors.toList());
+        }
 
         return Result.success(clubList);
     }

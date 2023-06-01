@@ -15,6 +15,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,20 +50,26 @@ public class ApplicationController {
 
     @ApiOperation("审核申请单")
     @GetMapping("checkApp")
+    @Transactional
     public Result<String> checkApp(@ApiParam(name="publicSiteId", value="公用场地id", required = true)
                                        @RequestParam("publicSiteId") Long publicSiteId,
                                    @ApiParam(name="agree", value="是否同意该场地入驻", required = true)
                                         @RequestParam("agree") Boolean agree,
                                    @ApiParam(name="adminId", value="审核的管理员id", required = true)
-                                       @RequestParam("adminId") Long adminId)
+                                       @RequestParam("adminId") Long adminId,
+                                   @ApiParam(name="adminMessage", value="管理员审核意见", required = true)
+                                       @RequestParam("adminMessage") String adminMessage)
     {
-        int res = applicationService.adminCheck(publicSiteId, agree, adminId);
-        if(res > 0){
+        try {
+            int res = applicationService.adminCheck(publicSiteId, agree, adminId, adminMessage);
             return Result.success("审核保存成功！");
         }
-        else{
+        catch(Exception e){
+            System.out.println(e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return Result.fail(500,"审核失败！检查后端");
         }
+
     }
 
     @ApiOperation("新增一个举报单图片")

@@ -45,6 +45,7 @@ public class PublicSite {
     float longitude;
     Long adminId;
     String adminPhotos;
+    String adminMessage;
 
     public PublicSite(String creatorId, String name, String city, String location, String picture, String introduction, float avgCost, int capacity, int gameNum, String phone, Date uploadTime, int status, String type, String tag, float latitude, float longitude) {
         this.creatorId = creatorId;

@@ -3,11 +3,13 @@ package com.backend.tjtablepartyspringboot.service.impl;
 import com.backend.tjtablepartyspringboot.dto.AppDto;
 import com.backend.tjtablepartyspringboot.dto.AppSimpleDto;
 import com.backend.tjtablepartyspringboot.dto.PublicSiteTimeDto;
+import com.backend.tjtablepartyspringboot.entity.Message;
 import com.backend.tjtablepartyspringboot.entity.PublicSite;
 import com.backend.tjtablepartyspringboot.entity.PublicSiteTime;
 import com.backend.tjtablepartyspringboot.entity.SiteTag;
 import com.backend.tjtablepartyspringboot.mapper.*;
 import com.backend.tjtablepartyspringboot.service.ApplicationService;
+import com.backend.tjtablepartyspringboot.util.MessageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -80,14 +82,31 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public int adminCheck(Long publicSiteId, boolean agree, Long adminId) {
+    public int adminCheck(Long publicSiteId, boolean agree, Long adminId, String adminMessage) {
         Byte status = agree ?  Byte.valueOf("1") : Byte.valueOf("0");
 
         PublicSite publicSite = publicSiteMapper.selectPublicSiteById(publicSiteId);
         publicSite.setCheckTime(new Date());
         publicSite.setStatus(status);
         publicSite.setAdminId(adminId);
+        publicSite.setAdminMessage(adminMessage);
+
+
         int res = publicSiteMapper.updateById(publicSite);
+
+        //发消息
+        if(agree){
+            Message message = new Message(publicSiteId, "场地审核通过",
+                    "您申请的场地"+publicSite.getName()+"已审核通过，正式入驻本平台！",
+                    new Date(), 2);
+            MessageUtil.messageSender(publicSite.getCreatorId(), message);
+        }
+        else{
+            Message message = new Message(publicSiteId, "场地审核不通过",
+                    "您申请的场地"+publicSite.getName()+"未通过，请查看管理员审核意见。如因信息不完整而未通过，可在完善信息后重新提交。",
+                    new Date(), 2);
+            MessageUtil.messageSender(publicSite.getCreatorId(), message);
+        }
         return res;
     }
 }
