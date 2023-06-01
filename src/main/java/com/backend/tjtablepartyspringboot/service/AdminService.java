@@ -5,5 +5,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface AdminService {
-    AdminConsoleDto getAdminConsoleDto(Long adminId);
+    AdminConsoleDto getAdminConsoleDto(String adminId);
 }

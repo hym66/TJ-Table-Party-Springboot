@@ -3,10 +3,12 @@ package com.backend.tjtablepartyspringboot.controller;
 import com.backend.tjtablepartyspringboot.common.Result;
 import com.backend.tjtablepartyspringboot.config.TencentCosConfig;
 import com.backend.tjtablepartyspringboot.dto.ReportDto;
+import com.backend.tjtablepartyspringboot.entity.Message;
 import com.backend.tjtablepartyspringboot.entity.Report;
 import com.backend.tjtablepartyspringboot.service.ReportService;
 import com.backend.tjtablepartyspringboot.config.TencentCosProperties4Picture;
 import com.backend.tjtablepartyspringboot.util.FileUtil;
+import com.backend.tjtablepartyspringboot.util.MessageUtil;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.exception.CosClientException;
 import com.qcloud.cos.exception.CosServiceException;
@@ -112,6 +114,21 @@ public class ReportController {
     {
         try {
             int res = reportService.checkReport(reportId, agree, adminId, punishment);
+
+            Report report = reportService.selectReportByReportId(reportId);
+            if(agree){
+                //给被举报者发消息
+                Message message = new Message(0L, "举报成功反馈", "您的举报经我们核实，被举报者违规行为属实，" +
+                        "予以惩罚："+punishment, new Date(), 2);
+                MessageUtil.messageSender(report.getReporterId(), message);
+            }
+            else{
+                //给被举报者发消息
+                Message message = new Message(0L, "举报失败反馈", "您的举报经我们核实，不存在违规行为，不予通过。",
+                        new Date(), 2);
+                MessageUtil.messageSender(report.getReporterId(), message);
+            }
+
             return Result.success("审核保存成功！");
         }
         catch (Exception e){

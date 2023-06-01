@@ -23,7 +23,7 @@ public class AdminController {
     @ApiOperation("根据管理员id，获取管理员控制台的信息")
     @GetMapping("getAdminConsole")
     public Result<AdminConsoleDto> getAppById(@ApiParam(name="adminId", value="管理员id", required = true)
-                                     @RequestParam("adminId") Long adminId)
+                                     @RequestParam("adminId") String adminId)
     {
         AdminConsoleDto adminConsoleDto = adminService.getAdminConsoleDto(adminId);
         return Result.success(adminConsoleDto);
