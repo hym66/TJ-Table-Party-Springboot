@@ -185,11 +185,20 @@ public class SiteController {
 
     @ApiOperation("修改私人场地的基本信息，场地图片不修改")
     @PutMapping("modifyPrivateSiteWithoutPicture")
-    public Result<String> modifyPrivateSiteWithoutPicture(@RequestBody PrivateSite privateSite) {
+    public Result<String> modifyPrivateSiteWithoutPicture(@RequestBody PrivateSite privateSite,
+                                                          @RequestParam("siteTrpgList") String siteTrpgList) {
 
         int res = siteService.modifyPrivateSite(privateSite);
         if (res == 0) return Result.fail(400, "修改私人场地信息失败");
-        else return Result.success("修改私人场地信息成功");
+        // 修改场地的游戏信息
+        List<String> siteTrpgList_new = new ArrayList<>(JSONArray.parseArray(siteTrpgList, String.class));
+        siteService.deleteSiteTrpg(privateSite.getPrivateSiteId(), 1);
+        // 插入私人场地的游戏信息
+        for (String trpgId : siteTrpgList_new) {
+            int res_ = siteService.addSiteTrpg(privateSite.getPrivateSiteId(), trpgId, 1);
+            if (res_ == 0) return Result.fail(400, "插入私人场地失败");
+        }
+        return Result.success("修改私人场地信息成功");
     }
 
     @ApiOperation("修改私人场地的所有信息")

@@ -183,4 +183,9 @@ public class SiteServiceImpl implements SiteService {
     public Integer addSiteTrpg(Long siteId, String trpgId, int siteType) {
         return siteHasTrpgMapper.addSiteTrpg(siteId, trpgId, siteType);
     }
+
+    @Override
+    public Integer deleteSiteTrpg(Long siteId, int siteType) {
+        return siteHasTrpgMapper.deleteSiteTrpg(siteId, siteType);
+    }
 }

@@ -41,4 +41,5 @@ public interface SiteService {
     List<SiteHasTrpg> selectTrpgsBySite(Long siteId, int siteType);
 
     public Integer addSiteTrpg(Long siteId, String trpgId, int siteType);
+    public Integer deleteSiteTrpg(Long siteId, int siteType);
 }
