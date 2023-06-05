@@ -285,6 +285,12 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
+    public boolean isInThisClub(Long clubId, String userId) {
+        ClubUser clubUser = clubUserMapper.selectClubUserById(clubId, userId);
+        return clubUser != null;
+    }
+
+    @Override
     public List<ClubSimpleDto> selectByKeyword(String keyword) {
         List<Club> clubList = clubMapper.selectByKeyword(keyword);
         List<ClubSimpleDto> dtoList = new ArrayList<>();

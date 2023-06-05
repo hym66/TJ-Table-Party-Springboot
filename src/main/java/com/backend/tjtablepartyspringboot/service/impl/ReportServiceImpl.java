@@ -77,13 +77,13 @@ public class ReportServiceImpl implements ReportService {
 
         //如果举报单审核通过了，要实施制裁
         String criminalId = report.getCriminalId();
-        //todo: 给用户发消息提醒
+
         if(isPassed == 1) {
             String targetType = report.getTargetType();
             if (targetType.equals("user")) {
                 int banDays = Integer.valueOf(punishment.split("天")[0].split("封号")[0]);
                 //给用户表封号
-                Calendar now =Calendar.getInstance();
+                Calendar now = Calendar.getInstance();
                 now.setTime(new Date());
                 now.set(Calendar.DATE,now.get(Calendar.DATE)+banDays);
                 Date bantime = now.getTime();

@@ -31,4 +31,5 @@ public interface ClubService {
     boolean clubIsFull(Long clubId);
     int dissolveClub(Long clubId);
     int transferManager(Long clubId, String userId);
+    boolean isInThisClub(Long clubId, String userId);
 }

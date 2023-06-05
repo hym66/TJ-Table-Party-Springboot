@@ -462,4 +462,16 @@ public class ClubController {
         }
     }
 
+    @ApiOperation("判断某个用户是否在这个俱乐部中")
+    @GetMapping("isInThisClub")
+    @Transactional
+    public Result<Boolean> isInThisClub(@ApiParam(name="clubId", value="俱乐部id", required = true)
+                                          @RequestParam("clubId") Long clubId,
+                                          @ApiParam(name="userId", value="用户id", required = true)
+                                          @RequestParam("userId") String userId)
+    {
+        Boolean result = clubService.isInThisClub(clubId, userId);
+        return Result.success(result);
+    }
+
 }
