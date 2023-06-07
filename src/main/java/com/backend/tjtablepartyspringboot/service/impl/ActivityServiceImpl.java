@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -458,9 +459,13 @@ public class ActivityServiceImpl implements ActivityService {
             for (Activity act:actList){
                 Map<String,Object>siteData=getSite(act.getSiteId(),act.getSiteType());
                 if (siteData.containsKey("city")){
+                    //不满足条件的，打上-1，后续删除
                     if (!siteData.get("city").equals(cityCode)){
                         act.setSiteId(-1l);
                     }
+                }
+                else{
+                    act.setSiteId(-1l);
                 }
             }
 
@@ -1178,5 +1183,40 @@ public class ActivityServiceImpl implements ActivityService {
 
 
         return resultMap;
+    }
+
+
+    @Scheduled(cron="0/5 * *  * * ? ")
+    //每5秒执行一次
+    public Map<String,Object>scheduled_checkActivity(){
+        Map<String,Object>resultMap=new HashMap<>();
+        QueryWrapper<Activity>qw=new QueryWrapper<>();
+        //检查所有的活动
+        List<Activity>allList=activityMapper.selectList(qw);
+        for (Activity act :allList){
+            Integer repeat=act.getRepeatDay();
+            //repeat有效的
+            if (repeat!=null&&repeat>0){
+                System.out.println("repeat valid!");
+                System.out.println(act);
+                //重复创建一个新活动
+
+                createReplyActivity(act);
+
+            }
+
+        }
+
+
+        return resultMap;
+    }
+
+    public Activity createReplyActivity(Activity act){
+        Activity newAct=null;
+        //判断时间
+
+        //注意新活动的repeat是0
+
+        return newAct;
     }
 }

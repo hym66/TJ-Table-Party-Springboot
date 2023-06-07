@@ -186,4 +186,15 @@ public interface ActivityService {
      */
     Integer deleteAllTrpg(Long activityId);
 
+
+    /**
+     * 定时任务，检查所有活动
+     */
+    Map<String,Object>scheduled_checkActivity();
+
+
+    /**
+     * 输入一个activity，根据creat time 和 repeat day，创建一个重复的活动
+     */
+    Activity createReplyActivity(Activity act);
 }
