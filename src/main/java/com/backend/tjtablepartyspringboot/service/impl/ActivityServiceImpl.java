@@ -127,6 +127,15 @@ public class ActivityServiceImpl implements ActivityService {
         detailMap.put("createTime",createTime);
         detailMap.put("createTimeLabel",activityTimeFormate(createTime));
 
+        //repeat
+        detailMap.put("repeatDay",act.getRepeatDay());
+        detailMap.put("repeatNum",act.getRepeatNum());
+
+        Date repeatTime=act.getRepeatTime();
+        detailMap.put("repeatTime",repeatTime);
+        detailMap.put("repeatTimeLabel",activityTimeFormate(repeatTime));
+
+
         detailMap.put("summary",act.getSummary());
         detailMap.put("description",act.getDescription());
         detailMap.put("poster",act.getPoster());
@@ -761,6 +770,9 @@ public class ActivityServiceImpl implements ActivityService {
             activityHasTrpgMapper.delete(qw_2);
         }
 
+        //发送活动通知
+
+
         return resultMap;
     }
 
@@ -1186,8 +1198,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
 
-    @Scheduled(cron="0/5 * *  * * ? ")
-    //每5秒执行一次
+    @Scheduled(cron="0/10 * *  * * ? ")
+    //每10秒执行一次
     public Map<String,Object>scheduled_checkActivity(){
         Map<String,Object>resultMap=new HashMap<>();
         QueryWrapper<Activity>qw=new QueryWrapper<>();
@@ -1197,13 +1209,14 @@ public class ActivityServiceImpl implements ActivityService {
             Integer repeat=act.getRepeatDay();
             //repeat有效的
             if (repeat!=null&&repeat>0){
-                System.out.println("repeat valid!");
-                System.out.println(act);
                 //重复创建一个新活动
-
                 createReplyActivity(act);
-
             }
+
+            //活动快开始了，发送活动通知
+
+
+
 
         }
 
@@ -1213,7 +1226,98 @@ public class ActivityServiceImpl implements ActivityService {
 
     public Activity createReplyActivity(Activity act){
         Activity newAct=null;
-        //判断时间
+        Date createTime=act.getCreateTime();
+        Integer repeatDay=act.getRepeatDay();
+        Integer repeatNum=act.getRepeatNum();
+        Long activityId=act.getActivityId();
+
+
+
+
+
+
+
+        //计算得到需要repeat创建的下一次时间
+        Calendar c=Calendar.getInstance();
+        c.setTime(createTime);
+        c.add(Calendar.DATE,repeatDay*(repeatNum+1));
+        Date repeatTime=c.getTime();
+
+
+        activityMapper.update(
+                null,
+                Wrappers.<Activity>lambdaUpdate()
+                        .eq(Activity::getActivityId,activityId)
+                        .set(Activity::getRepeatTime,repeatTime)
+        );
+
+
+
+
+
+        // now date
+        Date nowTime=new Date();
+
+        // pattern string for date
+        String pattern="yyyy MM dd";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        String repeatTime_label= simpleDateFormat.format(repeatTime);
+        String nowTime_label= simpleDateFormat.format(nowTime);
+
+        //抵达时间
+        if (repeatTime_label.equals(nowTime_label)){
+            //创建新活动
+            //俱乐部、场地、游戏 id 都得存在，否则创建失败，发送活动通知
+
+            //new start time
+            Date startTime=act.getStartTime();
+            Calendar c_startTime=Calendar.getInstance();
+            c_startTime.setTime(startTime);
+            c_startTime.add(Calendar.DATE,repeatDay*(repeatNum+1));
+            Date newStartTime=c_startTime.getTime();
+
+            //new end time
+            Date endTime=act.getEndTime();
+            Calendar c_endTime=Calendar.getInstance();
+            c_endTime.setTime(endTime);
+            c_endTime.add(Calendar.DATE,repeatDay*(repeatNum+1));
+            Date newEndTime=c_endTime.getTime();
+
+            newAct =act;
+            newAct.setActivityId(null);
+            newAct.setCreateTime(nowTime);
+            newAct.setStartTime(newStartTime);
+            newAct.setEndTime(newEndTime);
+            newAct.setRepeatDay(0);
+            newAct.setRepeatNum(0);
+            newAct.setRepeatTime(null);
+            activityMapper.insert(newAct);
+
+
+
+            //更新旧活动的信息
+            Calendar newC=Calendar.getInstance();
+            newC.setTime(createTime);
+            newC.add(Calendar.DATE,repeatDay*(repeatNum+2));
+            Date newRepeatTime=newC.getTime();
+
+            activityMapper.update(
+                    null,
+                    Wrappers.<Activity>lambdaUpdate()
+                            .eq(Activity::getActivityId,activityId)
+                            .set(Activity::getRepeatTime,newRepeatTime)
+                            .set(Activity::getRepeatNum,repeatNum+1)
+            );
+
+
+
+        }
+
+
+
+
+
+
 
         //注意新活动的repeat是0
 
