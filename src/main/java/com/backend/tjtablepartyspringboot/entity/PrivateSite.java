@@ -19,21 +19,25 @@ import lombok.NoArgsConstructor;
 @TableName(value = "private_site")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PrivateSite {
-    @JsonSerialize(using= ToStringSerializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     Long privateSiteId;
-    @JsonSerialize(using= ToStringSerializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     String creatorId;
     String name;
+    String city;
     String location;
+
     String picture;
     float latitude;
     float longitude;
 
     String locationTitle;
     int gameNum;
-    public PrivateSite(String creatorId, String name, String location, String picture, float latitude, float longitude, String locationTitle, int gameNum) {
+
+    public PrivateSite(String creatorId, String name, String city, String location, String picture, float latitude, float longitude, String locationTitle, int gameNum) {
         this.creatorId = creatorId;
         this.name = name;
+        this.city = city;
         this.location = location;
         this.picture = picture;
         this.latitude = latitude;

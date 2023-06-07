@@ -20,7 +20,7 @@ public interface PrivateSiteMapper extends BaseMapper<PrivateSite> {
     @Select("SELECT * FROM private_site WHERE private_site_id=#{privateSiteId}")
     PrivateSite selectPrivateSiteById(@Param("privateSiteId") Long privateSiteId);
 
-    @Insert("INSERT INTO private_site (creator_id, name, location, picture, latitude, longitude, location_title) VALUES (#{privateSite.creatorId}, #{privateSite.name}, #{privateSite.location}, #{privateSite.picture}, #{privateSite.latitude}, #{privateSite.longitude}, #{privateSite.locationTitle})")
+    @Insert("INSERT INTO private_site (creator_id, name, city, location, picture, latitude, longitude, location_title) VALUES (#{privateSite.creatorId}, #{privateSite.name}, #{privateSite.city}, #{privateSite.location}, #{privateSite.picture}, #{privateSite.latitude}, #{privateSite.longitude}, #{privateSite.locationTitle})")
     @Options(useGeneratedKeys = true, keyProperty = "privateSite.privateSiteId")
     int insertPrivateSite(@Param("privateSite") PrivateSite privateSite);
 

@@ -55,6 +55,7 @@ public class SiteController {
     @Autowired
     private MessageService messageService;
 
+
     @ApiOperation("获取所有公共场地信息")
     @GetMapping("getPublicSiteList")
     public Result<List<PublicSiteBriefDto>> getPublicSiteList() {
@@ -158,6 +159,7 @@ public class SiteController {
     public Result<String> createPrivateSite(@RequestParam("file") MultipartFile multipartFile,
                                             @RequestParam("creatorId") String creatorId,
                                             @RequestParam("name") String name,
+                                            @RequestParam("city") String city,
                                             @RequestParam("location") String location,
                                             @RequestParam("latitude") float latitude,
                                             @RequestParam("longitude") float longitude,
@@ -167,8 +169,8 @@ public class SiteController {
         List<String> siteTrpgList_new = new ArrayList<>(JSONArray.parseArray(siteTrpgList, String.class));
 
         // 图片云存储 返回url
-        String picture = FileUtil.uploadFile("/report/" + creatorId.toString() + "/", multipartFile);
-        PrivateSite privateSite = new PrivateSite(creatorId, name, location, picture, latitude, longitude, locationTitle, siteTrpgList_new.size());
+        String picture = FileUtil.uploadFile("/report/" + creatorId + "/", multipartFile);
+        PrivateSite privateSite = new PrivateSite(creatorId, name, city, location, picture, latitude, longitude, locationTitle, siteTrpgList_new.size());
         int res = siteService.insertPrivateSite(privateSite);
         if (res == 0) return Result.fail(400, "创建私人场地失败");
 
@@ -178,9 +180,9 @@ public class SiteController {
         // 插入私人场地的游戏信息
         for (String trpgId : siteTrpgList_new) {
             int res_ = siteService.addSiteTrpg(privateSiteId, trpgId, 1);
-            if (res_ == 0) return Result.fail(400, "插入私人场地失败");
+            if (res_ == 0) return Result.fail(400, "创建私人场地失败");
         }
-        return Result.success("插入私人场地成功");
+        return Result.success("创建私人场地成功");
     }
 
     @ApiOperation("修改私人场地的基本信息，场地图片不修改")
@@ -207,6 +209,7 @@ public class SiteController {
                                             @RequestParam("privateSiteId") Long privateSiteId,
                                             @RequestParam("creatorId") String creatorId,
                                             @RequestParam("name") String name,
+                                            @RequestParam("city") String city,
                                             @RequestParam("location") String location,
                                             @RequestParam("latitude") float latitude,
                                             @RequestParam("longitude") float longitude,
@@ -216,7 +219,7 @@ public class SiteController {
         // 图片云存储 返回url
         String picture = FileUtil.uploadFile("/report/" + creatorId + "/", multipartFile);
         List<String> siteTrpgList_new = new ArrayList<>(JSONArray.parseArray(siteTrpgList, String.class));
-        PrivateSite privateSite = new PrivateSite(privateSiteId, creatorId, name, location, picture, latitude, longitude, locationTitle, siteTrpgList_new.size());
+        PrivateSite privateSite = new PrivateSite(privateSiteId, creatorId, name, city, location, picture, latitude, longitude, locationTitle, siteTrpgList_new.size());
         int res = siteService.modifyPrivateSite(privateSite);
         if (res == 0) return Result.fail(400, "修改私人场地信息失败");
         else return Result.success("修改私人场地信息成功");
@@ -291,4 +294,217 @@ public class SiteController {
         else return Result.success("公共场地信息反馈成功");
     }
 
+    @ApiOperation("获取该活动对应的所有question信息列表")
+    @GetMapping("/getQuestionList")
+    public Result<List<Map<String, Object>>> getQuestionList(
+            @ApiParam(name = "publicSiteId", value = "场地id", required = true)
+            @RequestParam("publicSiteId") Long publicSiteId,
+            @ApiParam(name = "userId", value = "用户id", required = true)
+            @RequestParam(name = "userId") String userId
+
+    ) {
+        List<Map<String, Object>> list = new ArrayList<>();
+        try {
+
+            list = siteService.getQuestionList(publicSiteId, userId);
+
+            return Result.success(list);
+        } catch (Exception e) {
+            return Result.fail(0, e.getMessage());
+        }
+
+    }
+
+    @ApiOperation("获取该question对应的reply信息列表")
+    @GetMapping("/getReplyList")
+    public Result<Map<String, Object>> getReplyList(
+            @ApiParam(name = "questionId", value = "问题id", required = true)
+            @RequestParam("questionId") Long questionId,
+            @ApiParam(name = "userId", value = "用户id", required = true)
+            @RequestParam(name = "userId") String userId
+    ) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            resultMap = siteService.getReplyList(questionId, userId);
+            return Result.success(resultMap);
+        } catch (Exception e) {
+            return Result.fail(0, e.getMessage());
+        }
+
+    }
+
+    @ApiOperation("question的UserLike")
+    @GetMapping("/getUserLikeQuestionList")
+    public Result<Map<String, Object>> getUserLikeQuestionList(
+            @ApiParam(name = "questionId", value = "问题id", required = true)
+            @RequestParam("questionId") Long questionId
+    ) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            List<SiteUserLikeQuestion> userLikeQuestionList = siteService.getUserLikeQuestionList(questionId);
+            resultMap.put("data", userLikeQuestionList);
+            return Result.success(resultMap);
+        } catch (Exception e) {
+            return Result.fail(0, e.getMessage());
+        }
+
+    }
+
+    @ApiOperation("reply的UserLike")
+    @GetMapping("/getUserLikeReplyList")
+    public Result<Map<String, Object>> getUserLikeReplyList(
+            @ApiParam(name = "replyId", value = "回答id", required = true)
+            @RequestParam("replyId") Long replyId
+    ) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            List<SiteUserLikeReply> userLikeReplyList = siteService.getUserLikeReplyList(replyId);
+            resultMap.put("data", userLikeReplyList);
+            return Result.success(resultMap);
+        } catch (Exception e) {
+            return Result.fail(0, e.getMessage());
+        }
+
+    }
+
+
+    @ApiOperation("发布新的reply")
+    @PostMapping("/postReply")
+    public Result<Map<String, Object>> postReply(
+            @ApiParam(name = "replyData", value = "reply字典", required = true)
+            @RequestBody(required = true) Map<String, String> replyData
+
+    ) {
+        Map<String, Object> resultMap = new HashMap<>();
+
+        try {
+            Long questionId = Long.parseLong(replyData.get("questionId"));
+            String userId = replyData.get("userId");
+            String content = replyData.get("content");
+            String anonymity = replyData.get("anonymity");
+
+            Integer i = siteService.addReply(questionId, userId, content, anonymity);
+            resultMap.put("i", i);
+
+            return Result.success(resultMap);
+        } catch (Exception e) {
+            return Result.fail(0, e.getMessage());
+        }
+
+
+    }
+
+
+    @ApiOperation("发布新的question")
+    @PostMapping("/postQuestion")
+    public Result<Map<String, Object>> postQuestion(
+            @ApiParam(name = "questionData", value = "question字典", required = true)
+            @RequestBody(required = true) Map<String, String> questionData
+
+    ) {
+        Map<String, Object> resultMap = new HashMap<>();
+
+        try {
+            String userId = questionData.get("userId");
+            Long publicSiteId = Long.parseLong(questionData.get("publicSiteId"));
+            String content = questionData.get("content");
+            String title = questionData.get("title");
+            String anonymity = questionData.get("anonymity");
+
+            Integer i = siteService.addQuestion(publicSiteId, userId, content, title, anonymity);
+            resultMap.put("i", i);
+
+            return Result.success(resultMap);
+        } catch (Exception e) {
+            return Result.fail(0, e.getMessage());
+        }
+
+
+    }
+
+
+    @ApiOperation("user 点赞/取消点赞一条reply")
+    @PostMapping("/likeReply")
+    public Result<Map<String, Object>> likeReply(
+            @ApiParam(name = "userLikeReplyMap", value = "userLikeReply字典", required = true)
+            @RequestBody(required = true) Map<String, String> userLikeReplyMap
+    ) {
+        Map<String, Object> resultMap = new HashMap<>();
+
+        try {
+            Long replyId = Long.parseLong(userLikeReplyMap.get("replyId"));
+            String userId = userLikeReplyMap.get("userId");
+
+            Integer i = siteService.userLikeOneReply(userId, replyId);
+            resultMap.put("i", i);
+
+            return Result.success(resultMap);
+        } catch (Exception e) {
+            return Result.fail(0, e.getMessage());
+        }
+
+
+    }
+
+
+    @ApiOperation("user 点赞/取消点赞一条 question")
+    @PostMapping("/likeQuestion")
+    public Result<Map<String, Object>> likeQuestion(
+            @ApiParam(name = "userLikeQuestionMap", value = "userLikeReply字典", required = true)
+            @RequestBody(required = true) Map<String, String> userLikeQuestionMap
+    ) {
+        Map<String, Object> resultMap = new HashMap<>();
+
+        try {
+            Long questionId = Long.parseLong(userLikeQuestionMap.get("questionId"));
+            String userId = userLikeQuestionMap.get("userId");
+
+            Integer i = siteService.userLikeOneQuestion(userId, questionId);
+            resultMap.put("i", i);
+
+            return Result.success(resultMap);
+        } catch (Exception e) {
+            return Result.fail(0, e.getMessage());
+        }
+
+
+    }
+
+
+    @ApiOperation("删除一条reply")
+    @DeleteMapping("/deleteReply")
+    public Result<Map<String, Object>> deleteReply(
+            @ApiParam(name = "replyId", value = "回答id", required = true)
+            @RequestParam("replyId") Long replyId
+    ) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            Integer i = siteService.deleteReply(replyId);
+            resultMap.put("i", i);
+            return Result.success(resultMap);
+        } catch (Exception e) {
+            return Result.fail(0, e.getMessage());
+        }
+
+
+    }
+
+
+    @ApiOperation("删除一条 question")
+    @DeleteMapping("/deleteQuestion")
+    public Result<Map<String, Object>> deleteQuestion(
+            @ApiParam(name = "questionId", value = "问题id", required = true)
+            @RequestParam("questionId") Long questionId
+    ) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            Integer i = siteService.deleteQuestion(questionId);
+            resultMap.put("i", i);
+            return Result.success(resultMap);
+        } catch (Exception e) {
+            return Result.fail(0, e.getMessage());
+        }
+
+
+    }
 }
