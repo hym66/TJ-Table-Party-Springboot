@@ -14,7 +14,7 @@ public interface ClubUserMapper extends BaseMapper<ClubUser> {
     int deleteUser(@Param("clubId") Long clubId, @Param("userId") String userId);
     @Select("SELECT * FROM club_user WHERE club_id=#{clubId} AND status=0")
     List<ClubUser> selectWaitingUsers(@Param("clubId") Long clubId);
-    @Update("UPDATE club_user SET status=0 WHERE club_id=#{clubId} AND user_id=#{userId}")
+    @Update("UPDATE club_user SET status=1 WHERE club_id=#{clubId} AND user_id=#{userId}")
     int activateClubUser(@Param("clubId") Long clubId, @Param("userId") String userId);
 
     @Select("SELECT * FROM club_user WHERE club_id=#{clubId} AND user_id=#{userId}")

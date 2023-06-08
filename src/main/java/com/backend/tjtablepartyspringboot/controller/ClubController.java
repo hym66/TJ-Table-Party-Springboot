@@ -325,7 +325,7 @@ public class ClubController {
                 return Result.fail(400, "俱乐部人数已满！");
             }
 
-            int res = clubService.askToJoin(clubId, userId);
+            int res = clubService.agreeToJoin(clubId, userId);
             UserDto userDto = userService.getNameAndAvatarUrl(userId);
             String name = userDto.getNickName();
             res = clubService.addRecord(clubId, name + "已加入俱乐部");
