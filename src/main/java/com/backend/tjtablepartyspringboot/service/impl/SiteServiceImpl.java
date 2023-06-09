@@ -110,7 +110,7 @@ public class SiteServiceImpl implements SiteService {
             games.add(detail_public);
         }
         // 创建dto对象
-        PublicSiteDto publicSiteDto = new PublicSiteDto(ps.getPublicSiteId(), ps.getCreatorId(), ps.getName(), ps.getCity(), ps.getLocation(), ps.getPicture(), ps.getIntroduction(), ps.getAvgCost(), ps.getCapacity(), ps.getGameNum(), ps.getPhone(), ps.getUploadTime(), ps.getCheckTime(), type, tag, ps.getStatus(), openTime, ps.getLatitude(), ps.getLongitude(), games);
+        PublicSiteDto publicSiteDto = new PublicSiteDto(ps.getPublicSiteId(), ps.getCreatorId(), ps.getName(), ps.getCity(), ps.getLocation(), ps.getPicture(), ps.getIntroduction(), ps.getAvgCost(), ps.getCapacity(), ps.getGameNum(), ps.getPhone(), ps.getUploadTime(), ps.getCheckTime(), type, tag, ps.getStatus(), openTime, ps.getLatitude(), ps.getLongitude(), ps.getLocationTitle(), games);
         return publicSiteDto;
     }
 

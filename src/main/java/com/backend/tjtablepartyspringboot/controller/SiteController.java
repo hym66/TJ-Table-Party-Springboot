@@ -119,6 +119,7 @@ public class SiteController {
                                            @RequestParam("openTime") String openTime,
                                            @RequestParam("latitude") float latitude,
                                            @RequestParam("longitude") float longitude,
+                                           @RequestParam("locationTitle") String locationTitle,
                                            @RequestParam("siteTrpgList") String siteTrpgList
     ) throws ParseException {
         List<SiteTimeDto> openTime_new = new ArrayList<SiteTimeDto>(JSONArray.parseArray(openTime, SiteTimeDto.class));
@@ -127,7 +128,7 @@ public class SiteController {
         // 图片云存储 返回url
         String picture = FileUtil.uploadFile("/report/" + creatorId.toString() + "/", multipartFile);
         // 创建新的公共场地
-        PublicSite publicSite = new PublicSite(creatorId, name, city, location, picture, introduction, avgCost, capacity, siteTrpgList_new.size(), phone, new Date(), 2, type, tag, latitude, longitude);
+        PublicSite publicSite = new PublicSite(creatorId, name, city, location, picture, introduction, avgCost, capacity, siteTrpgList_new.size(), phone, new Date(), 2, type, tag, latitude, longitude, locationTitle);
         // 插入数据库
         int res = siteService.insertPublicSite(publicSite);
         if (res == 0) return Result.fail(400, "插入公共场地失败");

@@ -45,5 +45,6 @@ public class PublicSiteDto {
     List<PublicSiteTimeDto> openTime;
     float latitude;
     float longitude;
+    String locationTitle;
     List<TrpgPublic> games;
 }

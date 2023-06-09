@@ -24,7 +24,7 @@ public interface PublicSiteMapper extends BaseMapper<PublicSite>{
     @Select("SELECT * FROM public_site WHERE creator_id=#{creatorId}")
     List<PublicSite> selectPublicSiteByCreatorId(@Param("creatorId") String creatorId);
 
-    @Insert("INSERT INTO public_site (creator_id, name, city, location, picture, introduction, avg_cost, capacity, phone, game_num, upload_time, status, type, tag, latitude, longitude) VALUES (#{publicSite.creatorId}, #{publicSite.name}, #{publicSite.city}, #{publicSite.location}, #{publicSite.picture}, #{publicSite.introduction}, #{publicSite.avgCost}, #{publicSite.capacity}, #{publicSite.phone}, #{publicSite.gameNum}, #{publicSite.uploadTime}, #{publicSite.status}, #{publicSite.type}, #{publicSite.tag}, #{publicSite.latitude}, #{publicSite.longitude})")
+    @Insert("INSERT INTO public_site (creator_id, name, city, location, picture, introduction, avg_cost, capacity, phone, game_num, upload_time, status, type, tag, latitude, longitude, locationTitle) VALUES (#{publicSite.creatorId}, #{publicSite.name}, #{publicSite.city}, #{publicSite.location}, #{publicSite.picture}, #{publicSite.introduction}, #{publicSite.avgCost}, #{publicSite.capacity}, #{publicSite.phone}, #{publicSite.gameNum}, #{publicSite.uploadTime}, #{publicSite.status}, #{publicSite.type}, #{publicSite.tag}, #{publicSite.latitude}, #{publicSite.longitude}, #{publicSite.locationTitle})")
     @Options(useGeneratedKeys = true, keyProperty = "publicSite.publicSiteId")
     int insertPublicSite(@Param("publicSite") PublicSite publicSite);
 
