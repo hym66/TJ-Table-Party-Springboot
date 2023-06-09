@@ -287,7 +287,7 @@ public class ClubServiceImpl implements ClubService {
     @Override
     public boolean isInThisClub(Long clubId, String userId) {
         ClubUser clubUser = clubUserMapper.selectClubUserById(clubId, userId);
-        return clubUser != null;
+        return clubUser != null && clubUser.getStatus() == 1;
     }
 
     @Override

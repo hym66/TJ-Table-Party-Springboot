@@ -43,11 +43,12 @@ public class PublicSite {
     String tag;
     float latitude;
     float longitude;
+    String locationTitle;
     Long adminId;
     String adminPhotos;
     String adminMessage;
 
-    public PublicSite(String creatorId, String name, String city, String location, String picture, String introduction, float avgCost, int capacity, int gameNum, String phone, Date uploadTime, int status, String type, String tag, float latitude, float longitude) {
+    public PublicSite(String creatorId, String name, String city, String location, String picture, String introduction, float avgCost, int capacity, int gameNum, String phone, Date uploadTime, int status, String type, String tag, float latitude, float longitude, String locationTitle) {
         this.creatorId = creatorId;
         this.name = name;
         this.city = city;
@@ -64,5 +65,6 @@ public class PublicSite {
         this.tag = tag;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.locationTitle = locationTitle;
     }
 }
