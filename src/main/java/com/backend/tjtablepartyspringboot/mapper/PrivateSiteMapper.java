@@ -20,14 +20,14 @@ public interface PrivateSiteMapper extends BaseMapper<PrivateSite> {
     @Select("SELECT * FROM private_site WHERE private_site_id=#{privateSiteId}")
     PrivateSite selectPrivateSiteById(@Param("privateSiteId") Long privateSiteId);
 
-    @Insert("INSERT INTO private_site (creator_id, name, city, location, picture, latitude, longitude, location_title) VALUES (#{privateSite.creatorId}, #{privateSite.name}, #{privateSite.city}, #{privateSite.location}, #{privateSite.picture}, #{privateSite.latitude}, #{privateSite.longitude}, #{privateSite.locationTitle})")
+    @Insert("INSERT INTO private_site (creator_id, name, city, location, picture, latitude, longitude, location_title, game_num) VALUES (#{privateSite.creatorId}, #{privateSite.name}, #{privateSite.city}, #{privateSite.location}, #{privateSite.picture}, #{privateSite.latitude}, #{privateSite.longitude}, #{privateSite.locationTitle}, #{privateSite.gameNum})")
     @Options(useGeneratedKeys = true, keyProperty = "privateSite.privateSiteId")
     int insertPrivateSite(@Param("privateSite") PrivateSite privateSite);
 
     @Delete("DELETE FROM private_site WHERE private_site_id=#{privateSiteId}")
     int deletePrivateSite(@Param("privateSiteId") Long privateSiteId);
 
-    @Update("UPDATE private_site SET name=#{privateSite.name}, location=#{privateSite.location}, picture=#{privateSite.picture}, latitude=#{privateSite.latitude}, longitude=#{privateSite.longitude}, location_title=#{privateSite.locationTitle}  WHERE private_site_id='${privateSite.privateSiteId}'")
+    @Update("UPDATE private_site SET name=#{privateSite.name}, city=#{privateSite.city}, location=#{privateSite.location}, picture=#{privateSite.picture}, latitude=#{privateSite.latitude}, longitude=#{privateSite.longitude}, location_title=#{privateSite.locationTitle}, game_num=#{privateSite.gameNum} WHERE private_site_id='${privateSite.privateSiteId}'")
     int updatePrivateSiteInfo(@Param("privateSite") PrivateSite privateSite);
 
 }

@@ -155,6 +155,91 @@ public class SiteController {
         return Result.success("插入公共场地成功");
     }
 
+    @ApiOperation("修改公共场地的基本信息，场地图片不修改")
+    @PutMapping("modifyPublicSiteWithoutPicture")
+    public Result<String> modifyPublicSite(@RequestBody PublicSiteModifyDto pDto,
+                                           @RequestParam("siteTrpgList") String siteTrpgList) throws ParseException {
+
+        List<SiteTimeDto> openTime_new = new ArrayList<SiteTimeDto>(JSONArray.parseArray(pDto.getOpenTime(), SiteTimeDto.class));
+        List<String> siteTrpgList_new = List.of(siteTrpgList.split(","));
+
+        PublicSite publicSite = new PublicSite(pDto.getPublicSiteId(), pDto.getCreatorId(), pDto.getName(), pDto.getCity(), pDto.getLocation(), pDto.getPicture(), pDto.getIntroduction(), pDto.getAvgCost(), pDto.getCapacity(), siteTrpgList_new.size(), pDto.getPhone(), new Date(), 2, pDto.getType(), pDto.getTag(), pDto.getLatitude(), pDto.getLongitude(), pDto.getLocationTitle());
+        int res = siteService.modifyPublicSite(publicSite);
+        if (res == 0) return Result.fail(400, "修改公共场地信息失败");
+
+        // 更新公共场地的时间信息
+        DateFormat sdf = new SimpleDateFormat("HH:mm");
+        for (SiteTimeDto op : openTime_new) {
+            Time startTime = new Time(sdf.parse(op.getStartTime()).getTime());
+            Time endTime = new Time(sdf.parse(op.getEndTime()).getTime());
+            int weekday = weekdayUnTrans(op.getWeek());
+            PublicSiteTime publicSiteTime = new PublicSiteTime(pDto.getPublicSiteId(), weekday, startTime, endTime, op.isOpen());
+            int res_ = siteService.modifyPublicSiteTime(publicSiteTime);
+            if (res_ == 0) return Result.fail(400, "修改公共场地失败");
+        }
+
+        // 修改场地的游戏信息
+        siteService.deleteSiteTrpg(publicSite.getPublicSiteId(), 0);
+        // 插入公共场地的游戏信息
+        for (String trpgId : siteTrpgList_new) {
+            int res_ = siteService.addSiteTrpg(publicSite.getPublicSiteId(), trpgId, 0);
+            if (res_ == 0) return Result.fail(400, "修改公共场地失败");
+        }
+        return Result.success("修改公共场地成功");
+    }
+
+    @ApiOperation("修改公共场地所有信息")
+    @PostMapping("modifyPublicSite")
+    public Result<String> modifyPublicSite(@RequestParam("file") MultipartFile multipartFile,
+                                           @RequestParam("publicSiteId") Long publicSiteId,
+                                           @RequestParam("creatorId") String creatorId,
+                                           @RequestParam("name") String name,
+                                           @RequestParam("type") String type,
+                                           @RequestParam("introduction") String introduction,
+                                           @RequestParam("city") String city,
+                                           @RequestParam("location") String location,
+                                           @RequestParam("avgCost") float avgCost,
+                                           @RequestParam("capacity") int capacity,
+                                           @RequestParam("phone") String phone,
+                                           @RequestParam("tag") String tag,
+                                           @RequestParam("openTime") String openTime,
+                                           @RequestParam("latitude") float latitude,
+                                           @RequestParam("longitude") float longitude,
+                                           @RequestParam("locationTitle") String locationTitle,
+                                           @RequestParam("siteTrpgList") String siteTrpgList
+    ) throws ParseException {
+        List<SiteTimeDto> openTime_new = new ArrayList<SiteTimeDto>(JSONArray.parseArray(openTime, SiteTimeDto.class));
+        List<String> siteTrpgList_new = new ArrayList<>(JSONArray.parseArray(siteTrpgList, String.class));
+
+        // 图片云存储 返回url
+        String picture = FileUtil.uploadFile("/report/" + creatorId.toString() + "/", multipartFile);
+        // 创建新的公共场地
+        PublicSite publicSite = new PublicSite(publicSiteId, creatorId, name, city, location, picture, introduction, avgCost, capacity, siteTrpgList_new.size(), phone, new Date(), 2, type, tag, latitude, longitude, locationTitle);
+        // 插入数据库
+        int res = siteService.modifyPublicSite(publicSite);
+        if (res == 0) return Result.fail(400, "插入公共场地失败");
+
+        // 更新公共场地的时间信息
+        DateFormat sdf = new SimpleDateFormat("HH:mm");
+        for (SiteTimeDto op : openTime_new) {
+            Time startTime = new Time(sdf.parse(op.getStartTime()).getTime());
+            Time endTime = new Time(sdf.parse(op.getEndTime()).getTime());
+            int weekday = weekdayUnTrans(op.getWeek());
+            PublicSiteTime publicSiteTime = new PublicSiteTime(publicSiteId, weekday, startTime, endTime, op.isOpen());
+            int res_ = siteService.modifyPublicSiteTime(publicSiteTime);
+            if (res_ == 0) return Result.fail(400, "修改公共场地失败");
+        }
+
+        siteService.deleteSiteTrpg(publicSite.getPublicSiteId(), 0);
+        // 插入公共场地的游戏信息
+        for (String trpgId : siteTrpgList_new) {
+            int res_ = siteService.addSiteTrpg(publicSite.getPublicSiteId(), trpgId, 0);
+            if (res_ == 0) return Result.fail(400, "修改公共场地失败");
+        }
+
+        return Result.success("修改公共场地成功");
+    }
+
     @ApiOperation("创建私人场地")
     @PostMapping("createPrivateSite")
     public Result<String> createPrivateSite(@RequestParam("file") MultipartFile multipartFile,
@@ -168,7 +253,7 @@ public class SiteController {
                                             @RequestParam("siteTrpgList") String siteTrpgList
     ) {
         List<String> siteTrpgList_new = new ArrayList<>(JSONArray.parseArray(siteTrpgList, String.class));
-
+        int a = siteTrpgList_new.size();
         // 图片云存储 返回url
         String picture = FileUtil.uploadFile("/report/" + creatorId + "/", multipartFile);
         PrivateSite privateSite = new PrivateSite(creatorId, name, city, location, picture, latitude, longitude, locationTitle, siteTrpgList_new.size());
@@ -194,7 +279,7 @@ public class SiteController {
         int res = siteService.modifyPrivateSite(privateSite);
         if (res == 0) return Result.fail(400, "修改私人场地信息失败");
         // 修改场地的游戏信息
-        List<String> siteTrpgList_new = new ArrayList<>(JSONArray.parseArray(siteTrpgList, String.class));
+        List<String> siteTrpgList_new = List.of(siteTrpgList.split(","));
         siteService.deleteSiteTrpg(privateSite.getPrivateSiteId(), 1);
         // 插入私人场地的游戏信息
         for (String trpgId : siteTrpgList_new) {
@@ -222,8 +307,14 @@ public class SiteController {
         List<String> siteTrpgList_new = new ArrayList<>(JSONArray.parseArray(siteTrpgList, String.class));
         PrivateSite privateSite = new PrivateSite(privateSiteId, creatorId, name, city, location, picture, latitude, longitude, locationTitle, siteTrpgList_new.size());
         int res = siteService.modifyPrivateSite(privateSite);
-        if (res == 0) return Result.fail(400, "修改私人场地信息失败");
-        else return Result.success("修改私人场地信息成功");
+        // 删除原先的游戏信息
+        siteService.deleteSiteTrpg(privateSite.getPrivateSiteId(), 1);
+        // 插入私人场地的游戏信息
+        for (String trpgId : siteTrpgList_new) {
+            int res_ = siteService.addSiteTrpg(privateSite.getPrivateSiteId(), trpgId, 1);
+            if (res_ == 0) return Result.fail(400, "插入私人场地失败");
+        }
+        return Result.success("修改私人场地信息成功");
     }
 
     @ApiOperation("删除私人场地")

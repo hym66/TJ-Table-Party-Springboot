@@ -36,6 +36,10 @@ public interface SiteService {
 
     int insertPublicSiteTime(PublicSiteTime publicSiteTime);
 
+    int modifyPublicSiteTime(PublicSiteTime publicSiteTime);
+
+    int modifyPublicSite(PublicSite PublicSite);
+
     int insertPrivateSite(PrivateSite privateSite);
 
     int modifyPrivateSite(PrivateSite privateSite);
