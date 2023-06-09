@@ -197,4 +197,9 @@ public interface ActivityService {
      * 输入一个activity，根据creat time 和 repeat day，创建一个重复的活动
      */
     Activity createReplyActivity(Activity act);
+
+    /**
+     *  输入一个activity， 俱乐部、场地 id 是否都存在
+     */
+    Map<String,Object> activityValid(Activity act);
 }

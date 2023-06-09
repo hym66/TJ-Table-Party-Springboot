@@ -2,11 +2,13 @@ package com.backend.tjtablepartyspringboot.service.impl;
 import com.backend.tjtablepartyspringboot.dto.UserDto;
 import com.backend.tjtablepartyspringboot.entity.*;
 import com.backend.tjtablepartyspringboot.mapper.*;
+import com.backend.tjtablepartyspringboot.service.MessageService;
 import com.backend.tjtablepartyspringboot.service.TrpgService;
 import com.backend.tjtablepartyspringboot.service.UserService;
 import com.backend.tjtablepartyspringboot.util.DateUtil;
 
 import com.backend.tjtablepartyspringboot.service.ActivityService;
+import com.backend.tjtablepartyspringboot.util.MessageUtil;
 import com.backend.tjtablepartyspringboot.util.StringUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -27,6 +29,9 @@ import java.util.stream.Collectors;
  */
 @Service
 public class ActivityServiceImpl implements ActivityService {
+    @Autowired
+    MessageService messageService;
+
     @Autowired
     ClubMapper clubMapper;
 
@@ -1214,7 +1219,23 @@ public class ActivityServiceImpl implements ActivityService {
             }
 
             //活动快开始了，发送活动通知
-
+            Date nowTime=new Date();
+            Date startTime=act.getStartTime();
+            long timeDiffMillis=startTime.getTime()-nowTime.getTime();
+            long minute=timeDiffMillis/1000;
+            if (3600*1<minute&&minute<3600*1+15){
+                Message message=new Message(
+                        act.getActivityId(),
+                        "活动开始提醒",
+                        act.getTitle()+" 再过1h就要开始咯，请留意及时参与活动。",
+                        new Date(),
+                        0);
+                //对该活动的所有参与者
+                List<UserJoinActivity>userJoinActivityList =getUserJoinActivityList(act.getActivityId());
+                for (UserJoinActivity userJoinActivity:userJoinActivityList){
+                    messageService.sendMessage(userJoinActivity.getUserId(),message);
+                }
+            }
 
 
 
@@ -1268,46 +1289,96 @@ public class ActivityServiceImpl implements ActivityService {
         if (repeatTime_label.equals(nowTime_label)){
             //创建新活动
             //俱乐部、场地、游戏 id 都得存在，否则创建失败，发送活动通知
+            Map<String,Object>actValidMap=activityValid(act);
+            Boolean actValid=(Boolean)actValidMap.get("valid");
+            String actValidMsg=(String)actValidMap.get("msg");
+            if (!actValid){
+                //俱乐部 或者 场地 不存在
+                //创建失败，发送活动通知
+                try
+                {
+                    Message message=new Message(activityId,"活动自动重复失败！","自动重复创建活动失败,原因:"+actValidMsg,new Date(),0);
+                    messageService.sendMessage(act.getUserId(),message);
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
 
-            //new start time
-            Date startTime=act.getStartTime();
-            Calendar c_startTime=Calendar.getInstance();
-            c_startTime.setTime(startTime);
-            c_startTime.add(Calendar.DATE,repeatDay*(repeatNum+1));
-            Date newStartTime=c_startTime.getTime();
+            }
+            else {
+                //new start time
+                Date startTime=act.getStartTime();
+                Calendar c_startTime=Calendar.getInstance();
+                c_startTime.setTime(startTime);
+                c_startTime.add(Calendar.DATE,repeatDay*(repeatNum+1));
+                Date newStartTime=c_startTime.getTime();
 
-            //new end time
-            Date endTime=act.getEndTime();
-            Calendar c_endTime=Calendar.getInstance();
-            c_endTime.setTime(endTime);
-            c_endTime.add(Calendar.DATE,repeatDay*(repeatNum+1));
-            Date newEndTime=c_endTime.getTime();
-
-            newAct =act;
-            newAct.setActivityId(null);
-            newAct.setCreateTime(nowTime);
-            newAct.setStartTime(newStartTime);
-            newAct.setEndTime(newEndTime);
-            newAct.setRepeatDay(0);
-            newAct.setRepeatNum(0);
-            newAct.setRepeatTime(null);
-            activityMapper.insert(newAct);
+                //new end time
+                Date endTime=act.getEndTime();
+                Date newEndTime=null;
+                if (endTime!=null){
+                    Calendar c_endTime=Calendar.getInstance();
+                    c_endTime.setTime(endTime);
+                    c_endTime.add(Calendar.DATE,repeatDay*(repeatNum+1));
+                    newEndTime=c_endTime.getTime();
+                }
 
 
+                newAct =act;
+                newAct.setActivityId(null);
+                newAct.setCreateTime(nowTime);
+                newAct.setStartTime(newStartTime);
+                newAct.setEndTime(newEndTime);
+                newAct.setRepeatDay(0);
+                newAct.setRepeatNum(0);
+                newAct.setRepeatTime(null);
+                activityMapper.insert(newAct);
 
-            //更新旧活动的信息
-            Calendar newC=Calendar.getInstance();
-            newC.setTime(createTime);
-            newC.add(Calendar.DATE,repeatDay*(repeatNum+2));
-            Date newRepeatTime=newC.getTime();
 
-            activityMapper.update(
-                    null,
-                    Wrappers.<Activity>lambdaUpdate()
-                            .eq(Activity::getActivityId,activityId)
-                            .set(Activity::getRepeatTime,newRepeatTime)
-                            .set(Activity::getRepeatNum,repeatNum+1)
-            );
+
+                //更新旧活动的信息
+                Calendar newC=Calendar.getInstance();
+                newC.setTime(createTime);
+                newC.add(Calendar.DATE,repeatDay*(repeatNum+2));
+                Date newRepeatTime=newC.getTime();
+
+                activityMapper.update(
+                        null,
+                        Wrappers.<Activity>lambdaUpdate()
+                                .eq(Activity::getActivityId,activityId)
+                                .set(Activity::getRepeatTime,newRepeatTime)
+                                .set(Activity::getRepeatNum,repeatNum+1)
+                );
+
+                //对 活动-游戏表，获取旧活动的所有条目，为新活动重复一遍
+                QueryWrapper<ActivityHasTrpg>qw_actHasTrpg=new QueryWrapper<>();
+                qw_actHasTrpg.eq("activity_id",activityId);
+                List<ActivityHasTrpg>hasTrpgList=activityHasTrpgMapper.selectList(qw_actHasTrpg);
+                for (ActivityHasTrpg activityHasTrpg:hasTrpgList){
+                    ActivityHasTrpg newOne=new ActivityHasTrpg(newAct.getActivityId(),activityHasTrpg.getTrpgId());
+                    activityHasTrpgMapper.insert(newOne);
+                }
+
+                //创建者是参与者
+                addParticipator(newAct.getUserId(), newAct.getActivityId());
+
+                if (newAct.getActivityId()!=null){
+                    //创建成功，发送活动通知
+                    try
+                    {
+                        Message message=new Message(newAct.getActivityId(),"活动自动重复成功！","自动重复创建活动成功，请关注该新活动。",new Date(),0);
+                        messageService.sendMessage(act.getUserId(),message);
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+                    }
+
+                }
+
+            }
+
+
+
 
 
 
@@ -1322,5 +1393,58 @@ public class ActivityServiceImpl implements ActivityService {
         //注意新活动的repeat是0
 
         return newAct;
+    }
+
+    @Override
+    public Map<String,Object> activityValid(Activity act){
+        Map<String,Object> resultMap=new HashMap<>();
+        resultMap.put("valid",true);
+        String msg="";
+        Long siteId=act.getSiteId();
+        Long clubId=act.getClubId();
+
+        //club valid
+        Club i_club=null;
+        if (clubId!=null){
+            QueryWrapper<Club>qw_club=new QueryWrapper<>();
+            qw_club.eq("club_id",clubId);
+            i_club=clubMapper.selectOne(qw_club);
+            if (i_club==null){
+                resultMap.put("valid",false);
+                msg="俱乐部不存在";
+            }
+        }
+
+
+
+        // site valid
+
+        int siteType=act.getSiteType();
+        if (siteType==0){
+            PublicSite publicSite=null;
+            QueryWrapper<PublicSite>qw_publicSite=new QueryWrapper<>();
+            qw_publicSite.eq("public_site_id",siteId);
+            publicSite=publicSiteMapper.selectOne(qw_publicSite);
+
+            if (publicSite==null){
+                resultMap.put("valid",false);
+                msg="场地不存在";
+            }
+
+        } else if (siteType==1) {
+            PrivateSite privateSite=null;
+            QueryWrapper<PrivateSite>qw_privateSite=new QueryWrapper<>();
+            qw_privateSite.eq("private_site_id",siteId);
+            privateSite=privateSiteMapper.selectOne(qw_privateSite);
+            if (privateSite==null){
+                resultMap.put("valid",false);
+                msg="场地不存在";
+            }
+        }
+
+
+
+        resultMap.put("msg",msg);
+        return resultMap;
     }
 }

@@ -23,12 +23,23 @@ import java.util.Date;
 public class Message {
     @JsonSerialize(using= ToStringSerializer.class)
     Long messageId;
+
+    /**
+     *     如果 type==0，sourceId 即为 activityId
+     *     如果 type==1，sourceId 即为 clubId
+     */
     @JsonSerialize(using=ToStringSerializer.class)
     Long sourceId;
     String title;
     String content;
     Date time;
+    /**
+     *  0 活动消息
+     *  1 俱乐部消息
+     *  2 其他消息
+     */
     int type;
+
 
     public Message(Long sourceId, String title, String content, Date time, int type) {
         this.sourceId = sourceId;
