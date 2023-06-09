@@ -144,6 +144,19 @@ public class ClubController {
         }
     }
 
+    @ApiOperation("删除一条俱乐部公告")
+    @DeleteMapping("deleteAnnounce")
+    public Result<String> deleteAnnounce(@RequestParam("announceId") Long announceId)
+    {
+        int res = clubService.deleteAnnounce(announceId);
+        if(res > 0){
+            return Result.success("删除公告成功！");
+        }
+        else{
+            return Result.fail(500,"删除公告失败！请检查后端！");
+        }
+    }
+
     @ApiOperation("根据俱乐部id，获取所有公告")
     @GetMapping("getClubAnnounces")
     public Result<List<ClubAnnounceDto>> getClubAnnounces(@ApiParam(name="clubId", value="俱乐部id", required = true)
@@ -203,7 +216,7 @@ public class ClubController {
     }
 
     @ApiOperation("添加俱乐部游戏")
-    @PostMapping("addClubTrpg")
+    @GetMapping("addClubTrpg")
     @Transactional
     public Result<String> addClubTrpg(@ApiParam(name="clubId", value="俱乐部id", required = true)
                                        @RequestParam("clubId") Long clubId,
@@ -211,16 +224,23 @@ public class ClubController {
                                        @RequestParam("trpgId") String trpgId)
     {
         try {
-            int res = clubService.addClubTrpg(clubId, trpgId);
+            String trpgName;
+            String posterUrl;
             TrpgPublic trpgPublic = trpgService.getDetail_public(trpgId);
             TrpgPrivate trpgPrivate = trpgService.getDetail_private(trpgId);
 
-            String trpgName;
             if (trpgPublic != null) {
                 trpgName = trpgPublic.getTitleName();
+                posterUrl = trpgPublic.getPoster();
             } else {
                 trpgName = trpgPrivate.getTitleName();
+                posterUrl = trpgPrivate.getPoster();
             }
+
+            int res = clubService.addClubTrpg(clubId, trpgId, trpgName, posterUrl);
+
+
+
 
             //插入俱乐部记录
             res = clubService.addRecord(clubId, trpgName + "已被添加至俱乐部爱玩的游戏");
@@ -473,5 +493,7 @@ public class ClubController {
         Boolean result = clubService.isInThisClub(clubId, userId);
         return Result.success(result);
     }
+
+
 
 }

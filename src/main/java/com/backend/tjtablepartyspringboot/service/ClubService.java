@@ -20,7 +20,7 @@ public interface ClubService {
     List<ClubSimpleDto> getCityClubSimpleDtos(String city, float longitude, float latitude);
     List<ClubSimpleDto> getUserClubSimpleDtos(String userId);
     int removeClubTrpg(Long clubId, String trpgId);
-    int addClubTrpg(Long clubId, String trpgId);
+    int addClubTrpg(Long clubId, String trpgId, String title, String poster);
     List<Activity> selectCurrentActivities(Long clubId);
     int patchClub(Club club);
     List<ClubSimpleDto> selectByKeyword(String keyword);
@@ -32,4 +32,5 @@ public interface ClubService {
     int dissolveClub(Long clubId);
     int transferManager(Long clubId, String userId);
     boolean isInThisClub(Long clubId, String userId);
+    int deleteAnnounce(Long announceId);
 }
