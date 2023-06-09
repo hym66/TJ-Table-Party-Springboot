@@ -219,8 +219,8 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public int addClubTrpg(Long clubId, String trpgId) {
-        int res = clubMapper.addClubTrpg(clubId, trpgId);
+    public int addClubTrpg(Long clubId, String trpgId, String title, String poster) {
+        int res = clubMapper.addClubTrpg(clubId, trpgId, title, poster);
         return res;
     }
 
@@ -288,6 +288,12 @@ public class ClubServiceImpl implements ClubService {
     public boolean isInThisClub(Long clubId, String userId) {
         ClubUser clubUser = clubUserMapper.selectClubUserById(clubId, userId);
         return clubUser != null && clubUser.getStatus() == 1;
+    }
+
+    @Override
+    public int deleteAnnounce(Long announceId) {
+        int res = announceMapper.deleteById(announceId);
+        return res;
     }
 
     @Override
