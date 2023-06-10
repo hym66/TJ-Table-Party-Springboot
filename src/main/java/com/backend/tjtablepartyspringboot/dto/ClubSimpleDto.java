@@ -45,4 +45,19 @@ public class ClubSimpleDto {
         this.longitude = club.getLongitude();
         this.latitude = club.getLatitude();
     }
+
+    public ClubSimpleDto(Club club) {
+        this.clubId = club.getClubId();
+        this.posterUrl = club.getPosterUrl();
+        this.clubTitle = club.getClubTitle();
+        this.mainTime = club.getMainTime();
+        this.meetingPoint = club.getMeetingPoint();
+        this.city = club.getCity();
+        this.capacity = club.getCapacity();
+
+        this.managerId = club.getManagerId();
+
+        this.longitude = club.getLongitude();
+        this.latitude = club.getLatitude();
+    }
 }

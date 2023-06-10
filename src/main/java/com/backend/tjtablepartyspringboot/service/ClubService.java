@@ -4,6 +4,7 @@ import com.backend.tjtablepartyspringboot.dto.*;
 import com.backend.tjtablepartyspringboot.entity.Activity;
 import com.backend.tjtablepartyspringboot.entity.Announce;
 import com.backend.tjtablepartyspringboot.entity.Club;
+import com.backend.tjtablepartyspringboot.entity.ClubUser;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,4 +34,6 @@ public interface ClubService {
     int transferManager(Long clubId, String userId);
     boolean isInThisClub(Long clubId, String userId);
     int deleteAnnounce(Long announceId);
+    List<ClubUser> getClubUsers(Long clubId);
+    ClubSimpleDto getClubSimpleDto(Long clubId);
 }
