@@ -5,6 +5,7 @@ import com.backend.tjtablepartyspringboot.config.TencentCosConfig;
 import com.backend.tjtablepartyspringboot.dto.ReportDto;
 import com.backend.tjtablepartyspringboot.entity.Message;
 import com.backend.tjtablepartyspringboot.entity.Report;
+import com.backend.tjtablepartyspringboot.service.MessageService;
 import com.backend.tjtablepartyspringboot.service.ReportService;
 import com.backend.tjtablepartyspringboot.config.TencentCosProperties4Picture;
 import com.backend.tjtablepartyspringboot.util.FileUtil;
@@ -37,6 +38,9 @@ import java.util.stream.Collectors;
 public class ReportController {
     @Autowired
     ReportService reportService;
+
+    @Autowired
+    MessageService messageService;
 
 //    @Resource
 //    private TencentCosProperties4Picture tencentCosProperties4Picture;
@@ -120,13 +124,13 @@ public class ReportController {
                 //给被举报者发消息
                 Message message = new Message(0L, "举报成功反馈", "您的举报经我们核实，被举报者违规行为属实，" +
                         "予以惩罚："+punishment, new Date(), 2);
-                MessageUtil.messageSender(report.getReporterId(), message);
+                messageService.sendMessage(report.getReporterId(), message);
             }
             else{
                 //给被举报者发消息
                 Message message = new Message(0L, "举报失败反馈", "您的举报经我们核实，不存在违规行为，不予通过。",
                         new Date(), 2);
-                MessageUtil.messageSender(report.getReporterId(), message);
+                messageService.sendMessage(report.getReporterId(), message);
             }
 
             return Result.success("审核保存成功！");
