@@ -169,6 +169,16 @@ public class SiteServiceImpl implements SiteService {
     }
 
     @Override
+    public int modifyPublicSiteTime(PublicSiteTime publicSiteTime) {
+        return publicSiteTimeMapper.updatePublicSiteTime(publicSiteTime);
+    }
+
+    @Override
+    public int modifyPublicSite(PublicSite PublicSite) {
+        return publicSiteMapper.updatePublicSiteInfo(PublicSite);
+    }
+
+    @Override
     public int insertPrivateSite(PrivateSite privateSite) {
         return privateSiteMapper.insertPrivateSite(privateSite);
     }

@@ -67,4 +67,25 @@ public class PublicSite {
         this.longitude = longitude;
         this.locationTitle = locationTitle;
     }
+
+    public PublicSite(Long publicSiteId, String creatorId, String name, String city, String location, String picture, String introduction, float avgCost, int capacity, int gameNum, String phone, Date uploadTime, int status, String type, String tag, float latitude, float longitude, String locationTitle) {
+        this.publicSiteId = publicSiteId;
+        this.creatorId = creatorId;
+        this.name = name;
+        this.city = city;
+        this.location = location;
+        this.picture = picture;
+        this.introduction = introduction;
+        this.avgCost = avgCost;
+        this.capacity = capacity;
+        this.gameNum = gameNum;
+        this.phone = phone;
+        this.uploadTime = uploadTime;
+        this.status = status;
+        this.type = type;
+        this.tag = tag;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.locationTitle = locationTitle;
+    }
 }
