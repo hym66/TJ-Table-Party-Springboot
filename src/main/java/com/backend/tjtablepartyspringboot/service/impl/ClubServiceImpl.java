@@ -297,6 +297,22 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
+    public List<ClubUser> getClubUsers(Long clubId) {
+        List<ClubUser> clubUserList = clubUserMapper.selectUsersByClubId(clubId);
+        return clubUserList;
+    }
+
+    @Override
+    public ClubSimpleDto getClubSimpleDto(Long clubId) {
+        Club club = clubMapper.selectById(clubId);
+
+        //这里的clubSimpleDto信息不全
+        ClubSimpleDto clubSimpleDto = new ClubSimpleDto(club);
+
+        return clubSimpleDto;
+    }
+
+    @Override
     public List<ClubSimpleDto> selectByKeyword(String keyword) {
         List<Club> clubList = clubMapper.selectByKeyword(keyword);
         List<ClubSimpleDto> dtoList = new ArrayList<>();

@@ -240,6 +240,15 @@ public class SiteController {
         return Result.success("修改公共场地成功");
     }
 
+    @ApiOperation("删除公共场地")
+    @DeleteMapping("deletePublicSite")
+    public Result<String> deletePublicSite(@ApiParam(name = "publicSiteId", value = "公共场地Id", required = true)
+                                            @RequestParam("publicSiteId") Long publicSiteId) {
+        int res = siteService.deletePublicSite(publicSiteId);
+        if (res == 0) return Result.fail(400, "删除公共场地失败");
+        else return Result.success("删除公共场地成功");
+    }
+
     @ApiOperation("创建私人场地")
     @PostMapping("createPrivateSite")
     public Result<String> createPrivateSite(@RequestParam("file") MultipartFile multipartFile,

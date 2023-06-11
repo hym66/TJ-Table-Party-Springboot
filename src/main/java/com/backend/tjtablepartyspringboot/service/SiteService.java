@@ -40,6 +40,8 @@ public interface SiteService {
 
     int modifyPublicSite(PublicSite PublicSite);
 
+    int deletePublicSite(Long publicSiteId);
+
     int insertPrivateSite(PrivateSite privateSite);
 
     int modifyPrivateSite(PrivateSite privateSite);

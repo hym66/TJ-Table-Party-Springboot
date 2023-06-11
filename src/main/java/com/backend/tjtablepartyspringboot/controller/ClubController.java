@@ -5,10 +5,7 @@ import com.backend.tjtablepartyspringboot.dto.*;
 import com.backend.tjtablepartyspringboot.entity.*;
 import com.backend.tjtablepartyspringboot.mapper.ClubMapper;
 import com.backend.tjtablepartyspringboot.mapper.ClubUserMapper;
-import com.backend.tjtablepartyspringboot.service.ClubService;
-import com.backend.tjtablepartyspringboot.service.SiteService;
-import com.backend.tjtablepartyspringboot.service.TrpgService;
-import com.backend.tjtablepartyspringboot.service.UserService;
+import com.backend.tjtablepartyspringboot.service.*;
 import com.backend.tjtablepartyspringboot.util.FileUtil;
 import com.backend.tjtablepartyspringboot.util.GeoUtil;
 import io.swagger.annotations.Api;
@@ -43,6 +40,8 @@ public class ClubController {
 
     @Autowired
     TrpgService trpgService;
+    @Autowired
+    MessageService messageService;
 
     @ApiOperation("根据俱乐部id，返回俱乐部基本信息")
     @GetMapping("getClubInfo")
@@ -458,8 +457,20 @@ public class ClubController {
     public Result<String> dissolveClub(@ApiParam(name="clubId", value="俱乐部id", required = true)
                                            @RequestParam("clubId") Long clubId)
     {
+        //获取俱乐部的所有用户
+        List<ClubUser> clubUsers = clubService.getClubUsers(clubId);
+        ClubSimpleDto clubSimpleDto = clubService.getClubSimpleDto(clubId);
+
         int res = clubService.dissolveClub(clubId);
-        //todo:给解散的每一个人发送消息
+
+        Message message = new Message(null, "俱乐部解散提醒", "您加入的俱乐部“"+clubSimpleDto.getClubTitle()+"”已被部长解散！",
+                new Date(), 1);
+
+        for(ClubUser clubUser : clubUsers){
+            String userId = clubUser.getUserId();
+
+            res = messageService.sendMessage(userId, message);
+        }
         return Result.success("成功解散俱乐部！");
     }
 

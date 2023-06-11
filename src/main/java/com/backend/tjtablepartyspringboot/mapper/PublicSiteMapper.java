@@ -35,4 +35,6 @@ public interface PublicSiteMapper extends BaseMapper<PublicSite>{
     @Update("UPDATE public_site SET name=#{publicSite.name}, city=#{publicSite.city}, location=#{publicSite.location}, picture=#{publicSite.picture}, introduction=#{publicSite.introduction}, avg_cost=#{publicSite.avgCost}, capacity=#{publicSite.capacity}, phone=#{publicSite.phone}, game_num=#{publicSite.gameNum}, upload_time=#{publicSite.uploadTime}, status=#{publicSite.status}, type=#{publicSite.type}, tag=#{publicSite.tag}, latitude=#{publicSite.latitude}, longitude=#{publicSite.longitude}, location_title=#{publicSite.locationTitle}  WHERE public_site_id='${publicSite.publicSiteId}'")
     int updatePublicSiteInfo(@Param("publicSite") PublicSite publicSite);
 
+    @Delete("DELETE FROM public_site WHERE public_site_id=#{publicSiteId}")
+    int deletePublicSite(@Param("publicSiteId") Long publicSiteId);
 }

@@ -9,6 +9,7 @@ import com.backend.tjtablepartyspringboot.entity.PublicSiteTime;
 import com.backend.tjtablepartyspringboot.entity.SiteTag;
 import com.backend.tjtablepartyspringboot.mapper.*;
 import com.backend.tjtablepartyspringboot.service.ApplicationService;
+import com.backend.tjtablepartyspringboot.service.MessageService;
 import com.backend.tjtablepartyspringboot.util.MessageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,8 @@ public class ApplicationServiceImpl implements ApplicationService {
     PublicSiteMapper publicSiteMapper;
     @Autowired
     SiteTagMapper siteTagMapper;
+    @Autowired
+    MessageService messageService;
 
     private static String weekdayTrans(int weekday) {
         if (weekday == 1) return "周一";
@@ -99,13 +102,13 @@ public class ApplicationServiceImpl implements ApplicationService {
             Message message = new Message(publicSiteId, "场地审核通过",
                     "您申请的场地"+publicSite.getName()+"已审核通过，正式入驻本平台！",
                     new Date(), 2);
-            MessageUtil.messageSender(publicSite.getCreatorId(), message);
+            messageService.sendMessage(publicSite.getCreatorId(), message);
         }
         else{
             Message message = new Message(publicSiteId, "场地审核不通过",
                     "您申请的场地"+publicSite.getName()+"未通过，请查看管理员审核意见。如因信息不完整而未通过，可在完善信息后重新提交。",
                     new Date(), 2);
-            MessageUtil.messageSender(publicSite.getCreatorId(), message);
+            messageService.sendMessage(publicSite.getCreatorId(), message);
         }
         return res;
     }
