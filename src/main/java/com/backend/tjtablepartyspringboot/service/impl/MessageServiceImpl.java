@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Author 2051196 刘一飞
@@ -35,7 +37,9 @@ public class MessageServiceImpl implements MessageService {
             MessageDto messageDto = new MessageDto(message.getMessageId(), message.getSourceId(), message.getTitle(), message.getContent(), message.getTime(), message.getType(), uvm.getIsView());
             res.add(messageDto);
         }
-        return res;
+        List<MessageDto> sortedMessages = res.stream()
+                .sorted(Comparator.comparing(MessageDto::getTime).reversed()).toList();
+        return sortedMessages;
     }
 
     @Override
