@@ -350,6 +350,12 @@ public class SiteController {
         //1.关键词筛选
         List<PublicSite> publicSiteList = siteService.selectByKeyword(keyword);
 
+        //2.城市筛选
+        if (city != null) {
+            publicSiteList = publicSiteList.stream()
+                    .filter((PublicSite c) -> (Objects.equals(c.getCity(), city)))
+                    .collect(Collectors.toList());
+        }
 
         //2.容量筛选
         if (maxCapacity != -1 && minCapacity != -1) {
