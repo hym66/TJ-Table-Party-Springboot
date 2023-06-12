@@ -238,9 +238,6 @@ public class ClubController {
 
             int res = clubService.addClubTrpg(clubId, trpgId, trpgName, posterUrl);
 
-
-
-
             //插入俱乐部记录
             res = clubService.addRecord(clubId, trpgName + "已被添加至俱乐部爱玩的游戏");
             return Result.success("添加俱乐部游戏成功！");
@@ -276,7 +273,7 @@ public class ClubController {
                 trpgName = trpgPrivate.getTitleName();
             }
 
-            res = clubService.addRecord(clubId, trpgName + "从爱玩的玩游戏中被移除");
+            res = clubService.addRecord(clubId, trpgName + "从爱玩的游戏中被移除");
             return Result.success("删除俱乐部游戏成功！");
         }
         catch (Exception e){
@@ -348,7 +345,7 @@ public class ClubController {
             UserDto userDto = userService.getNameAndAvatarUrl(userId);
             String name = userDto.getNickName();
             res = clubService.addRecord(clubId, name + "已加入俱乐部");
-            return Result.success("成功申请加入俱乐部！");
+            return Result.success("成功同意用户加入俱乐部！");
         }
         catch (Exception e){
             System.out.println(e.getMessage());
@@ -505,6 +502,15 @@ public class ClubController {
         return Result.success(result);
     }
 
+
+    @ApiOperation("判断俱乐部是否已满")
+    @GetMapping("clubIsFull")
+    public Result<Boolean> clubIsFull(@ApiParam(name="clubId", value="俱乐部id", required = true)
+                                        @RequestParam("clubId") Long clubId)
+    {
+        Boolean result = clubService.clubIsFull(clubId);
+        return Result.success(result);
+    }
 
 
 }
