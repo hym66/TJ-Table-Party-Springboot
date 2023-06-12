@@ -56,7 +56,7 @@ public class ApplicationController {
                                    @ApiParam(name="agree", value="是否同意该场地入驻", required = true)
                                         @RequestParam("agree") Boolean agree,
                                    @ApiParam(name="adminId", value="审核的管理员id", required = true)
-                                       @RequestParam("adminId") Long adminId,
+                                       @RequestParam("adminId") String adminId,
                                    @ApiParam(name="adminMessage", value="管理员审核意见", required = true)
                                        @RequestParam("adminMessage") String adminMessage)
     {

@@ -85,7 +85,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public int adminCheck(Long publicSiteId, boolean agree, Long adminId, String adminMessage) {
+    public int adminCheck(Long publicSiteId, boolean agree, String adminId, String adminMessage) {
         Byte status = agree ?  Byte.valueOf("1") : Byte.valueOf("0");
 
         PublicSite publicSite = publicSiteMapper.selectPublicSiteById(publicSiteId);
