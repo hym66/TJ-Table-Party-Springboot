@@ -2,6 +2,7 @@ package com.backend.tjtablepartyspringboot.controller;
 
 import com.backend.tjtablepartyspringboot.common.Result;
 import com.backend.tjtablepartyspringboot.dto.MessageDto;
+import com.backend.tjtablepartyspringboot.dto.TrpgWaitingDetailDto;
 import com.backend.tjtablepartyspringboot.dto.TrpgWaitingSimpleDto;
 import com.backend.tjtablepartyspringboot.entity.TrpgPublic;
 import com.backend.tjtablepartyspringboot.entity.TrpgPublicWaiting;
@@ -36,9 +37,10 @@ public class CrawlTrpgController {
 
     @ApiOperation("根据id获取一个待审核的游戏")
     @GetMapping("getTrpgWaitingById")
-    public Result<TrpgPublicWaiting> getTrpgWaitingById(@ApiParam(name="trpgId", value="桌游id", required = true)
+    public Result<TrpgWaitingDetailDto> getTrpgWaitingById(@ApiParam(name="trpgId", value="桌游id", required = true)
                                                             @RequestParam("trpgId") String trpgId) {
-        TrpgPublicWaiting dto = crawlTrpgService.findById(trpgId);
+        TrpgPublicWaiting t = crawlTrpgService.findById(trpgId);
+        TrpgWaitingDetailDto dto = new TrpgWaitingDetailDto(t);
         return Result.success(dto);
     }
 
