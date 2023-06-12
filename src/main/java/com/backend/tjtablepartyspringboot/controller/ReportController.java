@@ -114,8 +114,6 @@ public class ReportController {
 
     {
         try {
-            int res = reportService.checkReport(reportId, agree, adminId, punishment);
-
             Report report = reportService.selectReportByReportId(reportId);
             if(agree){
                 //给举报者发消息
@@ -178,6 +176,8 @@ public class ReportController {
                 messageService.sendMessage(report.getReporterId(), message);
             }
 
+            //这里面包括了删除实体的代码
+            int res = reportService.checkReport(reportId, agree, adminId, punishment);
             return Result.success("审核保存成功！");
         }
         catch (Exception e){

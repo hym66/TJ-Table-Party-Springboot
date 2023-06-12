@@ -13,6 +13,8 @@ import javax.accessibility.AccessibleIcon;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -65,6 +67,18 @@ public class ReportServiceImpl implements ReportService {
         return dtoList;
     }
 
+    private static int extractDays(String input) {
+        Pattern pattern = Pattern.compile("\\d+");
+        Matcher matcher = pattern.matcher(input);
+
+        if (matcher.find()) {
+            String daysString = matcher.group();
+            return Integer.parseInt(daysString);
+        }
+
+        return 0; // 默认返回0，表示未找到封号天数
+    }
+
     @Override
     public int checkReport(Long reportId, Boolean agree, String adminId, String punishment) {
         Report report = reportMapper.selectByReportId(reportId);
@@ -81,7 +95,7 @@ public class ReportServiceImpl implements ReportService {
         if(isPassed == 1) {
             String targetType = report.getTargetType();
             if (targetType.equals("user")) {
-                int banDays = Integer.valueOf(punishment.split("天")[0].split("封号")[0]);
+                int banDays = extractDays(punishment);
                 //给用户表封号
                 Calendar now = Calendar.getInstance();
                 now.setTime(new Date());

@@ -43,7 +43,7 @@ public class AppSimpleDto {
         this.picture = publicSite.getPicture();
         this.city = publicSite.getCity();
         this.location = publicSite.getLocation();
-        this.type = publicSite.getType().split(",");
+        this.type = publicSite.getType()==null ? null : publicSite.getType().split(",");
         this.avgCost = publicSite.getAvgCost();
         this.capacity = publicSite.getCapacity();
         this.gameNum = publicSite.getGameNum();
