@@ -240,6 +240,15 @@ public class SiteController {
         return Result.success("修改公共场地成功");
     }
 
+    @ApiOperation("删除公共场地")
+    @DeleteMapping("deletePublicSite")
+    public Result<String> deletePublicSite(@ApiParam(name = "publicSiteId", value = "公共场地Id", required = true)
+                                            @RequestParam("publicSiteId") Long publicSiteId) {
+        int res = siteService.deletePublicSite(publicSiteId);
+        if (res == 0) return Result.fail(400, "删除公共场地失败");
+        else return Result.success("删除公共场地成功");
+    }
+
     @ApiOperation("创建私人场地")
     @PostMapping("createPrivateSite")
     public Result<String> createPrivateSite(@RequestParam("file") MultipartFile multipartFile,
@@ -341,6 +350,12 @@ public class SiteController {
         //1.关键词筛选
         List<PublicSite> publicSiteList = siteService.selectByKeyword(keyword);
 
+        //2.城市筛选
+        if (city != null) {
+            publicSiteList = publicSiteList.stream()
+                    .filter((PublicSite c) -> (Objects.equals(c.getCity(), city)))
+                    .collect(Collectors.toList());
+        }
 
         //2.容量筛选
         if (maxCapacity != -1 && minCapacity != -1) {
