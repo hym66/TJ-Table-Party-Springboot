@@ -1133,6 +1133,7 @@ public class ActivityServiceImpl implements ActivityService {
             picture=site.getPicture();
             latitude=site.getLatitude();
             longitude=site.getLongitude();
+            resultMap.put("city",site.getCity());
         }
         resultMap.put("name",name);
         resultMap.put("location",location);
