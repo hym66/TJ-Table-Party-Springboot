@@ -32,10 +32,30 @@ public class TrpgWaitingSimpleDto {
         this.genre = trpgPublicWaiting.getGenre();
         this.averageDuration = trpgPublicWaiting.getAverageDuration();
 
+        //支持人数
         String[] supportNumList = trpgPublicWaiting.getSupportNum().split("#");
-        this.supportNum = "支持" + supportNumList[1] + "-" + supportNumList[supportNumList.length-1] + "人";
+        if(supportNumList.length > 2){
+            this.supportNum = "支持" + supportNumList[1] + "-" + supportNumList[supportNumList.length-1] + "人";
+        }
+        else if(supportNumList.length == 2){
+            this.supportNum = "支持" + supportNumList[1] + "人";
+        }
+        else{
+            this.supportNum = null;
+        }
 
+        //推荐人数
         String[] recommentNumList = trpgPublicWaiting.getRecommendNum().split("#");
-        this.recommendNum = "推荐" + recommentNumList[1] + "-" + recommentNumList[recommentNumList.length-1] + "人";
+        if(recommentNumList.length > 2){
+            this.recommendNum = "推荐" + recommentNumList[1] + "-" + recommentNumList[recommentNumList.length-1] + "人";
+        }
+        else if(recommentNumList.length == 2){
+            this.recommendNum = "推荐" + recommentNumList[1] + "人";
+        }
+        else{
+            this.recommendNum = null;
+        }
+
+
     }
 }
