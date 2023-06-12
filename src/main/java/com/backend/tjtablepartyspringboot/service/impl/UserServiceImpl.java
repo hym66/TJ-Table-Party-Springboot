@@ -13,7 +13,7 @@ import com.alibaba.fastjson.JSON;
 import java.util.Date;
 
 @Service
-public class       UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService {
 
     @Autowired
     UserMapper userMapper;

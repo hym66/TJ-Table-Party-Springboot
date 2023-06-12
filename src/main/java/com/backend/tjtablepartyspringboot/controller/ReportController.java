@@ -117,7 +117,7 @@ public class ReportController {
             Report report = reportService.selectReportByReportId(reportId);
             if(agree){
                 //给举报者发消息
-                Message message = new Message(0L, "举报成功反馈", "您的举报经我们核实，被举报者违规行为属实，" +
+                Message message = new Message(null, "举报成功反馈", "您的举报经我们核实，被举报者违规行为属实，" +
                         "予以惩罚："+punishment, new Date(), 2);
                 messageService.sendMessage(report.getReporterId(), message);
 
@@ -170,7 +170,7 @@ public class ReportController {
             }
             else{
                 //给被举报者发消息
-                Message message = new Message(0L, "举报失败反馈", "您的举报经我们核实，不存在违规行为，不予通过。" +
+                Message message = new Message(null, "举报失败反馈", "您的举报经我们核实，不存在违规行为，不予通过。" +
                         "如有疑问，请重新发起举报。",
                         new Date(), 2);
                 messageService.sendMessage(report.getReporterId(), message);
