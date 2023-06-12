@@ -44,7 +44,7 @@ public class PublicSite {
     float latitude;
     float longitude;
     String locationTitle;
-    Long adminId;
+    String adminId;
     String adminPhotos;
     String adminMessage;
 

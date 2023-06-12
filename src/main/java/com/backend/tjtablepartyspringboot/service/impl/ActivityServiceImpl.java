@@ -1112,7 +1112,8 @@ public class ActivityServiceImpl implements ActivityService {
         if (siteType.equals(0)){
             //public
             QueryWrapper<PublicSite>qw=new QueryWrapper<>();
-            qw.eq("public_site_id",siteId);
+            qw.eq("public_site_id",siteId)
+                    .eq("status",1);
             PublicSite site=publicSiteMapper.selectOne(qw);
             name=site.getName();
             location=site.getLocation();
