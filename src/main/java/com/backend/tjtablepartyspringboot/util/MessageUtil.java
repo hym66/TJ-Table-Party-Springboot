@@ -3,6 +3,8 @@ package com.backend.tjtablepartyspringboot.util;
 import com.backend.tjtablepartyspringboot.entity.Message;
 import com.backend.tjtablepartyspringboot.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  * @Author 2051196 刘一飞
@@ -17,3 +19,4 @@ public class MessageUtil {
     }
 
 }
+
