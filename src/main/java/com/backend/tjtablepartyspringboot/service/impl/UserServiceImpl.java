@@ -46,6 +46,7 @@ public class       UserServiceImpl implements UserService {
         userInfoDto.setCity(user.getCity());
         userInfoDto.setGender(user.getGender());
         userInfoDto.setRole(user.getRole());
+        userInfoDto.setBantime(user.getBantime());
         Date now = new Date();
         if (user.getBantime() != null && now.before(user.getBantime())) {
             userInfoDto.setBan("yes");
