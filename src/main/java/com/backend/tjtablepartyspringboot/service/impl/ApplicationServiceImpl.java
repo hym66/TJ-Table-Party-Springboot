@@ -106,7 +106,8 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
         else{
             Message message = new Message(publicSiteId, "场地审核不通过",
-                    "您申请的场地"+publicSite.getName()+"未通过，请查看管理员审核意见。如因信息不完整而未通过，可在完善信息后重新提交。",
+                    "您申请的场地"+publicSite.getName()+"未通过，请查看管理员审核意见。如因信息不完整而未通过，可在完善信息后重新提交。\n" +
+                            "管理员审核意见："+adminMessage,
                     new Date(), 2);
             messageService.sendMessage(publicSite.getCreatorId(), message);
         }
