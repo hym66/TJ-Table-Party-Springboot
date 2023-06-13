@@ -584,18 +584,26 @@ public class ActivityServiceImpl implements ActivityService {
         Map<String,Object>map=new HashMap<>();
         List<Activity> actList=new ArrayList<>();
 
-        //用户自己创建的
-        QueryWrapper<Activity>qw=new QueryWrapper<>();
-        qw.select("activity_id","title","summary","poster","start_time",
-                "user_id","site_id","site_type","fee","max_people","now_people","state")
-                .eq("user_id",userId);
-        actList=activityMapper.selectList(qw);
 
-        /**
-         * 筛选
-         */
 
-        //sort排序
+        // 用户参与的
+        QueryWrapper<UserJoinActivity>qw_join=new QueryWrapper<>();
+        qw_join.eq("user_id",userId);
+        List<UserJoinActivity>joinActivityList=userJoinActivityMapper.selectList(qw_join);
+
+        for (UserJoinActivity joinActivity:joinActivityList){
+            //每个activity id
+            Long activityId= joinActivity.getActivityId();
+            QueryWrapper<Activity>qw=new QueryWrapper<>();
+            qw.select("activity_id","title","summary","poster","start_time",
+                            "user_id","site_id","site_type","fee","max_people","now_people","state")
+                    .eq("activity_id",activityId);
+            Activity act=activityMapper.selectOne(qw);
+            actList.add(act);
+        }
+
+
+
 
         //结合其他表信息
         List<Map<String,Object>> datalist=new ArrayList<>();
