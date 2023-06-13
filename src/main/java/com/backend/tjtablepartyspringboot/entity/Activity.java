@@ -38,21 +38,21 @@ public class Activity {
 
 
     @DateTimeFormat(pattern="yyyy-MM-dd hh:mm:ss")
-    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(locale="zh_CN", timezone="Asia/Shanghai", pattern="yyyy-MM-dd hh:mm:ss")
     private Date startTime;
 
     @DateTimeFormat(pattern="yyyy-MM-dd hh:mm:ss")
-    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(locale="zh_CN", timezone="GMT+8", pattern="yyyy-MM-dd hh:mm:ss")
     private Date endTime;
 
     @DateTimeFormat(pattern="yyyy-MM-dd hh:mm:ss")
-    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(locale="zh_CN", timezone="GMT+8", pattern="yyyy-MM-dd hh:mm:ss")
     @TableField( "create_time")
     private Date createTime;
 
 
     @DateTimeFormat(pattern="yyyy-MM-dd hh:mm:ss")
-    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(locale="zh_CN", timezone="GMT+8", pattern="yyyy-MM-dd hh:mm:ss")
     @TableField( "repeat_time")
     private Date repeatTime;
 
