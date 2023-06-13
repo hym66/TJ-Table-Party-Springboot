@@ -477,6 +477,7 @@ public class ActivityServiceImpl implements ActivityService {
         if (!cityCode.equals("")){
             //先获取site信息
             for (Activity act:actList){
+
                 Map<String,Object>siteData=getSite(act.getSiteId(),act.getSiteType());
                 if (siteData.containsKey("city")){
                     //不满足条件的，打上-1，后续删除
@@ -1113,47 +1114,56 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public Map<String,Object>getSite(Long siteId,Integer siteType){
         Map<String,Object> resultMap=new HashMap<>();
-        resultMap.put("siteId",siteId);
-        resultMap.put("siteType",siteType);
+        try {
+            resultMap.put("siteId",siteId);
+            resultMap.put("siteType",siteType);
 
-        String name="";
-        String location="";
-        String picture="";
-        float latitude=-1f;
-        float longitude=-1f;
+            String name="";
+            String location="";
+            String picture="";
+            float latitude=-1f;
+            float longitude=-1f;
 
-        //区分public和private
-        if (siteType.equals(0)){
-            //public
-            QueryWrapper<PublicSite>qw=new QueryWrapper<>();
-            qw.eq("public_site_id",siteId);
-            PublicSite site=publicSiteMapper.selectOne(qw);
-            name=site.getName();
-            location=site.getLocation();
-            picture=site.getPicture();
-            latitude=site.getLatitude();
-            longitude=site.getLongitude();
-            resultMap.put("city",site.getCity());
+            //区分public和private
+            if (siteType.equals(0)){
+                //public
+                QueryWrapper<PublicSite>qw=new QueryWrapper<>();
+                qw.eq("public_site_id",siteId);
+                PublicSite site=publicSiteMapper.selectOne(qw);
+                name=site.getName();
+                location=site.getLocation();
+                picture=site.getPicture();
+                latitude=site.getLatitude();
+                longitude=site.getLongitude();
+                resultMap.put("city",site.getCity());
 
-        } else if (siteType.equals(1)) {
-            //private
-            QueryWrapper<PrivateSite>qw=new QueryWrapper<>();
-            qw.eq("private_site_id",siteId);
-            PrivateSite site=privateSiteMapper.selectOne(qw);
+            } else if (siteType.equals(1)) {
+                //private
+                QueryWrapper<PrivateSite>qw=new QueryWrapper<>();
+                qw.eq("private_site_id",siteId);
+                PrivateSite site=privateSiteMapper.selectOne(qw);
 
-            name=site.getName();
-            location=site.getLocation();
-            picture=site.getPicture();
-            latitude=site.getLatitude();
-            longitude=site.getLongitude();
-            resultMap.put("city",site.getCity());
+                name=site.getName();
+                location=site.getLocation();
+                picture=site.getPicture();
+                latitude=site.getLatitude();
+                longitude=site.getLongitude();
+                resultMap.put("city",site.getCity());
+            }
+            resultMap.put("name",name);
+            resultMap.put("location",location);
+            resultMap.put("picture",picture);
+            resultMap.put("latitude",latitude);
+            resultMap.put("longitude",longitude);
         }
-        resultMap.put("name",name);
-        resultMap.put("location",location);
-        resultMap.put("picture",picture);
-        resultMap.put("latitude",latitude);
-        resultMap.put("longitude",longitude);
-
+        catch (Exception e){
+            e.printStackTrace();
+            resultMap.put("name","");
+            resultMap.put("location","");
+            resultMap.put("picture","");
+            resultMap.put("latitude","");
+            resultMap.put("longitude","");
+        }
 
 
         return resultMap;
