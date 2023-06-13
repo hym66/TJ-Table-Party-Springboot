@@ -25,6 +25,6 @@ public class UserJoinActivity {
     private Long activityId;
 
     @DateTimeFormat(pattern="yyyy-MM-dd hh:mm:ss")
-    @JsonFormat(locale="zh_CN", timezone="GMT+8", pattern="yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(  timezone="GMT+8", pattern="yyyy-MM-dd hh:mm:ss")
     private Date joinTime;
 }

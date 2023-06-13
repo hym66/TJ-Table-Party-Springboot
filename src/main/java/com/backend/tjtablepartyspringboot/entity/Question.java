@@ -38,7 +38,7 @@ public class Question {
 
 
     @DateTimeFormat(pattern="yyyy-MM-dd hh:mm:ss")
-    @JsonFormat(locale="zh_CN", timezone="GMT+8", pattern="yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(  timezone="GMT+8", pattern="yyyy-MM-dd hh:mm:ss")
     @TableField( "create_time")
     private Date createTime;
 
