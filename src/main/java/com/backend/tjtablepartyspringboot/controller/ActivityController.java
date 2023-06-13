@@ -286,6 +286,7 @@ public class ActivityController {
     }
 
 
+
     @ApiOperation("删除一个活动")
     @DeleteMapping("/deleteOne")
     public Result<Map<String,Object>>deleteOne(
@@ -433,6 +434,23 @@ public class ActivityController {
         try
         {
             resultList=activityService.getActBySite(siteId,siteType);
+            return Result.success(resultList);
+        }catch (Exception e){
+            return Result.fail(0,e.getMessage());
+        }
+
+    }
+
+
+    @ApiOperation("后端部署上没")
+    @GetMapping("/test")
+    public Result<List<Activity>>test(
+
+    ){
+        List<Activity>resultList=new ArrayList<>();
+        try
+        {
+
             return Result.success(resultList);
         }catch (Exception e){
             return Result.fail(0,e.getMessage());
