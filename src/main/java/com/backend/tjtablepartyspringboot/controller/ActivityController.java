@@ -14,11 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.PublicKey;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import java.util.*;
 
 
 /**
@@ -444,14 +440,15 @@ public class ActivityController {
 
     @ApiOperation("后端部署上没")
     @GetMapping("/test")
-    public Result<List<Activity>>test(
+    public Result<Map<String,Object>>test(
 
     ){
-        List<Activity>resultList=new ArrayList<>();
+        Map<String,Object>map=new HashMap<>();
         try
         {
-
-            return Result.success(resultList);
+            Calendar c=Calendar.getInstance();
+            map.put("timeZone",c.getTimeZone());
+            return Result.success(map);
         }catch (Exception e){
             return Result.fail(0,e.getMessage());
         }
