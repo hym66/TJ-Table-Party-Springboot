@@ -119,17 +119,18 @@ public class ActivityServiceImpl implements ActivityService {
 
         //start time
         Date startTime=act.getStartTime();
-        detailMap.put("startTime",startTime);
+        detailMap.put("startTime",startTime.getTime());
+
         detailMap.put("startTimeLabel",activityTimeFormate(startTime));
 
         //end time
         Date endTime=act.getEndTime();
-        detailMap.put("endTime",endTime);
+        detailMap.put("endTime",endTime.getTime());
         detailMap.put("endTimeLabel",activityTimeFormate(endTime));
 
         //create time
         Date createTime=act.getCreateTime();
-        detailMap.put("createTime",createTime);
+        detailMap.put("createTime",createTime.getTime());
         detailMap.put("createTimeLabel",activityTimeFormate(createTime));
 
         //repeat
@@ -391,6 +392,7 @@ public class ActivityServiceImpl implements ActivityService {
         Integer hour= calendar.get(Calendar.HOUR_OF_DAY);				//时（24小时制）
         Integer minute= calendar.get(Calendar.MINUTE);					//分
         Integer second= calendar.get(Calendar.SECOND);					//秒
+
         //今年
         calendar.setTime(new Date());
         Integer year_now=calendar.get(Calendar.YEAR);
@@ -398,7 +400,11 @@ public class ActivityServiceImpl implements ActivityService {
         if (!year.equals(year_now)){
             str=year+"年";
         }
-        str=str+month+"月"+day+"日 "+hour+":"+minute;
+        String str_minute=minute.toString();
+        if (str_minute.length()==1){
+            str_minute="0"+str_minute;
+        }
+        str=str+month+"月"+day+"日 "+hour+":"+str_minute;
         return str;
     }
 
