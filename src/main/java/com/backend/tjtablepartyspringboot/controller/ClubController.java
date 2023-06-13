@@ -333,7 +333,6 @@ public class ClubController {
                                     @RequestParam("clubId") Long clubId,
                                     @ApiParam(name="userId", value="用户id", required = true)
                                     @RequestParam("userId") String userId)
-
     {
         try {
             //人满就不能加入俱乐部了
@@ -345,6 +344,15 @@ public class ClubController {
             UserDto userDto = userService.getNameAndAvatarUrl(userId);
             String name = userDto.getNickName();
             res = clubService.addRecord(clubId, name + "已加入俱乐部");
+
+            //给该用户发消息提醒
+            ClubSimpleDto clubSimpleDto = clubService.getClubSimpleDto(clubId);
+            String clubName = clubSimpleDto.getClubTitle();
+
+            Message message = new Message(clubId, "您已被同意加入俱乐部", "经过部长审核，您已被同意加入俱乐部“"+clubName+"”，" +
+                    "快和大家一起玩耍吧！", new Date(), 1);
+            messageService.sendMessage(userId, message);
+
             return Result.success("成功同意用户加入俱乐部！");
         }
         catch (Exception e){
@@ -352,6 +360,38 @@ public class ClubController {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return Result.fail(500, "添加失败，请检查！");
         }
+    }
+
+    @ApiOperation("部长拒绝一个加入申请")
+    @DeleteMapping("refuseToJoin")
+    @Transactional
+    public Result<String> refuseToJoin(@ApiParam(name="clubId", value="俱乐部id", required = true)
+                                   @RequestParam("clubId") Long clubId,
+                                   @ApiParam(name="userId", value="用户id", required = true)
+                                   @RequestParam("userId") String userId)
+
+    {
+        try {
+            int res = clubService.removeUser(clubId, userId);
+
+            UserDto userDto = userService.getNameAndAvatarUrl(userId);
+
+            //给该用户发消息提醒
+            ClubSimpleDto clubSimpleDto = clubService.getClubSimpleDto(clubId);
+            String clubName = clubSimpleDto.getClubTitle();
+
+            Message message = new Message(clubId, "您已被拒绝加入俱乐部", "经过部长审核，您已被拒绝加入俱乐部“"+clubName+"”",
+                    new Date(), 1);
+            messageService.sendMessage(userId, message);
+
+            return Result.success("删除成功！");
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return Result.fail(500, "删除失败，请检查！");
+        }
+
     }
 
     @ApiOperation("获取俱乐部所有待审核加入的用户")
@@ -366,6 +406,7 @@ public class ClubController {
 
     @ApiOperation("俱乐部踢出一名用户")
     @DeleteMapping("kickUser")
+    @Transactional
     public Result<String> kickUser(@ApiParam(name="clubId", value="俱乐部id", required = true)
                                   @RequestParam("clubId") Long clubId,
                                   @ApiParam(name="userId", value="用户id", required = true)
@@ -378,6 +419,14 @@ public class ClubController {
             UserDto userDto = userService.getNameAndAvatarUrl(userId);
             String name = userDto.getNickName();
             res = clubService.addRecord(clubId, name + "已被踢出俱乐部");
+
+            //给该用户发消息提醒
+            ClubSimpleDto clubSimpleDto = clubService.getClubSimpleDto(clubId);
+            String clubName = clubSimpleDto.getClubTitle();
+
+            Message message = new Message(clubId, "您已被踢出俱乐部", "您已被踢出俱乐部“"+clubName+"”",
+                    new Date(), 1);
+            messageService.sendMessage(userId, message);
             return Result.success("删除成功！");
         }
         catch (Exception e){
@@ -480,7 +529,17 @@ public class ClubController {
                                        @RequestParam("userId") String userId)
     {
         try{
+            //发消息提醒
+            ClubSimpleDto clubSimpleDto = clubService.getClubSimpleDto(clubId);
+            String clubName = clubSimpleDto.getClubTitle();
+
             int res = clubService.transferManager(clubId, userId);
+
+
+            Message message = new Message(clubId, "您已成为部长", "您已被踢出俱乐部“"+clubName+"”",
+                    new Date(), 1);
+            messageService.sendMessage(userId, message);
+
             return Result.success("转让部长职位成功！");
         }
         catch (Exception e){
