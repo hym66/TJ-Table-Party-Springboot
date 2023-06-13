@@ -634,8 +634,8 @@ public class ActivityServiceImpl implements ActivityService {
             //user信息
             Map<String,Object>userData=new HashMap<>();
 
-            UserDto userDto =userService.getNameAndAvatarUrl(userId);
-            userData.put("id",userId);
+            UserDto userDto =userService.getNameAndAvatarUrl(act.getUserId());
+            userData.put("id",act.getUserId());
             userData.put("avatar",userDto.getAvatarUrl());
             userData.put("name",userDto.getNickName());
             oneActData.put("creatorInfo",userData);
@@ -714,8 +714,8 @@ public class ActivityServiceImpl implements ActivityService {
             //user信息
             Map<String,Object>userData=new HashMap<>();
 
-            UserDto userDto =userService.getNameAndAvatarUrl(userId);
-            userData.put("id",userId);
+            UserDto userDto =userService.getNameAndAvatarUrl(act.getUserId());
+            userData.put("id",act.getUserId());
             userData.put("avatar",userDto.getAvatarUrl());
             userData.put("name",userDto.getNickName());
             oneActData.put("creatorInfo",userData);
