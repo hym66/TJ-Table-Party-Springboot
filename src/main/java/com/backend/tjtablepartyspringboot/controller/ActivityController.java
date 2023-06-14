@@ -440,9 +440,7 @@ public class ActivityController {
 
     @ApiOperation("后端部署上没")
     @GetMapping("/test")
-    public Result<Map<String,Object>>test(
-
-    ){
+    public Result<Map<String,Object>>test(){
         Map<String,Object>map=new HashMap<>();
         try
         {
