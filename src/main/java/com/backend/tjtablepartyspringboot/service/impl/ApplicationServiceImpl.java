@@ -35,6 +35,8 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Autowired
     MessageService messageService;
 
+
+
     private static String weekdayTrans(int weekday) {
         if (weekday == 1) return "周一";
         else if (weekday == 2) return "周二";
@@ -48,6 +50,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Override
     public List<AppSimpleDto> selectUnchecked() {
         List<PublicSite> publicSiteList = applicationMapper.selectUnchecked();
+        
         List<AppSimpleDto> dtoList = publicSiteList.stream().map(site -> new AppSimpleDto(site)).collect(Collectors.toList());
         return dtoList;
     }
