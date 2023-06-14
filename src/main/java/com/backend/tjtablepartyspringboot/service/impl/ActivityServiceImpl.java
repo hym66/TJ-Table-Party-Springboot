@@ -1043,6 +1043,7 @@ public class ActivityServiceImpl implements ActivityService {
         newAct.setSiteId(activity.getSiteId());
         newAct.setSiteType(activity.getSiteType());
         newAct.setClubId(activity.getClubId());
+        newAct.setRepeatDay(activity.getRepeatDay());
 
         //club可能设置为空
         Long clubId=activity.getClubId();
