@@ -59,4 +59,10 @@ public class CrawlTrpgServiceImpl implements CrawlTrpgService {
         int res = trpgPublicWaitingMapper.deleteById(trpgId);
         return res;
     }
+
+    @Override
+    public int selectUncheckedCount() {
+        int res = trpgPublicWaitingMapper.selectUncheckedCount();
+        return res;
+    }
 }

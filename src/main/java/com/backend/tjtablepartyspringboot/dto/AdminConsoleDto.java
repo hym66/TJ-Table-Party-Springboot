@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 public class AdminConsoleDto {
     int uncheckedReportNum;
     int uncheckedAppNum;
+    int uncheckedTrpgNum;
     UserInfoDto userInfo;
 }

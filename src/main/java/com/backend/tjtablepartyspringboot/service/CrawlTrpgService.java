@@ -13,4 +13,5 @@ public interface CrawlTrpgService {
     int addTrpgPublic(String trpgId);
     int refuseTrpgPublic(String trpgId);
     int removeTrpgPublic(String trpgId);
+    int selectUncheckedCount();
 }

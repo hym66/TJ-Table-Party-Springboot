@@ -14,4 +14,6 @@ public interface TrpgPublicWaitingMapper extends BaseMapper<TrpgPublicWaiting> {
     List<TrpgPublicWaiting> selectAll();
     @Select("SELECT * FROM trpg_public_waiting WHERE trpg_id=#{trpgId}")
     TrpgPublicWaiting selectByWaitingId(@Param("trpgId") String trpgId);
+    @Select("SELECT COUNT(*) FROM trpg_public_waiting")
+    Integer selectUncheckedCount();
 }
